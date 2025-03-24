@@ -1,6 +1,5 @@
 import Navbar from "../components/sections/navbar/default";
 import Hero from "../components/sections/hero/default";
-import Stats from "../components/sections/stats/default";
 import Logos from "../components/sections/logos/default";
 import Items from "../components/sections/items/default";
 import FAQ from "../components/sections/faq/default";

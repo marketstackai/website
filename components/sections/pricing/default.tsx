@@ -2,7 +2,6 @@ import { Section } from "../../ui/section";
 import { User, Users } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { PricingColumn, PricingColumnProps } from "../../ui/pricing-column";
-import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface PricingProps {
