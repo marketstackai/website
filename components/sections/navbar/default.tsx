@@ -5,11 +5,15 @@ import {
   NavbarLeft,
   NavbarRight,
 } from "../../ui/navbar";
+import { ThemeToggle } from "../../ui/theme-toggle";
 import { Sheet, SheetContent, SheetTrigger } from "../../ui/sheet";
 import { Menu } from "lucide-react";
-import LaunchUI from "../../logos/launch-ui";
 import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
+
+import MarketStack from "../../logos/marketstack";
+
+import { peaceSans } from "@/lib/fonts";
 
 interface NavbarLink {
   text: string;
@@ -36,8 +40,8 @@ interface NavbarProps {
 }
 
 export default function Navbar({
-  logo = <LaunchUI />,
-  name = "Launch UI",
+  logo = <MarketStack />,
+  name = "MARKET STACK",
   homeUrl = siteConfig.url,
   mobileLinks = [
     { text: "Getting Started", href: siteConfig.url },
@@ -64,7 +68,7 @@ export default function Navbar({
           <NavbarLeft>
             <a
               href={homeUrl}
-              className="flex items-center gap-2 text-xl font-bold"
+              className={`${peaceSans.className} text-primary flex items-center gap-2 lg:text-lg`}
             >
               {logo}
               {name}
@@ -72,11 +76,13 @@ export default function Navbar({
             {showNavigation && (customNavigation || <Navigation />)}
           </NavbarLeft>
           <NavbarRight>
+            <ThemeToggle type={"icon"} />
             {actions.map((action, index) =>
               action.isButton ? (
                 <Button
                   key={index}
                   variant={action.variant || "default"}
+                  className="hidden text-sm md:block"
                   asChild
                 >
                   <a href={action.href}>
@@ -112,7 +118,6 @@ export default function Navbar({
                     href={homeUrl}
                     className="flex items-center gap-2 text-xl font-bold"
                   >
-                    <span>{name}</span>
                   </a>
                   {mobileLinks.map((link, index) => (
                     <a

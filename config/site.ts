@@ -1,6 +1,6 @@
 export const siteConfig = {
-  name: "Launch UI",
-  url: "https://launchuicomponents.com",
+  name: "Market Stack",
+  url: "https://marketstack.ai",
   getStartedUrl:
     "https://launchuicomponents.com/docs/getting-started/introduction",
   ogImage: "https://launchuicomponents.com/og.jpg",

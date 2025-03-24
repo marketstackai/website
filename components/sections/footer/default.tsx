@@ -1,4 +1,4 @@
-import { ModeToggle } from "../../ui/mode-toggle";
+import { ThemeToggle } from "../../ui/theme-toggle";
 import {
   Footer,
   FooterColumn,
@@ -25,7 +25,7 @@ interface FooterProps {
   columns?: FooterColumnProps[];
   copyright?: string;
   policies?: FooterLink[];
-  showModeToggle?: boolean;
+  showThemeToggle?: boolean;
 }
 
 export default function FooterSection({
@@ -61,7 +61,7 @@ export default function FooterSection({
     { text: "Privacy Policy", href: siteConfig.url },
     { text: "Terms of Service", href: siteConfig.url },
   ],
-  showModeToggle = true,
+  showThemeToggle = true,
 }: FooterProps) {
   return (
     <footer className="bg-background w-full px-4">
@@ -97,7 +97,7 @@ export default function FooterSection({
                   {policy.text}
                 </a>
               ))}
-              {showModeToggle && <ModeToggle />}
+              {showThemeToggle && <ThemeToggle type={"dropdown"}/>}
             </div>
           </FooterBottom>
         </Footer>

@@ -57,7 +57,7 @@ export function PricingColumn({
     >
       <hr
         className={cn(
-          "via-foreground/60 absolute top-0 left-[10%] h-[1px] w-[80%] border-0 bg-linear-to-r from-transparent to-transparent",
+          "via-foreground/10 absolute top-0 left-[10%] h-[1px] w-[80%] border-0 bg-linear-to-r from-transparent to-transparent",
           variant === "glow-brand" && "via-brand",
         )}
       />

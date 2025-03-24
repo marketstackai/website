@@ -22,11 +22,11 @@ export const metadata: Metadata = {
   ],
   authors: [
     {
-      name: "Mikolaj Dobrucki",
-      url: "https://mikolajdobrucki.com",
+      name: "Teddy Benz",
+      url: "https://teddybenz.dev",
     },
   ],
-  creator: "mikolajdobrucki",
+  creator: "teddybenz",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -48,11 +48,11 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: "@mikolajdobrucki",
+    creator: "@xteddybenz",
   },
   icons: {
-    icon: "/favicon.svg",
-    apple: "/apple-touch-icon.png",
+    icon: "/favicon.ico",
+    apple: "/favicons/apple-touch-icon.png",
   },
 };
 
