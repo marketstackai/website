@@ -5,7 +5,6 @@ import Items from "../components/sections/items/default";
 import FAQ from "../components/sections/faq/default";
 import CTA from "../components/sections/cta/default";
 import Footer from "../components/sections/footer/default";
-import Pricing from "../components/sections/pricing/default";
 
 export default function Home() {
   return (
@@ -14,7 +13,6 @@ export default function Home() {
       <Hero />
       <Logos />
       <Items />
-      <Pricing />
       <FAQ />
       <CTA />
       <Footer />

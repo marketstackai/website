@@ -13,7 +13,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
-import LaunchUI from "../logos/launch-ui";
+import MarketStack from "../logos/marketstack";
 import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
 
@@ -47,76 +47,42 @@ interface NavigationProps {
 export default function Navigation({
   menuItems = [
     {
-      title: "Getting started",
+      title: "Services",
       content: "default",
     },
     {
-      title: "Components",
-      content: "components",
-    },
-    {
-      title: "Documentation",
+      title: "About",
       isLink: true,
-      href: siteConfig.url,
+      href: "/#about",
+    },
+    {
+      title: "Audit",
+      isLink: true,
+      href: siteConfig.auditUrl,
     },
   ],
-  components = [
-    {
-      title: "Alert Dialog",
-      href: "/docs/primitives/alert-dialog",
-      description:
-        "A modal dialog that interrupts the user with important content and expects a response.",
-    },
-    {
-      title: "Hover Card",
-      href: "/docs/primitives/hover-card",
-      description:
-        "For sighted users to preview content available behind a link.",
-    },
-    {
-      title: "Progress",
-      href: "/docs/primitives/progress",
-      description:
-        "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-    },
-    {
-      title: "Scroll-area",
-      href: "/docs/primitives/scroll-area",
-      description: "Visually or semantically separates content.",
-    },
-    {
-      title: "Tabs",
-      href: "/docs/primitives/tabs",
-      description:
-        "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-    },
-    {
-      title: "Tooltip",
-      href: "/docs/primitives/tooltip",
-      description:
-        "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-    },
-  ],
-  logo = <LaunchUI />,
-  logoTitle = "Launch UI",
-  logoDescription = "Landing page template built with React, Shadcn/ui and Tailwind that you can copy/paste into your project.",
-  logoHref = siteConfig.url,
+  logo = <MarketStack />,
+  logoTitle = "Market Stack",
+  logoDescription = "AI-powered systems and agentic workflows that streamline pipelines and eliminate bottlenecks for small businesses.",
+  logoHref = "/",
   introItems = [
     {
-      title: "Introduction",
-      href: siteConfig.url,
+      title: "Pipeline Automation",
+      href: "/#services",
       description:
-        "Re-usable components built using Radix UI and Tailwind CSS.",
+        "End-to-end automation from intake to delivery — no manual handoffs.",
     },
     {
-      title: "Installation",
-      href: siteConfig.url,
-      description: "How to install dependencies and structure your app.",
+      title: "AI Agent Deployment",
+      href: "/#services",
+      description:
+        "Autonomous agents that execute multi-step processes while you sleep.",
     },
     {
-      title: "Typography",
-      href: siteConfig.url,
-      description: "Styles for headings, paragraphs, lists...etc",
+      title: "Process Optimization",
+      href: "/#services",
+      description:
+        "Map, measure, and eliminate every bottleneck in your operations.",
     },
   ],
 }: NavigationProps) {
@@ -154,20 +120,12 @@ export default function Navigation({
                         </NavigationMenuLink>
                       </li>
                       {introItems.map((intro, i) => (
-                        <ListItem key={i} href={intro.href} title={intro.title}>
-                          {intro.description}
-                        </ListItem>
-                      ))}
-                    </ul>
-                  ) : item.content === "components" ? (
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      {components.map((component) => (
                         <ListItem
-                          key={component.title}
-                          title={component.title}
-                          href={component.href}
+                          key={i}
+                          href={intro.href}
+                          title={intro.title}
                         >
-                          {component.description}
+                          {intro.description}
                         </ListItem>
                       ))}
                     </ul>

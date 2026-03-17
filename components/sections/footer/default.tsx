@@ -5,9 +5,11 @@ import {
   FooterBottom,
   FooterContent,
 } from "../../ui/footer";
-import LaunchUI from "../../logos/launch-ui";
+import MarketStack from "../../logos/marketstack";
 import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
+
+import { peaceSans } from "@/lib/fonts";
 
 interface FooterLink {
   text: string;
@@ -29,37 +31,38 @@ interface FooterProps {
 }
 
 export default function FooterSection({
-  logo = <LaunchUI />,
-  name = "Launch UI",
+  logo = <MarketStack />,
+  name = "MARKET STACK",
   columns = [
     {
-      title: "Product",
+      title: "Services",
       links: [
-        { text: "Changelog", href: siteConfig.url },
-        { text: "Documentation", href: siteConfig.url },
+        { text: "Pipeline Automation", href: "/#services" },
+        { text: "AI Agents", href: "/#services" },
+        { text: "Process Mapping", href: "/#services" },
       ],
     },
     {
       title: "Company",
       links: [
-        { text: "About", href: siteConfig.url },
-        { text: "Careers", href: siteConfig.url },
-        { text: "Blog", href: siteConfig.url },
+        { text: "About", href: "/#about" },
+        { text: "Audit", href: siteConfig.auditUrl },
+        { text: "Contact", href: siteConfig.links.email },
       ],
     },
     {
-      title: "Contact",
+      title: "Connect",
       links: [
-        { text: "Discord", href: siteConfig.url },
-        { text: "Twitter", href: siteConfig.url },
-        { text: "Github", href: siteConfig.links.github },
+        { text: "LinkedIn", href: siteConfig.links.linkedin },
+        { text: "X / Twitter", href: siteConfig.links.twitter },
+        { text: "Email", href: siteConfig.links.email },
       ],
     },
   ],
-  copyright = "© 2025 Mikołaj Dobrucki. All rights reserved",
+  copyright = "© 2025 Market Stack. All rights reserved",
   policies = [
-    { text: "Privacy Policy", href: siteConfig.url },
-    { text: "Terms of Service", href: siteConfig.url },
+    { text: "Privacy Policy", href: "#" },
+    { text: "Terms of Service", href: "#" },
   ],
   showThemeToggle = true,
 }: FooterProps) {
@@ -69,10 +72,10 @@ export default function FooterSection({
         <Footer>
           <FooterContent>
             <FooterColumn className="col-span-2 sm:col-span-3 md:col-span-1">
-              <div className="flex items-center gap-2">
+              <a href="/" className={`${peaceSans.className} text-primary flex items-center gap-2 lg:text-lg`}>
                 {logo}
-                <h3 className="text-xl font-bold">{name}</h3>
-              </div>
+                {name}
+              </a>
             </FooterColumn>
             {columns.map((column, index) => (
               <FooterColumn key={index}>
@@ -97,7 +100,7 @@ export default function FooterSection({
                   {policy.text}
                 </a>
               ))}
-              {showThemeToggle && <ThemeToggle type={"dropdown"}/>}
+              {showThemeToggle && <ThemeToggle type={"dropdown"} />}
             </div>
           </FooterBottom>
         </Footer>

@@ -21,126 +21,84 @@ interface FAQProps {
 }
 
 export default function FAQ({
-  title = "Questions and Answers",
+  title = "Questions & Answers",
   items = [
     {
-      question:
-        "Why building a great landing page is critical for your business?",
+      question: "What is an Operations Audit?",
       answer: (
-        <>
-          <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
-            In today&apos;s AI-driven world, standing out is harder than ever.
-            While anyone can build a product, a professional landing page makes
-            the difference between success and failure.
-          </p>
-          <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
-            Launch UI helps you ship faster without compromising on quality.
-          </p>
-        </>
-      ),
-    },
-    {
-      question: "Why use Launch UI instead of a no-code tool?",
-      answer: (
-        <>
-          <p className="text-muted-foreground mb-4 max-w-[600px]">
-            No-code tools lock you into their ecosystem with recurring fees and
-            limited control. They often come with performance issues and make it
-            difficult to integrate with your product.
-          </p>
-          <p className="text-muted-foreground mb-4 max-w-[600px]">
-            You can&apos;t even change your hosting provider and basic things
-            like web analytics come as extra costs and paid add-ons.
-          </p>
-          <p className="text-muted-foreground mb-4 max-w-[600px]">
-            What might seem like a convenient solution today could paint you
-            into a corner tomorrow, limiting your ability to scale and adapt.
-            Launch UI gives you full control of your code while maintaining
-            professional quality.
-          </p>
-        </>
-      ),
-    },
-    {
-      question:
-        "How Launch UI is different from other components libraries and templates?",
-      answer: (
-        <>
-          <p className="text-muted-foreground mb-4 max-w-[580px]">
-            Launch UI stands out with premium design quality and delightful
-            touches of custom animations and illustrations.
-          </p>
-          <p className="text-muted-foreground mb-4 max-w-[580px]">
-            All components are carefully crafted to help position your product
-            as a professional tool, avoiding the generic template look.
-          </p>
-          <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
-            Unlike many libraries that rely on outdated CSS practices and old
-            dependencies, Launch UI is built with modern technologies and best
-            practices in mind.
-          </p>
-        </>
-      ),
-    },
-    {
-      question: 'Why exactly does it mean that "The code is yours"?',
-      answer: (
-        <>
-          <p className="text-muted-foreground mb-4 max-w-[580px]">
-            The basic version of Launch UI is open-source and free forever,
-            under a do-whatever-you-want license.
-          </p>
-          <p className="text-muted-foreground mb-4 max-w-[580px]">
-            The pro version that contains more components and options is a
-            one-time purchase that gives you lifetime access to all current and
-            future content. Use it for unlimited personal and commercial
-            projects - no recurring fees or restrictions.
-          </p>
-          <p className="text-muted-foreground mb-4 max-w-[580px]">
-            For complete details about licensing and usage rights, check out{" "}
-            <Link href="/pricing" className="text-foreground underline">
-              the pricing page
-            </Link>
-            .
-          </p>
-        </>
-      ),
-    },
-    {
-      question: "Are Figma files included?",
-      answer: (
-        <p className="text-muted-foreground mb-4 max-w-[580px]">
-          Yes! The complete Launch UI template is available for free on the{" "}
-          <Link
-            href="https://www.figma.com/community/file/1420131743903900629/launch-ui-landing-page-components-ui-kit"
-            className="text-foreground underline"
-          >
-            Figma community
-          </Link>
-          .
+        <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
+          We analyze your current workflows, identify bottlenecks, and deliver a
+          clear roadmap for automation. It&apos;s free, no-commitment, and
+          designed to show you exactly where AI can save you time and money.
         </p>
       ),
     },
     {
-      question: "Can I get a discount?",
+      question: "What types of businesses do you work with?",
+      answer: (
+        <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
+          Small businesses across all industries that have manual, repetitive
+          processes slowing their growth. If your team is spending hours on tasks
+          that should take minutes, we can help.
+        </p>
+      ),
+    },
+    {
+      question: "What are agentic workflows?",
       answer: (
         <>
-          <p className="text-muted-foreground mb-4 max-w-[580px]">
-            Actually, yes! I&apos;m looking for beta testers and great examples
-            of Launch UI in action to feature on the website. Here&apos;s the
-            deal: you provide feedback to help me improve the product, and in
-            return, you get a huge discount plus a solid backlink for your
-            product.
+          <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
+            Agentic workflows are AI agents that autonomously execute multi-step
+            tasks — like a tireless employee who never sleeps and never makes
+            mistakes.
           </p>
-          <p className="text-muted-foreground mb-4 max-w-[580px]">
-            If this interests you, don&apos;t hesitate to{" "}
+          <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
+            Unlike simple automations, these agents can make decisions, adapt to
+            new information, and handle complex processes end-to-end.
+          </p>
+        </>
+      ),
+    },
+    {
+      question: "How long does implementation take?",
+      answer: (
+        <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
+          Most clients see their first automated pipeline live within 2–4 weeks.
+          We prioritize quick wins that deliver immediate value, then build out
+          more complex systems over time.
+        </p>
+      ),
+    },
+    {
+      question: "Do I need to replace my current tools?",
+      answer: (
+        <>
+          <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
+            No. We integrate with your existing stack and build automation on top
+            of what you already use. Our job is to make your current tools work
+            harder, not to add more to your plate.
+          </p>
+          <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
+            And when an off-the-shelf solution doesn&apos;t exist, we build
+            custom applications tailored to your exact workflow.
+          </p>
+        </>
+      ),
+    },
+    {
+      question: "What does it cost?",
+      answer: (
+        <>
+          <p className="text-muted-foreground mb-4 max-w-[640px] text-balance">
+            Every engagement starts with a free{" "}
             <Link
-              href={siteConfig.links.email}
+              href={siteConfig.auditUrl}
               className="text-foreground underline"
             >
-              reach out by email
+              Operations Audit
             </Link>
-            .
+            . From there, pricing is project-based with no recurring fees — you
+            pay for the system, not a subscription.
           </p>
         </>
       ),

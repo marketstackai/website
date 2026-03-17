@@ -1,12 +1,9 @@
-import Figma from "../../logos/figma";
 import React from "../../logos/react";
 import ShadcnUi from "../../logos/shadcn-ui";
-import Tailwind from "../../logos/tailwind";
-import TypeScript from "../../logos/typescript";
+import Claude from "../../logos/claude";
+import Gemini from "../../logos/gemini";
 import Logo from "../../ui/logo";
 import { Section } from "../../ui/section";
-import { Badge } from "../../ui/badge";
-import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
 
 interface LogosProps {
@@ -16,35 +13,13 @@ interface LogosProps {
 }
 
 export default function Logos({
-  title = "Built with industry-standard tools and best practices",
-  badge = (
-    <Badge variant="outline" className="border-brand/30 text-brand">
-      Last updated: {siteConfig.stats.updated}
-    </Badge>
-  ),
+  title = "Built on the tools that power modern automation",
+  badge = false,
   logos = [
-    <Logo key="figma" image={Figma} name="Figma" />,
-    <Logo key="react" image={React} name="React" version="19.0.0" />,
-    <Logo
-      key="typescript"
-      image={TypeScript}
-      name="TypeScript"
-      version="5.6.3"
-    />,
-    <Logo
-      key="shadcn"
-      image={ShadcnUi}
-      name="Shadcn/ui"
-      version="2.4.0"
-      badge="New"
-    />,
-    <Logo
-      key="tailwind"
-      image={Tailwind}
-      name="Tailwind"
-      version="4.0"
-      badge="New"
-    />,
+    <Logo key="react" image={React} name="React" />,
+    <Logo key="shadcn" image={ShadcnUi} name="Shadcn/ui" />,
+    <Logo key="claude" image={Claude} name="Claude" />,
+    <Logo key="gemini" image={Gemini} name="Gemini" />,
   ],
 }: LogosProps) {
   return (

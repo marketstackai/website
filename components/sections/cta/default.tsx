@@ -2,6 +2,7 @@ import { Section } from "../../ui/section";
 import { Button, type ButtonProps } from "../../ui/button";
 import { siteConfig } from "@/config/site";
 import Glow from "../../ui/glow";
+import { ArrowRightIcon } from "lucide-react";
 import { ReactNode } from "react";
 
 interface CTAButtonProps {
@@ -18,12 +19,13 @@ interface CTAProps {
 }
 
 export default function CTA({
-  title = "Start building",
+  title = "Ready to eliminate your bottlenecks?",
   buttons = [
     {
-      href: siteConfig.getStartedUrl,
-      text: "Get Started",
-      variant: "default",
+      href: siteConfig.auditUrl,
+      text: "Book Your Free Audit",
+      variant: "default" as const,
+      iconRight: <ArrowRightIcon className="ml-2 size-4" />,
     },
   ],
 }: CTAProps) {

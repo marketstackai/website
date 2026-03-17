@@ -42,17 +42,17 @@ interface NavbarProps {
 export default function Navbar({
   logo = <MarketStack />,
   name = "MARKET STACK",
-  homeUrl = siteConfig.url,
+  homeUrl = "/",
   mobileLinks = [
-    { text: "Getting Started", href: siteConfig.url },
-    { text: "Components", href: siteConfig.url },
-    { text: "Documentation", href: siteConfig.url },
+    { text: "Services", href: "/#services" },
+    { text: "About", href: "/#about" },
+    { text: "FAQ", href: "/#faq" },
+    { text: "Audit", href: siteConfig.auditUrl },
   ],
   actions = [
-    { text: "Sign in", href: siteConfig.url, isButton: false },
     {
-      text: "Get Started",
-      href: siteConfig.url,
+      text: "Book an Audit",
+      href: siteConfig.auditUrl,
       isButton: true,
       variant: "default",
     },

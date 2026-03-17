@@ -1,12 +1,12 @@
 import {
-  BlocksIcon,
-  EclipseIcon,
-  FastForwardIcon,
-  LanguagesIcon,
-  MonitorSmartphoneIcon,
-  RocketIcon,
-  ScanFaceIcon,
-  SquarePenIcon,
+  BotIcon,
+  GitBranchIcon,
+  NetworkIcon,
+  BrainCircuitIcon,
+  PlugIcon,
+  ActivityIcon,
+  ScalingIcon,
+  RefreshCwIcon,
 } from "lucide-react";
 import { Item, ItemIcon, ItemTitle, ItemDescription } from "../../ui/item";
 import { Section } from "../../ui/section";
@@ -24,50 +24,55 @@ interface ItemsProps {
 }
 
 export default function Items({
-  title = "Everything you need. Nothing you don't.",
+  title = "Systems that work while you sleep",
   items = [
     {
-      title: "Accessibility first",
-      description: "Fully WCAG 2.0 compliant, made with best a11y practices",
-      icon: <ScanFaceIcon className="size-5 stroke-1" />,
-    },
-    {
-      title: "Responsive design",
-      description: "Looks and works great on any device and screen size",
-      icon: <MonitorSmartphoneIcon className="size-5 stroke-1" />,
-    },
-    {
-      title: "Light and dark mode",
+      title: "Agentic Workflows",
       description:
-        "Seamless switching between color schemes, 6 themes included",
-      icon: <EclipseIcon className="size-5 stroke-1" />,
+        "AI agents that execute multi-step processes autonomously — no babysitting required",
+      icon: <BotIcon className="size-5 stroke-1" />,
     },
     {
-      title: "Easy to customize",
-      description: "Flexible options to match your product or brand",
-      icon: <BlocksIcon className="size-5 stroke-1" />,
-    },
-    {
-      title: "Top-level performance",
-      description: "Made for lightning-fast load times and smooth interactions",
-      icon: <FastForwardIcon className="size-5 stroke-1" />,
-    },
-    {
-      title: "Production ready",
-      description: "Thoroughly tested and launch-prepared",
-      icon: <RocketIcon className="size-5 stroke-1" />,
-    },
-    {
-      title: "Made for localisation",
+      title: "Pipeline Automation",
       description:
-        "Easy to implement support for multiple languages and regions",
-      icon: <LanguagesIcon className="size-5 stroke-1" />,
+        "End-to-end automation from intake to delivery, eliminating manual handoffs",
+      icon: <GitBranchIcon className="size-5 stroke-1" />,
     },
     {
-      title: "CMS friendly",
+      title: "Process Mapping",
       description:
-        "Built to work with your any headless content management system",
-      icon: <SquarePenIcon className="size-5 stroke-1" />,
+        "Identify and visualize every bottleneck choking your operations",
+      icon: <NetworkIcon className="size-5 stroke-1" />,
+    },
+    {
+      title: "AI-Powered Decisions",
+      description:
+        "Data-driven insights that replace guesswork with confidence",
+      icon: <BrainCircuitIcon className="size-5 stroke-1" />,
+    },
+    {
+      title: "Custom Integrations",
+      description:
+        "Connect your existing tools into one seamless, automated system",
+      icon: <PlugIcon className="size-5 stroke-1" />,
+    },
+    {
+      title: "Real-Time Monitoring",
+      description:
+        "Live dashboards for every automated process — full visibility, zero surprises",
+      icon: <ActivityIcon className="size-5 stroke-1" />,
+    },
+    {
+      title: "Scalable Architecture",
+      description:
+        "Systems engineered to grow with your business, not against it",
+      icon: <ScalingIcon className="size-5 stroke-1" />,
+    },
+    {
+      title: "Continuous Optimization",
+      description:
+        "AI that learns from your operations and improves processes over time",
+      icon: <RefreshCwIcon className="size-5 stroke-1" />,
     },
   ],
 }: ItemsProps) {
