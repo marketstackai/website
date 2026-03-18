@@ -1,8 +1,5 @@
 import {
   BotIcon,
-  GitBranchIcon,
-  NetworkIcon,
-  BrainCircuitIcon,
   PlugIcon,
   ActivityIcon,
   ScalingIcon,
@@ -29,32 +26,20 @@ export default function Items({
     {
       title: "Agentic Workflows",
       description:
-        "AI agents that execute multi-step processes autonomously — no babysitting required",
+        "AI agents that execute complex multi-step processes autonomously",
       icon: <BotIcon className="size-5 stroke-1" />,
-    },
-    {
-      title: "Pipeline Automation",
-      description:
-        "End-to-end automation from intake to delivery, eliminating manual handoffs",
-      icon: <GitBranchIcon className="size-5 stroke-1" />,
-    },
-    {
-      title: "Process Mapping",
-      description:
-        "Identify and visualize every bottleneck choking your operations",
-      icon: <NetworkIcon className="size-5 stroke-1" />,
-    },
-    {
-      title: "AI-Powered Decisions",
-      description:
-        "Data-driven insights that replace guesswork with confidence",
-      icon: <BrainCircuitIcon className="size-5 stroke-1" />,
     },
     {
       title: "Custom Integrations",
       description:
-        "Connect your existing tools into one seamless, automated system",
+        "Connect your existing data and tools into one seamless, automated system",
       icon: <PlugIcon className="size-5 stroke-1" />,
+    },
+    {
+      title: "Scalable Architecture",
+      description:
+        "Systems engineered to grow with your business",
+      icon: <ScalingIcon className="size-5 stroke-1" />,
     },
     {
       title: "Real-Time Monitoring",
@@ -63,27 +48,21 @@ export default function Items({
       icon: <ActivityIcon className="size-5 stroke-1" />,
     },
     {
-      title: "Scalable Architecture",
-      description:
-        "Systems engineered to grow with your business, not against it",
-      icon: <ScalingIcon className="size-5 stroke-1" />,
-    },
-    {
       title: "Continuous Optimization",
       description:
-        "AI that learns from your operations and improves processes over time",
+        "Learns from your operations and improves processes over time",
       icon: <RefreshCwIcon className="size-5 stroke-1" />,
     },
   ],
 }: ItemsProps) {
   return (
-    <Section>
+    <Section className="py-8 sm:py-16 md:py-20 px-1 sm:px-4">
       <div className="max-w-container mx-auto flex flex-col items-center gap-6 sm:gap-20">
-        <h2 className="max-w-[560px] text-center text-3xl leading-tight font-semibold sm:text-5xl sm:leading-tight">
+        <h2 className="max-w-4xl text-center text-3xl leading-tight font-semibold sm:text-5xl sm:leading-tight">
           {title}
         </h2>
         {items !== false && items.length > 0 && (
-          <div className="grid auto-rows-fr grid-cols-2 gap-0 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+          <div className="grid w-full auto-rows-fr grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-5 sm:gap-4">
             {items.map((item, index) => (
               <Item key={index}>
                 <ItemTitle className="flex items-center gap-2">

@@ -59,7 +59,7 @@ export default function FooterSection({
       ],
     },
   ],
-  copyright = "© 2025 Market Stack. All rights reserved",
+  copyright = `© ${new Date().getFullYear()} Market Stack. All rights reserved`,
   policies = [
     { text: "Privacy Policy", href: "#" },
     { text: "Terms of Service", href: "#" },
@@ -71,12 +71,7 @@ export default function FooterSection({
       <div className="max-w-container mx-auto">
         <Footer>
           <FooterContent>
-            <FooterColumn className="col-span-2 sm:col-span-3 md:col-span-1">
-              <a href="/" className={`${peaceSans.className} text-primary flex items-center gap-2 lg:text-lg`}>
-                {logo}
-                {name}
-              </a>
-            </FooterColumn>
+
             {columns.map((column, index) => (
               <FooterColumn key={index}>
                 <h3 className="text-md pt-1 font-semibold">{column.title}</h3>

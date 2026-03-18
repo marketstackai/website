@@ -6,7 +6,7 @@ import {
   NavbarRight,
 } from "../../ui/navbar";
 import { ThemeToggle } from "../../ui/theme-toggle";
-import { Sheet, SheetContent, SheetTrigger } from "../../ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "../../ui/sheet";
 import { Menu } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
@@ -113,6 +113,9 @@ export default function Navbar({
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                </SheetHeader>
                 <nav className="grid gap-6 text-lg font-medium">
                   <a
                     href={homeUrl}
