@@ -35,34 +35,18 @@ export default function FooterSection({
   name = "MARKET STACK",
   columns = [
     {
-      title: "Services",
-      links: [
-        { text: "Pipeline Automation", href: "/#services" },
-        { text: "AI Agents", href: "/#services" },
-        { text: "Process Mapping", href: "/#services" },
-      ],
-    },
-    {
-      title: "Company",
-      links: [
-        { text: "About", href: "/#about" },
-        { text: "Audit", href: siteConfig.auditUrl },
-        { text: "Contact", href: siteConfig.links.email },
-      ],
-    },
-    {
       title: "Connect",
       links: [
-        { text: "LinkedIn", href: siteConfig.links.linkedin },
+        { text: "LinkedIn", href: "https://www.linkedin.com/in/teddybenz" },
         { text: "X / Twitter", href: siteConfig.links.twitter },
-        { text: "Email", href: siteConfig.links.email },
+        { text: "GitHub", href: "https://github.com/teddybenzdev" },
       ],
     },
   ],
   copyright = `© ${new Date().getFullYear()} Market Stack. All rights reserved`,
   policies = [
-    { text: "Privacy Policy", href: "#" },
-    { text: "Terms of Service", href: "#" },
+    { text: "Privacy Policy", href: "/privacy-policy" },
+    { text: "Terms of Service", href: "/terms-of-service" },
   ],
   showThemeToggle = true,
 }: FooterProps) {

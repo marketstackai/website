@@ -1,4 +1,3 @@
-import Navigation from "../../ui/navigation";
 import { Button, type ButtonProps } from "../../ui/button";
 import {
   Navbar as NavbarComponent,
@@ -43,12 +42,7 @@ export default function Navbar({
   logo = <MarketStack />,
   name = "MARKET STACK",
   homeUrl = "/",
-  mobileLinks = [
-    { text: "Services", href: "/#services" },
-    { text: "About", href: "/#about" },
-    { text: "FAQ", href: "/#faq" },
-    { text: "Audit", href: siteConfig.auditUrl },
-  ],
+  mobileLinks = [],
   actions = [
     {
       text: "Book an Audit",
@@ -73,7 +67,7 @@ export default function Navbar({
               {logo}
               {name}
             </a>
-            {showNavigation && (customNavigation || <Navigation />)}
+            {showNavigation && customNavigation}
           </NavbarLeft>
           <NavbarRight>
             <ThemeToggle type={"icon"} />
@@ -101,39 +95,41 @@ export default function Navbar({
                 </a>
               ),
             )}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="shrink-0 md:hidden"
-                >
-                  <Menu className="size-5" />
-                  <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <SheetHeader>
-                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                </SheetHeader>
-                <nav className="grid gap-6 text-lg font-medium">
-                  <a
-                    href={homeUrl}
-                    className="flex items-center gap-2 text-xl font-bold"
+            {mobileLinks.length > 0 && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 md:hidden"
                   >
-                  </a>
-                  {mobileLinks.map((link, index) => (
+                    <Menu className="size-5" />
+                    <span className="sr-only">Toggle navigation menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right">
+                  <SheetHeader>
+                    <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                  </SheetHeader>
+                  <nav className="grid gap-6 text-lg font-medium">
                     <a
-                      key={index}
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground"
+                      href={homeUrl}
+                      className="flex items-center gap-2 text-xl font-bold"
                     >
-                      {link.text}
                     </a>
-                  ))}
-                </nav>
-              </SheetContent>
-            </Sheet>
+                    {mobileLinks.map((link, index) => (
+                      <a
+                        key={index}
+                        href={link.href}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        {link.text}
+                      </a>
+                    ))}
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            )}
           </NavbarRight>
         </NavbarComponent>
       </div>
