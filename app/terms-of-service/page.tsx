@@ -20,7 +20,7 @@ export default function TermsOfService() {
 
         <h2 className="text-2xl font-semibold mt-8 mb-4">2. Description of Services</h2>
         <p className="text-muted-foreground mb-4">
-          Market Stack provides AI automation consulting, process mapping, and custom software systems designed for workflow optimization. Our services are tailored to individual business needs and delivered "as is."
+          Market Stack provides AI automation consulting, process mapping, and custom software systems designed for workflow optimization. Our services are tailored to individual business needs and delivered &quot;as is.&quot;
         </p>
 
         <h2 className="text-2xl font-semibold mt-8 mb-4">3. Intellectual Property</h2>

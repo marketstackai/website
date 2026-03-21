@@ -38,3 +38,6 @@ next-env.d.ts
 # pro
 /app/pro/
 /components/pro/
+
+# lint
+lint*.txt

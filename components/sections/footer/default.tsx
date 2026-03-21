@@ -5,11 +5,7 @@ import {
   FooterBottom,
   FooterContent,
 } from "../../ui/footer";
-import MarketStack from "../../logos/marketstack";
 import { siteConfig } from "@/config/site";
-import { ReactNode } from "react";
-
-import { peaceSans } from "@/lib/fonts";
 
 interface FooterLink {
   text: string;
@@ -22,8 +18,6 @@ interface FooterColumnProps {
 }
 
 interface FooterProps {
-  logo?: ReactNode;
-  name?: string;
   columns?: FooterColumnProps[];
   copyright?: string;
   policies?: FooterLink[];
@@ -31,8 +25,6 @@ interface FooterProps {
 }
 
 export default function FooterSection({
-  logo = <MarketStack />,
-  name = "MARKET STACK",
   columns = [
     {
       title: "Connect",

@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
 
         <h2 className="text-2xl font-semibold mt-8 mb-4">1. Information We Collect</h2>
         <p className="text-muted-foreground mb-4">
-          When you use Market Stack's services, or book an audit, we may collect information such as your name, email address, company name, and details about your business operations. This information is solely used to provide you with relevant automation strategies and services.
+          When you use Market Stack&apos;s services, or book an audit, we may collect information such as your name, email address, company name, and details about your business operations. This information is solely used to provide you with relevant automation strategies and services.
         </p>
 
         <h2 className="text-2xl font-semibold mt-8 mb-4">2. How We Use Your Information</h2>
