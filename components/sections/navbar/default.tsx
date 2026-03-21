@@ -11,6 +11,7 @@ import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
 
 import MarketStack from "../../logos/marketstack";
+import Navigation from "../../ui/navigation";
 
 import { peaceSans } from "@/lib/fonts";
 
@@ -42,10 +43,12 @@ export default function Navbar({
   logo = <MarketStack />,
   name = "MARKET STACK",
   homeUrl = "/",
-  mobileLinks = [],
+  mobileLinks = [
+    { text: "Services", href: "/services#stack" },
+  ],
   actions = [
     {
-      text: "Book an Audit",
+      text: "AI Audit",
       href: siteConfig.auditUrl,
       isButton: true,
       variant: "default",
@@ -67,6 +70,37 @@ export default function Navbar({
               {logo}
               {name}
             </a>
+            <div className="hidden ml-4 md:block">
+              <Navigation 
+                menuItems={[
+                  {
+                    title: "Services",
+                    content: "default",
+                    href: "/services#stack",
+                  }
+                ]}
+                logoTitle="The Stack"
+                logoDescription="Your entire revenue engine running on autopilot. Built for modern operators."
+                logoHref="/services#stack"
+                introItems={[
+                  {
+                    title: "Train",
+                    href: "/services#train",
+                    description: "Fast-track your team with highly actionable AI workshops."
+                  },
+                  {
+                    title: "Strategize",
+                    href: "/services#strategize",
+                    description: "Map your bottlenecks and create custom strategy."
+                  },
+                  {
+                    title: "Build",
+                    href: "/services#build",
+                    description: "Full-scale custom software development and AI engineering."
+                  }
+                ]}
+              />
+            </div>
             {showNavigation && customNavigation}
           </NavbarLeft>
           <NavbarRight>
@@ -89,7 +123,7 @@ export default function Navbar({
                 <a
                   key={index}
                   href={action.href}
-                  className="hidden text-sm md:block"
+                  className="hidden text-sm font-medium cursor-pointer text-muted-foreground transition-colors hover:text-foreground md:flex"
                 >
                   {action.text}
                 </a>

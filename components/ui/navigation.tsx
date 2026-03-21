@@ -99,7 +99,15 @@ export default function Navigation({
               </Link>
             ) : (
               <>
-                <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+                {item.href ? (
+                  <Link href={item.href} legacyBehavior passHref>
+                    <NavigationMenuTrigger className="cursor-pointer">
+                      {item.title}
+                    </NavigationMenuTrigger>
+                  </Link>
+                ) : (
+                  <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+                )}
                 <NavigationMenuContent>
                   {item.content === "default" ? (
                     <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">

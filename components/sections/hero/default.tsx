@@ -1,6 +1,6 @@
 import { Button, type ButtonProps } from "../../ui/button";
 import { Badge } from "../../ui/badge";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Section } from "../../ui/section";
 import { Mockup, MockupFrame } from "../../ui/mockup";
 import Glow from "../../ui/glow";
@@ -43,16 +43,16 @@ export default function Hero({
       </span>
       <a href={siteConfig.auditUrl} className="flex items-center gap-1">
         Learn more
-        <ArrowRightIcon className="size-3" />
+        <ArrowUpRight className="size-3" />
       </a>
     </Badge>
   ),
   buttons = [
     {
-      href: siteConfig.auditUrl,
-      text: "Book Your Free Audit",
+      href: `${siteConfig.auditUrl}`,
+      text: "Start Your AI Audit",
       variant: "default" as const,
-      iconRight: <ArrowRightIcon className="ml-2 size-4" />,
+      iconRight: <ArrowUpRight className="ml-2 size-4" />,
     },
   ],
 }: HeroProps) {

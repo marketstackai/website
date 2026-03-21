@@ -13,3 +13,4 @@ Goal: Eradicate generic AI patterns. Every scroll is intentional; every animatio
 - "1:1 Pixel Perfect": Match design specs with obsessive precision.
 - "Weighted Motion": No linear animations. Use custom bouncier/heavier springs for a "cinematic" feel.
 - "Anti-AI Patterns": Avoid generic 'Card' layouts or 'Hero' sections. Propose bespoke, instrument-like interfaces.
+- "Clean Code": Do not leave logs, lints, unused imports.

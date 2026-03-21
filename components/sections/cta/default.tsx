@@ -2,7 +2,7 @@ import { Section } from "../../ui/section";
 import { Button, type ButtonProps } from "../../ui/button";
 import { siteConfig } from "@/config/site";
 import Glow from "../../ui/glow";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, ArrowUpRight } from "lucide-react";
 import { ReactNode } from "react";
 
 interface CTAButtonProps {
@@ -16,18 +16,20 @@ interface CTAButtonProps {
 interface CTAProps {
   title?: string;
   buttons?: CTAButtonProps[] | false;
+  subtext?: string | false;
 }
 
 export default function CTA({
   title = "Ready to eliminate your bottlenecks?",
   buttons = [
     {
-      href: siteConfig.auditUrl,
-      text: "Book Your Free Audit",
+      href: `${siteConfig.auditUrl}`,
+      text: "Start Your AI Audit",
       variant: "default" as const,
-      iconRight: <ArrowRightIcon className="ml-2 size-4" />,
+      iconRight: <ArrowUpRight className="ml-2 size-4" />,
     },
   ],
+  subtext = "AI Readiness Report",
 }: CTAProps) {
   return (
     <Section className="group relative overflow-hidden">
@@ -36,21 +38,29 @@ export default function CTA({
           {title}
         </h2>
         {buttons !== false && buttons.length > 0 && (
-          <div className="flex justify-center gap-4">
-            {buttons.map((button, index) => (
-              <Button
-                key={index}
-                variant={button.variant || "default"}
-                size="lg"
-                asChild
-              >
-                <a href={button.href}>
-                  {button.icon}
-                  {button.text}
-                  {button.iconRight}
-                </a>
-              </Button>
-            ))}
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex justify-center gap-4">
+              {buttons.map((button, index) => (
+                <Button
+                  key={index}
+                  variant={button.variant || "default"}
+                  size="lg"
+                  asChild
+                  className="group"
+                >
+                  <a href={button.href} className="flex items-center gap-1">
+                    {button.icon}
+                    {button.text}
+                    {button.iconRight}
+                  </a>
+                </Button>
+              ))}
+            </div>
+            {subtext && (
+              <p className="text-sm text-muted-foreground animate-appear delay-300">
+                {subtext}
+              </p>
+            )}
           </div>
         )}
       </div>
