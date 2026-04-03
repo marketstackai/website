@@ -87,23 +87,23 @@ export default function AuditDevPage() {
     closeRate: results.closeRate,
     jobValue: results.jobValue,
   };
-  const [params, setParams] = useState<AdjustableParams>(defaults);
+  const [adjParams, setParams] = useState<AdjustableParams>(defaults);
 
   // Reset params when quiz data changes
-  const paramsKey = `${results.leads}-${results.leakRate}-${results.closeRate}-${results.jobValue}`;
-  const [lastKey, setLastKey] = useState(paramsKey);
-  if (paramsKey !== lastKey) {
+  const adjParamsKey = `${results.leads}-${results.leakRate}-${results.closeRate}-${results.jobValue}`;
+  const [lastKey, setLastKey] = useState(adjParamsKey);
+  if (adjParamsKey !== lastKey) {
     setParams(defaults);
-    setLastKey(paramsKey);
+    setLastKey(adjParamsKey);
   }
 
   const isAdjusted =
-    params.leads !== defaults.leads ||
-    params.leakRate !== defaults.leakRate ||
-    params.closeRate !== defaults.closeRate ||
-    params.jobValue !== defaults.jobValue;
+    adjParams.leads !== defaults.leads ||
+    adjParams.leakRate !== defaults.leakRate ||
+    adjParams.closeRate !== defaults.closeRate ||
+    adjParams.jobValue !== defaults.jobValue;
 
-  const adjusted = useMemo(() => recalculate(params), [params]);
+  const adjusted = useMemo(() => recalculate(adjParams), [adjParams]);
 
   const displayMax = isAdjusted ? adjusted.maxImpactMonthly : results.maxImpactMonthly;
   const displayMaxAnnual = isAdjusted ? adjusted.maxImpactAnnual : results.maxImpactAnnual;
@@ -151,14 +151,14 @@ export default function AuditDevPage() {
 
               <div className="space-y-4">
                 <AssumptionAdjuster
-                  params={params}
+                  params={adjParams}
                   onChange={setParams}
                   onReset={() => setParams(defaults)}
                   isAdjusted={isAdjusted}
                 />
 
                 <MetricsGrid
-                  params={params}
+                  params={adjParams}
                   onUpdateParam={(key, val) => setParams(prev => ({ ...prev, [key]: val }))}
                 />
               </div>
