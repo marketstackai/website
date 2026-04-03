@@ -92,10 +92,11 @@ export default function AuditDevPage() {
   // Reset params when quiz data changes
   const paramsKey = `${results.leads}-${results.leakRate}-${results.closeRate}-${results.jobValue}`;
   const [lastKey, setLastKey] = useState(paramsKey);
-  if (paramsKey !== lastKey) {
+  const [params, setParams] = useState<AdjustableParams>(defaults);
+
+  useEffect(() => {
     setParams(defaults);
-    setLastKey(paramsKey);
-  }
+  }, [defaults]);
 
   const isAdjusted =
     params.leads !== defaults.leads ||
