@@ -38,9 +38,8 @@ export async function POST(request: Request) {
       email: string;
       full_name?: string;
       business_name?: string;
-      contact_updates?: { 
-        tags_add?: string[]; 
-        tags_remove?: string[]; 
+      contact_updates?: {
+        tags_add?: string[];
         customField?: Record<string, string>;
       };
       audit_record?: Record<string, unknown>;
@@ -51,8 +50,11 @@ export async function POST(request: Request) {
     const locationId = process.env.GHL_LOCATION_ID;
 
     if (!apiKey || !locationId) {
-      console.warn("Missing GHL API credentials — skipping API calls");
-      return NextResponse.json({ success: true });
+      console.error("Missing GHL API credentials");
+      return NextResponse.json(
+        { success: false, error: "API integration not configured" },
+        { status: 503 },
+      );
     }
 
     if (!email) {
@@ -79,24 +81,18 @@ export async function POST(request: Request) {
 
       const tagsToAdd = contact_updates.tags_add || [];
       if (tagsToAdd.length > 0) {
-        await fetch(`${GHL_BASE}/contacts/${contactId}/tags`, {
+        const tagRes = await fetch(`${GHL_BASE}/contacts/${contactId}/tags`, {
           method: "POST",
           headers,
           body: JSON.stringify({ tags: tagsToAdd }),
         });
-      }
-
-      const tagsToRemove = contact_updates.tags_remove || [];
-      if (tagsToRemove.length > 0) {
-        await fetch(`${GHL_BASE}/contacts/${contactId}/tags`, {
-          method: "DELETE",
-          headers,
-          body: JSON.stringify({ tags: tagsToRemove }),
-        });
+        if (!tagRes.ok) {
+          console.error("Failed to add tags:", tagRes.status, await tagRes.text());
+        }
       }
 
       if (contact_updates.customField) {
-        await fetch(`${GHL_BASE}/contacts/${contactId}`, {
+        const cfRes = await fetch(`${GHL_BASE}/contacts/${contactId}`, {
           method: "PUT",
           headers,
           body: JSON.stringify({
@@ -105,6 +101,9 @@ export async function POST(request: Request) {
             ),
           }),
         });
+        if (!cfRes.ok) {
+          console.error("Failed to update custom fields:", cfRes.status, await cfRes.text());
+        }
       }
     }
 
@@ -133,10 +132,12 @@ export async function POST(request: Request) {
               // MULTIPLE_OPTIONS expects an array
               biggest_challenges: Array.isArray(audit_record.biggest_challenges)
                 ? audit_record.biggest_challenges
-                : String(audit_record.biggest_challenges)
-                  .split(",")
-                  .map((s: string) => s.trim())
-                  .filter(Boolean),
+                : audit_record.biggest_challenges
+                  ? String(audit_record.biggest_challenges)
+                      .split(",")
+                      .map((s: string) => s.trim())
+                      .filter(Boolean)
+                  : [],
             },
           }),
         },
@@ -177,7 +178,7 @@ export async function POST(request: Request) {
       const siteUrl = process.env.NEXT_PUBLIC_URL ?? "https://marketstack.ai";
       const reportUrl = recordId ? `${siteUrl}/audit/report?id=${recordId}` : siteUrl;
       const html = buildAuditEmail({ ...computed_email, reportUrl });
-      await fetch(`${GHL_BASE}/conversations/messages`, {
+      const emailRes = await fetch(`${GHL_BASE}/conversations/messages`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -191,6 +192,9 @@ export async function POST(request: Request) {
           html,
         }),
       });
+      if (!emailRes.ok) {
+        console.error("Failed to send audit email:", emailRes.status, await emailRes.text());
+      }
     }
 
     return NextResponse.json({ success: true, recordId });
