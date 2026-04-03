@@ -5,9 +5,8 @@ import {
   FooterBottom,
   FooterContent,
 } from "../../ui/footer";
-import LaunchUI from "../../logos/launch-ui";
 import { siteConfig } from "@/config/site";
-import { ReactNode } from "react";
+import MarketStack from "../../logos/marketstack";
 
 interface FooterLink {
   text: string;
@@ -20,8 +19,6 @@ interface FooterColumnProps {
 }
 
 interface FooterProps {
-  logo?: ReactNode;
-  name?: string;
   columns?: FooterColumnProps[];
   copyright?: string;
   policies?: FooterLink[];
@@ -29,37 +26,27 @@ interface FooterProps {
 }
 
 export default function FooterSection({
-  logo = <LaunchUI />,
-  name = "Launch UI",
   columns = [
     {
-      title: "Product",
+      title: "Platform",
       links: [
-        { text: "Changelog", href: siteConfig.url },
-        { text: "Documentation", href: siteConfig.url },
+        { text: "Services", href: "/services" },
+        { text: "AI Audit", href: "/audit" },
       ],
     },
     {
-      title: "Company",
+      title: "Connect",
       links: [
-        { text: "About", href: siteConfig.url },
-        { text: "Careers", href: siteConfig.url },
-        { text: "Blog", href: siteConfig.url },
-      ],
-    },
-    {
-      title: "Contact",
-      links: [
-        { text: "Discord", href: siteConfig.url },
-        { text: "Twitter", href: siteConfig.url },
-        { text: "Github", href: siteConfig.links.github },
+        { text: "LinkedIn", href: siteConfig.links.linkedin },
+        { text: "X / Twitter", href: siteConfig.links.twitter },
+        { text: "GitHub", href: siteConfig.links.github },
       ],
     },
   ],
-  copyright = "© 2025 Mikołaj Dobrucki. All rights reserved",
+  copyright = `© ${new Date().getFullYear()} Market Stack. All rights reserved`,
   policies = [
-    { text: "Privacy Policy", href: siteConfig.url },
-    { text: "Terms of Service", href: siteConfig.url },
+    { text: "Privacy Policy", href: "/privacy" },
+    { text: "Terms of Service", href: "/terms" },
   ],
   showThemeToggle = true,
 }: FooterProps) {
@@ -68,12 +55,6 @@ export default function FooterSection({
       <div className="max-w-container mx-auto">
         <Footer>
           <FooterContent>
-            <FooterColumn className="col-span-2 sm:col-span-3 md:col-span-1">
-              <div className="flex items-center gap-2">
-                {logo}
-                <h3 className="text-xl font-bold">{name}</h3>
-              </div>
-            </FooterColumn>
             {columns.map((column, index) => (
               <FooterColumn key={index}>
                 <h3 className="text-md pt-1 font-semibold">{column.title}</h3>
@@ -82,6 +63,7 @@ export default function FooterSection({
                     key={linkIndex}
                     href={link.href}
                     className="text-muted-foreground text-sm"
+                    {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   >
                     {link.text}
                   </a>
@@ -93,11 +75,12 @@ export default function FooterSection({
             <div>{copyright}</div>
             <div className="flex items-center gap-4">
               {policies.map((policy, index) => (
-                <a key={index} href={policy.href}>
+                <a key={index} href={policy.href} className="text-muted-foreground transition-colors hover:text-foreground">
                   {policy.text}
                 </a>
               ))}
-              {showThemeToggle && <ThemeToggle type={"dropdown"}/>}
+              {showThemeToggle && <ThemeToggle type={"dropdown"} />}
+              <MarketStack className="size-6 text-foreground/50 ml-2" />
             </div>
           </FooterBottom>
         </Footer>

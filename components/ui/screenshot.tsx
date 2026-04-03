@@ -10,6 +10,7 @@ interface ScreenshotProps {
   width: number;
   height: number;
   className?: string;
+  priority?: boolean;
 }
 
 export default function Screenshot({
@@ -19,6 +20,7 @@ export default function Screenshot({
   width,
   height,
   className,
+  priority,
 }: ScreenshotProps) {
   const { resolvedTheme } = useTheme();
   let src;
@@ -42,6 +44,7 @@ export default function Screenshot({
       width={width}
       height={height}
       className={className}
+      priority={priority}
     />
   );
 }

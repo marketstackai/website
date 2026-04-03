@@ -1,11 +1,10 @@
 import { Button, type ButtonProps } from "../../ui/button";
 import { Badge } from "../../ui/badge";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Section } from "../../ui/section";
 import { Mockup, MockupFrame } from "../../ui/mockup";
 import Glow from "../../ui/glow";
 import { siteConfig } from "@/config/site";
-import Github from "../../logos/github";
 import { ReactNode } from "react";
 import Screenshot from "../../ui/screenshot";
 
@@ -26,39 +25,36 @@ interface HeroProps {
 }
 
 export default function Hero({
-  title = "Give your big idea the website it deserves",
-  description = "Landing page components built with React, Shadcn/ui and Tailwind that will make your website feel premium.",
+  title = "AI-Powered Systems for Smarter Operations",
+  description = "We build agentic workflows that automate pipelines, eliminate bottlenecks, and give small businesses the operational edge of enterprises.",
   mockup = (
     <Screenshot
       srcLight="/app-light.png"
       srcDark="/app-dark.png"
-      alt="Launch UI app screenshot"
+      alt="Market Stack platform preview"
       width={1248}
       height={765}
+      priority
+      className="w-full h-auto"
     />
   ),
   badge = (
     <Badge variant="outline" className="animate-appear">
       <span className="text-muted-foreground">
-        New version of Launch UI is out!
+        Now Offering Free Operations Audits
       </span>
-      <a href={siteConfig.getStartedUrl} className="flex items-center gap-1">
-        Get started
-        <ArrowRightIcon className="size-3" />
+      <a href={siteConfig.auditUrl} className="flex items-center gap-1">
+        Learn more
+        <ArrowUpRight className="size-3" />
       </a>
     </Badge>
   ),
   buttons = [
     {
-      href: siteConfig.getStartedUrl,
-      text: "Get Started",
-      variant: "default",
-    },
-    {
-      href: siteConfig.links.github,
-      text: "Github",
-      variant: "glow",
-      icon: <Github className="mr-2 size-4" />,
+      href: `${siteConfig.auditUrl}`,
+      text: "Start Your AI Audit",
+      variant: "default" as const,
+      iconRight: <ArrowUpRight className="ml-2 size-4" />,
     },
   ],
 }: HeroProps) {

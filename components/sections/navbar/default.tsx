@@ -1,4 +1,3 @@
-import Navigation from "../../ui/navigation";
 import { Button, type ButtonProps } from "../../ui/button";
 import {
   Navbar as NavbarComponent,
@@ -6,12 +5,13 @@ import {
   NavbarRight,
 } from "../../ui/navbar";
 import { ThemeToggle } from "../../ui/theme-toggle";
-import { Sheet, SheetContent, SheetTrigger } from "../../ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "../../ui/sheet";
 import { Menu } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
 
 import MarketStack from "../../logos/marketstack";
+import Navigation from "../../ui/navigation";
 
 import { peaceSans } from "@/lib/fonts";
 
@@ -42,17 +42,14 @@ interface NavbarProps {
 export default function Navbar({
   logo = <MarketStack />,
   name = "MARKET STACK",
-  homeUrl = siteConfig.url,
+  homeUrl = "/",
   mobileLinks = [
-    { text: "Getting Started", href: siteConfig.url },
-    { text: "Components", href: siteConfig.url },
-    { text: "Documentation", href: siteConfig.url },
+    { text: "Services", href: "/services#stack" },
   ],
   actions = [
-    { text: "Sign in", href: siteConfig.url, isButton: false },
     {
-      text: "Get Started",
-      href: siteConfig.url,
+      text: "AI Audit",
+      href: siteConfig.auditUrl,
       isButton: true,
       variant: "default",
     },
@@ -73,7 +70,38 @@ export default function Navbar({
               {logo}
               {name}
             </a>
-            {showNavigation && (customNavigation || <Navigation />)}
+            <div className="hidden ml-4 md:block">
+              <Navigation 
+                menuItems={[
+                  {
+                    title: "Services",
+                    content: "default",
+                    href: "/services#stack",
+                  }
+                ]}
+                logoTitle="The Stack"
+                logoDescription="Automation for your specific needs. Built for modern operators."
+                logoHref="/services#stack"
+                introItems={[
+                  {
+                    title: "Train",
+                    href: "/services#train",
+                    description: "Fast-track your team with highly actionable AI workshops."
+                  },
+                  {
+                    title: "Strategize",
+                    href: "/services#strategize",
+                    description: "Map your bottlenecks and create custom strategy."
+                  },
+                  {
+                    title: "Build",
+                    href: "/services#build",
+                    description: "Full-scale custom software development and AI engineering."
+                  }
+                ]}
+              />
+            </div>
+            {showNavigation && customNavigation}
           </NavbarLeft>
           <NavbarRight>
             <ThemeToggle type={"icon"} />
@@ -95,42 +123,47 @@ export default function Navbar({
                 <a
                   key={index}
                   href={action.href}
-                  className="hidden text-sm md:block"
+                  className="hidden text-sm font-medium cursor-pointer text-muted-foreground transition-colors hover:text-foreground md:flex"
                 >
                   {action.text}
                 </a>
               ),
             )}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="shrink-0 md:hidden"
-                >
-                  <Menu className="size-5" />
-                  <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <nav className="grid gap-6 text-lg font-medium">
-                  <a
-                    href={homeUrl}
-                    className="flex items-center gap-2 text-xl font-bold"
+            {mobileLinks.length > 0 && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 md:hidden"
                   >
-                  </a>
-                  {mobileLinks.map((link, index) => (
+                    <Menu className="size-5" />
+                    <span className="sr-only">Toggle navigation menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right">
+                  <SheetHeader>
+                    <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                  </SheetHeader>
+                  <nav className="grid gap-6 text-lg font-medium">
                     <a
-                      key={index}
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground"
+                      href={homeUrl}
+                      className="flex items-center gap-2 text-xl font-bold"
                     >
-                      {link.text}
                     </a>
-                  ))}
-                </nav>
-              </SheetContent>
-            </Sheet>
+                    {mobileLinks.map((link, index) => (
+                      <a
+                        key={index}
+                        href={link.href}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        {link.text}
+                      </a>
+                    ))}
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            )}
           </NavbarRight>
         </NavbarComponent>
       </div>

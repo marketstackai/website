@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
-import { CircleCheckBig } from "lucide-react";
+import { CircleCheckBig, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -28,7 +28,8 @@ export interface PricingColumnProps
   name: string;
   icon?: ReactNode;
   description: string;
-  price: number;
+  price: number | string;
+  priceSubtext?: ReactNode;
   priceNote: string;
   cta: {
     variant: "glow" | "default";
@@ -43,6 +44,7 @@ export function PricingColumn({
   icon,
   description,
   price,
+  priceSubtext,
   priceNote,
   cta,
   features,
@@ -50,9 +52,11 @@ export function PricingColumn({
   className,
   ...props
 }: PricingColumnProps) {
+  const hasNumericPrice = typeof price === 'number' || (typeof price === 'string' && /^\d/.test(price));
+
   return (
     <div
-      className={cn(pricingColumnVariants({ variant, className }))}
+      className={cn(pricingColumnVariants({ variant, className }), "h-full")}
       {...props}
     >
       <hr
@@ -61,53 +65,65 @@ export function PricingColumn({
           variant === "glow-brand" && "via-brand",
         )}
       />
-      <div className="flex flex-col gap-7">
-        <div className="flex flex-col gap-2">
-          <h2 className="flex items-center gap-2 font-bold">
-            {icon && (
-              <div className="text-muted-foreground flex items-center gap-2">
-                {icon}
-              </div>
-            )}
-            {name}
-          </h2>
-          <p className="text-muted-foreground max-w-[220px] text-sm">
-            {description}
-          </p>
+      <div className="flex flex-col gap-7 h-full">
+        <div className="flex items-start gap-4">
+          {icon && (
+            <div className="text-brand flex items-center shrink-0 mt-1">
+              {icon}
+            </div>
+          )}
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-bold">
+              {name}
+            </h2>
+            <p className="text-muted-foreground max-w-[220px] text-sm leading-relaxed">
+              {description}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-3 lg:flex-col lg:items-start xl:flex-row xl:items-center">
-          <div className="flex items-baseline gap-1">
-            <span className="text-muted-foreground text-2xl font-bold">$</span>
-            <span className="text-6xl font-bold">{price}</span>
+          <div className="flex items-start gap-1">
+            {hasNumericPrice && (
+              <span className="text-muted-foreground text-2xl font-bold mt-1">$</span>
+            )}
+            <span className="text-6xl font-bold tracking-tight">{price}</span>
           </div>
-          <div className="flex min-h-[40px] flex-col">
-            {price > 0 && (
+          <div className="flex min-h-[40px] flex-col justify-center">
+            {priceSubtext !== undefined ? (
+              priceSubtext
+            ) : price !== 0 && price !== "0" && hasNumericPrice ? (
               <>
-                <span className="text-sm">one-time payment</span>
+                <span className="text-sm font-medium">one-time payment</span>
                 <span className="text-muted-foreground text-sm">
                   plus local taxes
                 </span>
               </>
-            )}
+            ) : null}
           </div>
         </div>
-        <Button variant={cta.variant} size="lg" asChild>
-          <Link href={cta.href}>{cta.label}</Link>
-        </Button>
-        <p className="text-muted-foreground min-h-[40px] max-w-[220px] text-sm">
-          {priceNote}
-        </p>
-        <hr className="border-input" />
-      </div>
-      <div>
-        <ul className="flex flex-col gap-2">
-          {features.map((feature) => (
-            <li key={feature} className="flex items-center gap-2 text-sm">
-              <CircleCheckBig className="text-muted-foreground size-4 shrink-0" />
-              {feature}
-            </li>
-          ))}
-        </ul>
+
+        <div className="flex flex-col gap-3">
+          <Button variant={cta.variant} size="lg" asChild className="w-full group">
+            <Link href={cta.href} className="flex items-center gap-1">
+              {cta.label}
+              <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+            </Link>
+          </Button>
+          <p className="text-muted-foreground max-w-[220px] text-sm">
+            {priceNote}
+          </p>
+        </div>
+        
+        <div className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-2">
+            {features.map((feature) => (
+              <li key={feature} className="flex items-center gap-2 text-sm">
+                <CircleCheckBig className="text-brand size-4 shrink-0" />
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
