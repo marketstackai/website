@@ -16,3 +16,6 @@ Goal: Eradicate generic AI patterns. Every scroll is intentional; every animatio
 - Type: Strict TypeScript (No 'any', no exceptions)
 - Package Management: pmpm
 - Backend CRM: GoHighLevel (GHL) https://marketplace.gohighlevel.com/docs
+
+## Rules
+- Never include raw hardcoded API keys or secrets in the codebase unless the file is gitignored. Use environment variables.
