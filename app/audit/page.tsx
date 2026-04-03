@@ -1,556 +1,650 @@
 "use client";
-/* eslint-disable prefer-const */
 
-import { useState } from "react";
-import { Section } from "@/components/ui/section";
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { GlowCard } from "@/components/ui/spotlight-card";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon } from "lucide-react";
-import Link from "next/link";
+import type { ContactFormData } from "@/components/forms/contact-form";
+import { ArrowLeftIcon, Check } from "lucide-react";
+import { GHLTracker } from "@/components/ghl-tracker";
 import { cn } from "@/lib/utils";
+import { computeResults } from "@/lib/audit/engine";
+import type { AuditResults, GHLAuditRecord } from "@/lib/audit/types";
 
-const scores: Record<string, Record<string, number>> = {
-  team_size: { solo: 1, "2_10": 2, "11_50": 3, "51_200": 4, "200_plus": 4 },
-  monthly_revenue: { under_50k: 1, "50k_100k": 2, "100k_250k": 3, "250k_500k": 4, "500k_plus": 5, undisclosed: 0 },
-  biggest_challenge: { missed_leads: 2, pipeline_stuck: 3, manual_tasks: 4, no_visibility: 3, tool_disconnect: 4, unsure_ai: 1 },
-  lead_response: { voicemail: 1, office_pickup: 2, auto_response: 3, ai_system: 4 },
-  follow_up: { none: 1, manual: 2, partial: 3, full_auto: 4 },
-  ai_experience: { no_ai: 1, ai_poor_results: 2, ai_some_results: 3, ai_advanced: 4 },
-  urgency: { urgent: 4, "1_3_months": 3, "3_6_months": 2, exploring: 1 }
+const initialContactData: ContactFormData = {
+  first_name: "", last_name: "", email: "", phone: "", business_name: "", website: "",
+  sms_consent: false, marketing_consent: false,
 };
 
-const avgJobValues: Record<string, number> = {
-  under_500: 350, "500_2k": 1250, "2k_10k": 6000, "10k_plus": 15000
+const initialQuizData = {
+  industry: "", industry_other: "", team_size: "", monthly_revenue: "",
+  avg_job_value: "", monthly_leads: "",
+  biggest_challenges: [] as string[], lead_response: "",
+  ai_experience: "", ai_detail: "", urgency: "",
+  additional_notes: ""
 };
+
+const QUIZ_START = 2;
+const TOTAL_STEPS = 11;
 
 export default function AuditPage() {
-  const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({
-    first_name: "", last_name: "", email: "", phone: "",
-    sms_consent: false, marketing_consent: false,
-    industry: "", industry_other: "", team_size: "", monthly_revenue: "",
-    biggest_challenge: "", lead_response: "", follow_up: "",
-    ai_experience: "", ai_detail: "", urgency: "", avg_job_value: "",
-    additional_notes: ""
-  });
+  const router = useRouter();
+  const [step, setStep] = useState<number | null>(null);
+  const [contactData, setContactData] = useState<ContactFormData>(initialContactData);
+  const [quizData, setQuizData] = useState(initialQuizData);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [results, setResults] = useState<{
-    leads: number; leakRate: number; jobValue: number; monthlyLeak: number; annualLeak: number;
-    totalScore: number; tierLabel: string; tierText: string; recommendedPackage: string;
-    hotLead: boolean; highValue: boolean; quickWinOpp: boolean; enterpriseSignal: boolean;
-    nurtureTrack: boolean; needsReview: boolean;
-  } | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [ghlEnabled, setGhlEnabled] = useState(false);
 
-  const totalSteps = 11;
+  const auditFormRef = useRef<HTMLFormElement>(null);
+
+  const formData = { ...contactData, ...quizData };
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      const stored = localStorage.getItem("ms_ghl_enabled");
+      if (stored !== null) {
+        setGhlEnabled(stored === "true");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
+    const saved = sessionStorage.getItem("ms_audit_contact");
+    if (saved) {
+      try {
+        const parsed: ContactFormData = JSON.parse(saved);
+        setContactData(parsed);
+      } catch { /* ignore */ }
+      const savedStep = parseInt(sessionStorage.getItem("ms_audit_step") || "");
+      const startStep = (savedStep >= QUIZ_START && savedStep <= TOTAL_STEPS) ? savedStep : QUIZ_START;
+      setStep(startStep);
+      // Tag the current entry with our step — spread existing state so Next.js routing isn't clobbered
+      window.history.replaceState({ ...window.history.state, step: startStep }, "");
+      sessionStorage.setItem("ms_audit_needs_reload", "1");
+    } else {
+      router.replace("/audit/start");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      // If we popped history and there's a step in state, update UI to match
+      if (e.state && e.state.step) {
+        setStep(e.state.step);
+        sessionStorage.setItem("ms_audit_step", String(e.state.step));
+      }
+      // If there is no step state, the browser has popped off the audit completely (e.g. to /audit/start).
+      // We do nothing here and let Next.js naturally unmount this page and render the previous route.
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [router]);
+
+  const navigateToStep = (newStep: number) => {
+    setStep(newStep);
+    sessionStorage.setItem("ms_audit_step", String(newStep));
+    window.history.pushState({ step: newStep }, "");
+  };
 
   const nextStep = () => {
-    if (step < 11) setStep(step + 1);
+    if (step !== null && step < TOTAL_STEPS) navigateToStep(step + 1);
   };
 
   const prevStep = () => {
-    if (step > 1) setStep(step - 1);
-  };
-
-  const handleSlide1Submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await fetch("/api/audit/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: formData.first_name,
-          lastName: formData.last_name,
-          email: formData.email,
-          phone: formData.phone,
-          customField: {
-            sms_consent: formData.sms_consent,
-            marketing_consent: formData.marketing_consent,
-            consent_timestamp: new Date().toISOString(),
-            consent_source: "stack_audit_form"
-          }
-        })
-      });
-      // Errors handled gracefully without blocking UI
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-      nextStep();
+    if (step !== null && step >= QUIZ_START) {
+      router.back();
     }
   };
 
-  const calculateResults = () => {
-    // 1. Est monthly leads
-    let leads = 0;
-    if (formData.monthly_revenue && formData.monthly_revenue !== 'undisclosed') {
-      const lookup: Record<string, number> = { under_50k: 10, "50k_100k": 25, "100k_250k": 50, "250k_500k": 80, "500k_plus": 120 };
-      leads = lookup[formData.monthly_revenue] || 0;
-    } else if (formData.team_size) {
-      const lookup: Record<string, number> = { solo: 8, "2_10": 20, "11_50": 50, "51_200": 90, "200_plus": 130 };
-      leads = lookup[formData.team_size] || 0;
-    }
+  const injectResultsIntoForm = (computed: AuditResults) => {
+    const form = auditFormRef.current;
+    if (!form) return;
+    const set = (name: string, value: string) => {
+      let el = form.querySelector<HTMLInputElement>(`input[name="${name}"]`);
+      if (!el) { el = document.createElement("input"); el.type = "hidden"; el.name = name; form.appendChild(el); }
+      el.value = value;
+    };
+    set("estimated_leads_per_month", String(computed.leads));
+    set("leak_rate_pct", `${Math.round(computed.leakRate * 100)}%`);
+    set("close_rate_pct", `${Math.round(computed.closeRate * 100)}%`);
+    set("avg_job_value_dollars", `$${computed.jobValue.toLocaleString()}`);
+    set("industry_multiplier", String(computed.industryMultiplier));
+    set("monthly_revenue_leak", `$${Math.round(computed.maxImpactMonthly).toLocaleString()}`);
+    set("annual_revenue_leak", `$${Math.round(computed.maxImpactAnnual).toLocaleString()}`);
+    set("monthly_leak_realistic", `$${Math.round(computed.realisticMonthly).toLocaleString()}`);
+    set("monthly_leak_conservative", `$${Math.round(computed.conservativeMonthly).toLocaleString()}`);
+    set("monthly_leak_optimistic", `$${Math.round(computed.optimisticMonthly).toLocaleString()}`);
+    set("total_score", String(computed.totalScore));
+    set("tier_label", computed.tierLabel);
+    set("tier_text", computed.tierText);
+    set("recommended_package", computed.recommendedPackage);
+    set("flag_hot_lead", computed.hotLead ? "true" : "false");
+    set("flag_high_ticket", computed.highTicket ? "true" : "false");
+    set("flag_quick_win", computed.quickWinOpp ? "true" : "false");
+    set("flag_enterprise_signal", computed.enterpriseSignal ? "true" : "false");
+    set("flag_nurture_track", computed.nurtureTrack ? "true" : "false");
+    set("quick_wins", computed.quickWins.map(w => w.id).join(", "));
+    set("recommendation", computed.recommendedPackage);
+  };
 
-    // 2. Leak rate
-    let q5q6score = (scores.lead_response[formData.lead_response] || 0) + (scores.follow_up[formData.follow_up] || 0);
-    let leakRate = 0;
-    if (q5q6score <= 3) leakRate = 0.6;
-    else if (q5q6score <= 5) leakRate = 0.4;
-    else if (q5q6score === 6) leakRate = 0.25;
-    else leakRate = 0.1;
+  const submitToGHL = async (contact: ContactFormData, quiz: typeof quizData, computed: AuditResults): Promise<string | null> => {
+    const tags: string[] = [];
+    if (computed.hotLead) tags.push("hot");
+    if (computed.highTicket) tags.push("high ticket");
+    if (computed.enterpriseSignal) tags.push("enterprise");
 
-    // 3. Job Value
-    let jobValue = avgJobValues[formData.avg_job_value] || 0;
-
-    let monthlyLeak = leads * leakRate * jobValue;
-    let annualLeak = monthlyLeak * 12;
-
-    // Tiers
-    let totalScore = 0;
-    ["team_size", "monthly_revenue", "biggest_challenge", "lead_response", "follow_up", "ai_experience", "urgency"].forEach(key => {
-      if (key === 'monthly_revenue' && formData[key as keyof typeof formData] === 'undisclosed') return;
-      totalScore += (scores[key][formData[key as keyof typeof formData] as string] || 0);
-    });
-
-    let tierLabel = "Foundation";
-    let tierText = "Foundation Stage";
-    let recommendedPackage = "Market Stack Foundation Kit";
-    let includesQ3 = formData.monthly_revenue && formData.monthly_revenue !== 'undisclosed';
-
-    if (includesQ3) {
-      if (totalScore >= 7 && totalScore <= 14) { tierLabel = "Foundation"; tierText = "Foundation Stage"; recommendedPackage = "Market Stack Foundation Kit"; }
-      else if (totalScore >= 15 && totalScore <= 23) { tierLabel = "Growth"; tierText = "Growth Stage"; recommendedPackage = "Market Stack Operating System"; }
-      else if (totalScore >= 24) { tierLabel = "Optimization"; tierText = "Optimization Stage"; recommendedPackage = "Your Stack × Market Stack OS"; }
-    } else {
-      if (totalScore >= 6 && totalScore <= 12) { tierLabel = "Foundation"; tierText = "Foundation Stage"; recommendedPackage = "Market Stack Foundation Kit"; }
-      else if (totalScore >= 13 && totalScore <= 19) { tierLabel = "Growth"; tierText = "Growth Stage"; recommendedPackage = "Market Stack Operating System"; }
-      else if (totalScore >= 20) { tierLabel = "Optimization"; tierText = "Optimization Stage"; recommendedPackage = "Your Stack × Market Stack OS"; }
-    }
-
-    let hotLead = formData.urgency === 'urgent' && totalScore >= 13;
-    let highValue = formData.avg_job_value === '10k_plus' && (formData.monthly_revenue === '250k_500k' || formData.monthly_revenue === '500k_plus');
-    let quickWinOpp = formData.biggest_challenge === 'missed_leads' && (scores.lead_response[formData.lead_response] || 0) <= 2;
-    let enterpriseSignal = formData.ai_experience === 'ai_advanced' && ["51_200", "200_plus"].includes(formData.team_size);
-    let nurtureTrack = formData.urgency === 'exploring';
-    let needsReview = formData.industry === 'other' && !formData.industry_other;
-
-    const resObj = {
-      leads, leakRate, jobValue, monthlyLeak, annualLeak, 
-      totalScore, tierLabel, tierText, recommendedPackage,
-      hotLead, highValue, quickWinOpp, enterpriseSignal, nurtureTrack, needsReview
+    const recommendedMap: Record<string, GHLAuditRecord["recommended"]> = {
+      "Foundation Kit": "foundation_kit",
+      "Operating System": "operating_system",
+      "Studio": "studio",
     };
 
-    setResults(resObj);
+    const auditRecord: GHLAuditRecord = {
+      website: contact.website,
+      industry: quiz.industry,
+      industry_other: quiz.industry_other,
+      team_size: quiz.team_size,
+      monthly_revenue: quiz.monthly_revenue,
+      avg_job_value: quiz.avg_job_value,
+      monthly_leads: quiz.monthly_leads,
+      biggest_challenges: quiz.biggest_challenges,
+      lead_response: quiz.lead_response,
+      ai_experience: quiz.ai_experience,
+      ai_detail: quiz.ai_detail,
+      urgency: quiz.urgency,
+      additional_notes: quiz.additional_notes,
+      recommended: recommendedMap[computed.recommendedPackage] ?? "foundation_kit",
+    };
 
-    // Get cookie contact id
-    const match = document.cookie.match(/ms_audit_cid=([^;]+)/);
-    const existingContactId = match ? match[1] : null;
-
-    if (existingContactId) {
-      fetch("/api/audit/complete", {
+    try {
+      const res = await fetch("/api/audit/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contact_id: existingContactId,
-          contact_updates: {
-            tags_add: ["audit_completed", tierLabel.toLowerCase() + "_stage", ...(hotLead ? ["hot_lead"] : [])],
-            tags_remove: ["audit_started"],
-            customField: { audit_tier: tierLabel }
+          email: contact.email,
+          full_name: `${contact.first_name} ${contact.last_name}`,
+          business_name: contact.business_name,
+          contact_updates: { 
+            tags_add: tags, 
+            customField: { recommended: computed.recommendedPackage } 
           },
-          stack_audit_record: {
-            industry: formData.industry,
-            industry_other: formData.industry_other || null,
-            team_size: formData.team_size,
-            monthly_revenue: formData.monthly_revenue,
-            biggest_challenge: formData.biggest_challenge,
-            lead_response: formData.lead_response,
-            follow_up: formData.follow_up,
-            ai_experience: formData.ai_experience,
-            ai_detail: formData.ai_detail || null,
-            urgency: formData.urgency,
-            avg_job_value: formData.avg_job_value,
-            additional_notes: formData.additional_notes || null,
-            audit_score: totalScore,
-            audit_tier: tierLabel,
-            monthly_revenue_leak: monthlyLeak,
-            annual_revenue_leak: annualLeak,
-            completed_at: new Date().toISOString(),
-            ...resObj
-          }
-        })
-      }).catch(console.error);
+          audit_record: auditRecord,
+          computed_email: {
+            firstName: contact.first_name,
+            tierLabel: computed.tierLabel,
+            totalScore: computed.totalScore,
+            realisticMonthly: computed.realisticMonthly,
+            realisticAnnual: computed.realisticAnnual,
+            recommendedPackage: computed.recommendedPackage,
+            aiReadinessScore: computed.aiReadiness.score,
+            aiReadinessDescription: computed.aiReadiness.description,
+            leads: computed.leads,
+            leakRate: computed.leakRate,
+            quickWins: computed.quickWins.slice(0, 1).map(w => ({
+              title: w.title,
+              recoveredMonthly: w.recoveredMonthly,
+            })),
+          },
+        }),
+      });
+      const data = await res.json();
+      return data.recordId ?? null;
+    } catch (err) {
+      console.error("GHL API submission failed:", err);
+      return null;
     }
-    
-    setStep(12); // Results
   };
 
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setStep(11.5); // Loading
-    setTimeout(() => {
-      calculateResults();
-      setIsSubmitting(false);
-    }, 2000);
+    setStep(11.5);
+
+    const computed = computeResults(formData);
+    injectResultsIntoForm(computed);
+    auditFormRef.current?.requestSubmit();
+
+    const recordId = await submitToGHL(contactData, quizData, computed);
+    const reportId = recordId ?? crypto.randomUUID();
+
+    // Cache results in sessionStorage for instant load on the report page
+    sessionStorage.setItem(
+      `ms_audit_report_${reportId}`,
+      JSON.stringify({ version: 1, results: computed, email: contactData.email }),
+    );
+    sessionStorage.removeItem("ms_audit_step");
+
+    router.replace(`/audit/report?id=${reportId}`);
   };
 
-  const renderOption = (value: string, label: string, field: string) => {
-    const isSelected = formData[field as keyof typeof formData] === value;
+
+  const devAutofill = () => {
+    const fills: Record<number, Partial<typeof quizData>> = {
+      2: { industry: "other", industry_other: "Magician" },
+      3: { team_size: "12" },
+      4: { monthly_revenue: "175000" },
+      5: { avg_job_value: "6000" },
+      6: { monthly_leads: "50" },
+      7: { biggest_challenges: ["missed_leads", "manual_tasks"] },
+      8: { lead_response: "voicemail" },
+      9: { ai_experience: "ai_some_results", ai_detail: "We use ChatGPT for marketing copy and have a basic 'thank you' email, but no automated qualification or scheduling." },
+      10: { urgency: "urgent" },
+      11: { additional_notes: "Main focus is reducing response time for after-hours leads and automating appointment setting to free up our office staff." }
+    };
+    if (step !== null && fills[step]) {
+      setQuizData(prev => ({ ...prev, ...fills[step as number] }));
+      if (step < 11) setTimeout(nextStep, 100);
+    }
+  };
+
+  const devAutoSubmit = async () => {
+    const fullContact: ContactFormData = {
+      first_name: "Dev", last_name: "Test", email: "dev@marketstack.ai", phone: "1234567890",
+      business_name: "Dev Test Co", website: "https://example.com", sms_consent: true, marketing_consent: true,
+    };
+    const fullQuiz: typeof quizData = {
+      industry: "other", industry_other: "Magician", team_size: "12", monthly_revenue: "175000",
+      avg_job_value: "6000", monthly_leads: "50",
+      biggest_challenges: ["missed_leads", "manual_tasks"], lead_response: "voicemail",
+      ai_experience: "ai_some_results", ai_detail: "Using ChatGPT for some basic tasks but looking for a more integrated lead management solution that connects to our CRM.",
+      urgency: "urgent", additional_notes: "We need a way to handle high lead volume more efficiently without hiring more office staff. Interested in lead recovery and automated SMS follow-ups."
+    };
+    setContactData(fullContact);
+    setQuizData(fullQuiz);
+    sessionStorage.setItem("ms_audit_contact", JSON.stringify(fullContact));
+    setIsSubmitting(true);
+    setStep(11.5);
+
+    // Small delay to let React flush state before computing
+    await new Promise(r => setTimeout(r, 50));
+
+    const fullData = { ...fullContact, ...fullQuiz };
+    const computed = computeResults(fullData);
+    injectResultsIntoForm(computed);
+    auditFormRef.current?.requestSubmit();
+
+    const recordId = await submitToGHL(fullContact, fullQuiz, computed);
+    const reportId = recordId ?? crypto.randomUUID();
+
+    sessionStorage.setItem(
+      `ms_audit_report_${reportId}`,
+      JSON.stringify({ version: 1, results: computed, email: fullContact.email }),
+    );
+    sessionStorage.removeItem("ms_audit_step");
+
+    router.replace(`/audit/report?id=${reportId}`);
+  };
+
+  const renderOption = (value: string, label: string, field: keyof typeof quizData, autoNext = true) => {
+    const isSelected = quizData[field] === value;
     return (
-      <div
-        key={value}
-        onClick={() => {
-          setFormData({ ...formData, [field]: value });
-          setTimeout(nextStep, 350);
-        }}
-        className={cn(
-          "p-4 border border-border rounded-xl cursor-pointer hover:border-brand transition-all flex items-center justify-between",
-          isSelected && "border-brand bg-brand/10"
-        )}
-      >
+      <div key={value} onClick={() => { setQuizData({ ...quizData, [field]: value }); if (autoNext) setTimeout(nextStep, 350); }}
+           className={cn("p-4 border border-border rounded-xl cursor-pointer hover:border-brand transition-all flex items-center justify-between", isSelected && "border-brand bg-brand/10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.1)]")}>
         <span className="font-medium">{label}</span>
-        <div className={cn("size-5 rounded-full border-2 flex items-center justify-center", isSelected ? "border-brand" : "border-muted-foreground/30")}>
-          {isSelected && <div className="size-2.5 rounded-full bg-brand" />}
+        <div className={cn("size-5 rounded-full border-2 flex items-center justify-center transition-colors", isSelected ? "border-brand" : "border-muted-foreground/30")}>
+          {isSelected && <div className="size-2.5 rounded-full bg-brand animate-in fade-in zoom-in duration-300" />}
         </div>
       </div>
     );
   };
 
-  if (step === 0) {
+  const renderMultiselectOption = (value: string, label: string) => {
+    const isSelected = quizData.biggest_challenges.includes(value);
     return (
-      <main className="min-h-screen w-full bg-background text-foreground flex flex-col">
-        <Section className="flex-1 flex flex-col items-center justify-center fade-bottom overflow-hidden pt-24 sm:pt-48">
-          <div className="max-w-container mx-auto flex flex-col items-center gap-8 text-center px-4 relative z-10">
-            <h1 className="animate-appear from-foreground to-foreground dark:to-muted-foreground bg-linear-to-r bg-clip-text text-4xl leading-tight font-semibold text-balance text-transparent drop-shadow-2xl sm:text-6xl sm:leading-tight md:text-7xl">
-              Find out where you&apos;re leaking revenue — in under 5 minutes.
-            </h1>
-            <p className="text-md animate-appear text-muted-foreground max-w-[740px] font-medium text-balance opacity-0 delay-100 sm:text-xl">
-              Answer a few questions about your business and we&apos;ll show you exactly how much revenue your current systems are leaving on the table — and what to fix first.
-            </p>
-            <div className="animate-appear opacity-0 delay-300 mt-4">
-              <Button size="lg" onClick={() => setStep(1)}>
-                Start the Audit
-                <ArrowRightIcon className="ml-2 size-4" />
-              </Button>
-            </div>
-            <div className="mt-8">
-              <Button variant="ghost" className="text-muted-foreground" asChild>
-                <Link href="/"><ChevronLeftIcon className="mr-2" size={16}/> Back</Link>
-              </Button>
-            </div>
-          </div>
-        </Section>
-      </main>
-    );
-  }
-
-  if (step === 11.5) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 animate-pulse">
-          <div className="size-12 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-          <p className="text-xl font-medium">Analyzing your stack...</p>
+      <div key={value} onClick={() => {
+        const next = isSelected ? quizData.biggest_challenges.filter(v => v !== value) : [...quizData.biggest_challenges, value];
+        setQuizData({ ...quizData, biggest_challenges: next });
+      }} className={cn("p-4 border border-border rounded-xl cursor-pointer hover:border-brand transition-all flex items-center justify-between", isSelected && "border-brand bg-brand/10")}>
+        <span className="font-medium text-left">{label}</span>
+        <div className={cn("size-5 rounded border-2 flex items-center justify-center transition-colors shrink-0 ml-4", isSelected ? "border-brand bg-brand" : "border-muted-foreground/30")}>
+          {isSelected && <Check className="size-3.5 text-background" />}
         </div>
       </div>
     );
-  }
+  };
 
-  if (step === 12 && results) {
-    return (
-      <div className="min-h-screen bg-background text-foreground pb-24">
-        <div className="max-w-4xl mx-auto px-6 pt-12 sm:pt-24 space-y-16">
-          
-          <div className="text-center space-y-6">
-            <h1 className="text-4xl font-semibold sm:text-5xl text-brand">Your estimated monthly revenue leak: ${results.monthlyLeak.toLocaleString()}</h1>
-            <p className="text-xl text-muted-foreground">That&apos;s approximately <strong className="text-foreground">${results.annualLeak.toLocaleString()}</strong> per year your current systems are leaving on the table.</p>
-            
-            <div className="inline-flex flex-col items-start bg-muted/40 rounded-xl p-6 text-sm text-muted-foreground space-y-2 mt-4 max-w-sm mx-auto w-full">
-              <div className="flex justify-between w-full"><span>Est. leads/mo:</span><span className="font-medium text-foreground">~{results.leads}</span></div>
-              <div className="flex justify-between w-full"><span>Est. leak rate:</span><span className="font-medium text-foreground">{results.leakRate * 100}%</span></div>
-              <div className="flex justify-between w-full"><span>Avg job value:</span><span className="font-medium text-foreground">${results.jobValue.toLocaleString()}</span></div>
-            </div>
-          </div>
+  const progress = step !== null && step >= 1 && step <= 12 ? (step / TOTAL_STEPS) * 100 : 0;
 
-          <div className="space-y-6">
-            <h2 className="text-3xl font-semibold text-center border-b pb-4">Your Stack Stage</h2>
-            <div className="bg-card border rounded-2xl p-6 sm:p-10 text-lg space-y-4">
-              <Badge className="mb-2 bg-foreground text-background">{results.tierText.toUpperCase()}</Badge>
-              {results.tierLabel === 'Foundation' && <p>You&apos;re in the Foundation Stage. You have the hustle but not the systems yet. The good news: small changes to your lead capture and follow-up will have an outsized impact on your revenue. You don&apos;t need to overhaul everything — you need the right building blocks in place.</p>}
-              {results.tierLabel === 'Growth' && <p>You&apos;re in the Growth Stage. You&apos;ve got volume and momentum, but your systems can&apos;t keep up. Leads are slipping through the cracks, follow-up is inconsistent, and your team is spending too much time on manual tasks. You need a system that runs without you babysitting it.</p>}
-              {results.tierLabel === 'Optimization' && <p>You&apos;re in the Optimization Stage. You&apos;ve built real infrastructure, but you know there are still leaks and bottlenecks in your operation. The biggest gains for you come from custom AI workflows and strategic integration with your existing tools — not another off-the-shelf solution.</p>}
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <h2 className="text-3xl font-semibold text-center border-b pb-4">Recommended Service</h2>
-            <div className="flex justify-center">
-              <GlowCard customSize glowColor="brand" className="w-full max-w-md border-brand/50">
-                <div className="flex flex-col h-full z-10 relative text-center">
-                  <div className="p-6 flex-1 flex flex-col justify-center items-center">
-                    <h3 className="text-2xl font-bold mb-4">{results.recommendedPackage}</h3>
-                    <Button size="lg" className="w-full mt-4" asChild>
-                      <Link href={results.tierLabel === 'Optimization' ? "/book" : results.tierLabel === 'Growth' ? "/book" : "/services"}>
-                        {results.tierLabel === 'Optimization' ? "Book a Discovery Call" : results.tierLabel === 'Growth' ? "Deploy My System" : "Get the Kit"}
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </GlowCard>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <h2 className="text-3xl font-semibold text-center border-b pb-4">Quick Wins</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {formData.lead_response === 'voicemail' && (
-                <Card><CardHeader><CardTitle className="text-xl">Set up a missed-call text-back.</CardTitle></CardHeader><CardContent><p className="text-sm text-muted-foreground">Even a simple auto-text saying &quot;Hey, we just missed your call&quot; recovers 20–40% of missed calls.</p></CardContent></Card>
-              )}
-              {formData.follow_up === 'none' && (
-                <Card><CardHeader><CardTitle className="text-xl">Create a simple 3-touch follow-up sequence.</CardTitle></CardHeader><CardContent><p className="text-sm text-muted-foreground">Day 1, Day 3, Day 7 touches. Even this bare-bones sequence will recover jobs you&apos;re currently losing.</p></CardContent></Card>
-              )}
-              {formData.ai_experience === 'no_ai' && (
-                <Card><CardHeader><CardTitle className="text-xl">Start with one AI tool for one task.</CardTitle></CardHeader><CardContent><p className="text-sm text-muted-foreground">Don&apos;t try to overhaul everything. Pick your biggest time sink and test one AI solution for 30 days.</p></CardContent></Card>
-              )}
-            </div>
-          </div>
-
-          <div className="pt-12 border-t text-center space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-              <div className="bg-muted/30 p-8 rounded-2xl flex flex-col justify-between">
-                <div>
-                  <h4 className="font-semibold text-lg mb-2">Want the full picture?</h4>
-                  <p className="text-muted-foreground text-sm mb-6">Book a live Stack Audit ($500). We&apos;ll map your entire operation in 60 minutes — and the fee credits toward any package.</p>
-                </div>
-                <Button variant="outline" className="w-full" asChild><Link href="/book">Book My Stack Audit</Link></Button>
-              </div>
-              <div className="bg-muted/30 p-8 rounded-2xl flex flex-col justify-between">
-                <div>
-                  <h4 className="font-semibold text-lg mb-2">Ready to fix it now?</h4>
-                  <p className="text-muted-foreground text-sm mb-6">Let&apos;s talk about the right package for your business and start plugging the leaks.</p>
-                </div>
-                <Button className="w-full" asChild><Link href="/book">Book a Discovery Call</Link></Button>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-8">Your full audit report has also been sent to {formData.email}.</p>
-          </div>
-          
-        </div>
-      </div>
-    );
-  }
-
-  // Quiz Layout (Steps 1-11)
-  const progress = (step / totalSteps) * 100;
+  if (step === null) return null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <div className="w-full h-1.5 bg-muted">
-        <div className="h-full bg-brand transition-all duration-300 ease-out" style={{ width: `${progress}%` }} />
+    <>
+      <GHLTracker />
+      <div style={{ position: "fixed", top: 0, left: 0, opacity: 0.001, pointerEvents: "none", zIndex: -9999 }}>
+        <form ref={auditFormRef} name="audit" onSubmit={e => e.preventDefault()}>
+          <input type="text" name="first_name" value={contactData.first_name} onChange={() => {}} />
+          <input type="text" name="last_name" value={contactData.last_name} onChange={() => {}} />
+          <input type="email" name="email" value={contactData.email} onChange={() => {}} />
+          <input type="tel" name="phone" value={contactData.phone} onChange={() => {}} />
+          <input type="text" name="company" value={contactData.business_name} onChange={() => {}} />
+          <input type="text" name="website" value={contactData.website} onChange={() => {}} />
+          <input type="text" name="industry" value={quizData.industry} onChange={() => {}} />
+          <input type="text" name="industry_other" value={quizData.industry_other} onChange={() => {}} />
+          <input type="text" name="team_size" value={quizData.team_size} onChange={() => {}} />
+          <input type="text" name="monthly_revenue" value={quizData.monthly_revenue} onChange={() => {}} />
+          <input type="text" name="biggest_challenges" value={quizData.biggest_challenges.join(", ")} onChange={() => {}} />
+          <input type="text" name="lead_response" value={quizData.lead_response} onChange={() => {}} />
+          <input type="text" name="ai_experience" value={quizData.ai_experience} onChange={() => {}} />
+          <input type="text" name="ai_detail" value={quizData.ai_detail} onChange={() => {}} />
+          <input type="text" name="urgency" value={quizData.urgency} onChange={() => {}} />
+          <input type="text" name="avg_job_value" value={quizData.avg_job_value} onChange={() => {}} />
+          <input type="text" name="monthly_leads" value={quizData.monthly_leads} onChange={() => {}} />
+          <textarea name="additional_notes" value={quizData.additional_notes} onChange={() => {}} />
+          <input type="hidden" name="recommendation" value="" />
+          <input type="hidden" name="source" value="audit" />
+          <button type="submit">Submit</button>
+        </form>
       </div>
-      <div className="p-4 sm:p-8 shrink-0 flex items-center justify-between">
-        {step > 1 ? (
-          <Button variant="ghost" size="sm" onClick={prevStep} className="text-muted-foreground hover:text-foreground">
-            <ArrowLeftIcon className="mr-2 size-4" /> Back
-          </Button>
-        ) : <div />}
-        <span className="text-sm font-medium text-muted-foreground">Step {step} of {totalSteps}</span>
-      </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-6 animate-appear">
-        <div className="w-full max-w-lg">
-          
-          {step === 1 && (
-            <form onSubmit={handleSlide1Submit} className="space-y-6">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-semibold mb-2">Let&apos;s start with you.</h2>
-                <p className="text-muted-foreground">So we can send you your personalized audit report.</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">First Name</label>
-                  <input required type="text" className="w-full bg-background border rounded-lg px-4 py-3 outline-hidden focus:border-brand" 
-                         value={formData.first_name} onChange={e => setFormData({...formData, first_name: e.target.value})} />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Last Name</label>
-                  <input required type="text" className="w-full bg-background border rounded-lg px-4 py-3 outline-hidden focus:border-brand"
-                         value={formData.last_name} onChange={e => setFormData({...formData, last_name: e.target.value})} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Business Email</label>
-                <input required type="email" className="w-full bg-background border rounded-lg px-4 py-3 outline-hidden focus:border-brand"
-                       value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Phone Number</label>
-                <input type="tel" className="w-full bg-background border rounded-lg px-4 py-3 outline-hidden focus:border-brand"
-                       placeholder="Optional" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
-                <p className="text-xs text-muted-foreground">Add your number to receive your results via text</p>
-              </div>
-              
-              <div className="space-y-4 pt-4">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input type="checkbox" className="mt-1 size-4 accent-brand border-muted-foreground" 
-                         checked={formData.sms_consent} onChange={e => setFormData({...formData, sms_consent: e.target.checked})} />
-                  <span className="text-xs text-muted-foreground leading-tight max-w-[400px]">
-                    I consent to receive SMS notifications and alerts from Market Stack. Message frequency varies. Message & data rates may apply. Text HELP to [NUMBER] for assistance. Reply STOP to unsubscribe at any time.
-                  </span>
-                </label>
-
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input type="checkbox" className="mt-1 size-4 accent-brand border-muted-foreground"
-                         checked={formData.marketing_consent} onChange={e => setFormData({...formData, marketing_consent: e.target.checked})} />
-                  <span className="text-xs text-muted-foreground leading-tight">
-                    I also agree to receive occasional marketing messages and offers from Market Stack.
-                  </span>
-                </label>
-              </div>
-
-              <div className="text-xs text-center text-muted-foreground/60">
-                <Link href="/privacy" className="hover:underline">Privacy Policy</Link> | <Link href="/terms" className="hover:underline">Terms of Service</Link>
-              </div>
-
-              <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Next"}
-              </Button>
-            </form>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold mb-6">What type of business best describes you?</h2>
-              {renderOption('contractor', 'Contractor / Home Services (HVAC, Roofing, GC, etc)', 'industry')}
-              {renderOption('real_estate', 'Real Estate (Brokerage, Investment)', 'industry')}
-              {renderOption('professional_service', 'Professional Service (Law, Accounting, Consulting)', 'industry')}
-              {renderOption('other', 'Other (Please specify)', 'industry')}
-              {formData.industry === 'other' && (
-                <div className="space-y-2 mt-4 animate-appear">
-                  <label className="text-sm text-muted-foreground">Please briefly describe your business:</label>
-                  <input type="text" className="w-full bg-background border rounded-lg px-4 py-3 outline-hidden focus:border-brand"
-                         value={formData.industry_other} onChange={e => setFormData({...formData, industry_other: e.target.value})} autoFocus />
-                </div>
-              )}
-              {formData.industry && <Button className="w-full mt-4" onClick={nextStep} variant="secondary">Next</Button>}
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold mb-6">How many full-time employees are on your team?</h2>
-              {renderOption('solo', 'Just myself', 'team_size')}
-              {renderOption('2_10', '2–10 employees', 'team_size')}
-              {renderOption('11_50', '11–50 employees', 'team_size')}
-              {renderOption('51_200', '51–200 employees', 'team_size')}
-              {renderOption('200_plus', '200+ employees', 'team_size')}
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="space-y-6">
-              <div className="mb-6">
-                <h2 className="text-2xl font-semibold">What&apos;s your average monthly revenue?</h2>
-                <p className="text-muted-foreground mt-2">Optional — helps us give you a more accurate assessment.</p>
-              </div>
-              {renderOption('under_50k', 'Under $50K / month', 'monthly_revenue')}
-              {renderOption('50k_100k', '$50K – $100K / month', 'monthly_revenue')}
-              {renderOption('100k_250k', '$100K – $250K / month', 'monthly_revenue')}
-              {renderOption('250k_500k', '$250K – $500K / month', 'monthly_revenue')}
-              {renderOption('500k_plus', '$500K – $1M+ / month', 'monthly_revenue')}
-              {renderOption('undisclosed', 'Prefer not to say', 'monthly_revenue')}
-            </div>
-          )}
-
-          {step === 5 && (
-            <div className="space-y-4">
-              <h2 className="text-2xl font-semibold mb-6">What&apos;s the single biggest challenge impacting your revenue right now?</h2>
-              {renderOption('missed_leads', "We're missing calls or leads, or our follow-up is too slow", 'biggest_challenge')}
-              {renderOption('pipeline_stuck', "Our sales pipeline is inconsistent, or deals get stuck", 'biggest_challenge')}
-              {renderOption('manual_tasks', "Our team spends too much time on manual, repetitive tasks", 'biggest_challenge')}
-              {renderOption('no_visibility', "We lack clear visibility into our sales or marketing performance", 'biggest_challenge')}
-              {renderOption('tool_disconnect', "Our existing software tools don't communicate effectively", 'biggest_challenge')}
-              {renderOption('unsure_ai', "We're not sure how AI could specifically help our business", 'biggest_challenge')}
-            </div>
-          )}
-
-          {step === 6 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold mb-6">What happens when you miss a call or a new lead comes in outside business hours?</h2>
-              {renderOption('voicemail', "It goes to voicemail and we call back when we can", 'lead_response')}
-              {renderOption('office_pickup', "An office person or answering service picks up most of the time", 'lead_response')}
-              {renderOption('auto_response', "We have an automated text-back or email response", 'lead_response')}
-              {renderOption('ai_system', "We have an AI receptionist or instant response system", 'lead_response')}
-            </div>
-          )}
-
-          {step === 7 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold mb-6">Do you have automated follow-up sequences for leads that don&apos;t convert immediately?</h2>
-              {renderOption('none', "No — if they don't book, we move on", 'follow_up')}
-              {renderOption('manual', "We follow up manually a couple of times", 'follow_up')}
-              {renderOption('partial', "We have some automated emails but nothing comprehensive", 'follow_up')}
-              {renderOption('full_auto', "Yes — full automated nurture sequences running", 'follow_up')}
-            </div>
-          )}
-
-          {step === 8 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold mb-6">Have you explored or implemented AI tools in your business yet?</h2>
-              {renderOption('no_ai', "No, we haven't started", 'ai_experience')}
-              {renderOption('ai_poor_results', "Yes, but we're not seeing the results we hoped for", 'ai_experience')}
-              {renderOption('ai_some_results', "Yes, seeing some positive impact but want to do more", 'ai_experience')}
-              {renderOption('ai_advanced', "Yes, actively using AI in multiple core workflows", 'ai_experience')}
-              
-              {(formData.ai_experience === 'ai_some_results' || formData.ai_experience === 'ai_advanced') && (
-                <div className="space-y-2 mt-4 animate-appear">
-                  <label className="text-sm text-muted-foreground">How are you currently using AI, or what workflows are you optimizing?</label>
-                  <textarea className="w-full bg-background border rounded-lg px-4 py-3 outline-hidden focus:border-brand min-h-[100px] resize-none"
-                            value={formData.ai_detail} onChange={e => setFormData({...formData, ai_detail: e.target.value})} />
-                </div>
-              )}
-              {formData.ai_experience && <Button className="w-full mt-4" onClick={nextStep} variant="secondary">Next</Button>}
-            </div>
-          )}
-
-          {step === 9 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold mb-6">How quickly are you looking to implement a solution and see results?</h2>
-              {renderOption('urgent', "Immediately / This is urgent", 'urgency')}
-              {renderOption('1_3_months', "Within the next 1–3 months", 'urgency')}
-              {renderOption('3_6_months', "Within the next 3–6 months", 'urgency')}
-              {renderOption('exploring', "Just exploring options for the future", 'urgency')}
-            </div>
-          )}
-
-          {step === 10 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-semibold mb-6">What&apos;s your average job value or average revenue per client?</h2>
-              {renderOption('under_500', "Under $500", 'avg_job_value')}
-              {renderOption('500_2k', "$500 – $2,000", 'avg_job_value')}
-              {renderOption('2k_10k', "$2,000 – $10,000", 'avg_job_value')}
-              {renderOption('10k_plus', "$10,000+", 'avg_job_value')}
-            </div>
-          )}
-
-          {step === 11 && (
-            <form onSubmit={handleFinalSubmit} className="space-y-6">
-              <h2 className="text-2xl font-semibold mb-6">Anything else you&apos;d like us to know about your current situation or goals?</h2>
-              <textarea 
-                className="w-full bg-background border rounded-lg px-4 py-3 outline-hidden focus:border-brand min-h-[120px] resize-none"
-                placeholder="Optional..."
-                value={formData.additional_notes}
-                onChange={e => setFormData({...formData, additional_notes: e.target.value})}
-              />
-              <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Calculating..." : "Show My Results"}
-              </Button>
-            </form>
-          )}
-
+      {step === 11.5 && (
+        <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4 animate-pulse">
+            <div className="size-12 border-4 border-brand border-t-transparent rounded-full animate-spin" />
+            <p className="text-xl font-medium">Analyzing your business...</p>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+
+      {step >= 2 && step <= 11 && (
+        <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">
+          <div className="w-full h-1.5 bg-muted shrink-0 z-50 relative">
+            <div className="h-full bg-brand transition-all duration-300 ease-out" style={{ width: `${progress}%` }} />
+          </div>
+          <div className="absolute top-1.5 left-0 w-full p-2 sm:p-8 flex items-center justify-between z-50 pointer-events-none text-muted-foreground">
+            <Button variant="ghost" size="sm" onClick={prevStep} className="pointer-events-auto hover:text-foreground">
+              <ArrowLeftIcon className="mr-2 size-4" /> Back
+            </Button>
+            <span className="text-sm font-medium pr-2 pt-1.5 sm:pt-0">Step {step} of {TOTAL_STEPS}</span>
+          </div>
+          <div className="flex-1 flex flex-col items-center sm:justify-center pt-16 sm:pt-0 px-4 sm:px-6 animate-appear overflow-y-auto">
+            <div className="w-full max-w-lg mb-12 sm:mb-0">
+              {step === 2 && (
+                <div className="space-y-6">
+                  <h2 className="text-2xl font-semibold mb-6 text-balance">What type of business do you operate?</h2>
+                  {renderOption('home_services', 'Home Services (HVAC, Roofing, etc)', 'industry')}
+                  {renderOption('real_estate', 'Real Estate (Brokerage, Investor, etc)', 'industry')}
+                  {renderOption('professional_service', 'Professional Service (Attorney, CPA, etc)', 'industry')}
+                  {renderOption('tech', 'Technology / Software', 'industry')}
+                  {renderOption('ecom', 'E-Commerce', 'industry')}
+                  {renderOption('other', 'Other (Please specify)', 'industry', false)}
+                  {quizData.industry === 'other' && (
+                    <input type="text" className="w-full bg-background border rounded-lg px-4 py-2.5 outline-hidden focus:border-brand" placeholder="e.g. Solar Installation"
+                           value={quizData.industry_other} onChange={e => setQuizData({...quizData, industry_other: e.target.value})} autoFocus />
+                  )}
+                  {quizData.industry === 'other' && <Button className="w-full mt-4" size="lg" onClick={nextStep}>Next</Button>}
+                </div>
+              )}
+              {step === 3 && (
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-semibold text-balance">How big is your team?</h2>
+                    <p className="text-sm text-muted-foreground opacity-80 text-balance">Includes you, full-time staff, and long-term contractors.</p>
+                  </div>
+                  <div className="w-full bg-black border border-border rounded-2xl p-8 flex items-center justify-center transition-all hover:border-brand/40 focus-within:border-brand shadow-xl overflow-hidden">
+                    <input 
+                      type="number" 
+                      className="bg-transparent border-none outline-hidden text-5xl font-bold text-white text-center tabular-nums focus:ring-0 w-full" 
+                      placeholder="5"
+                      value={quizData.team_size} 
+                      onChange={e => setQuizData({...quizData, team_size: e.target.value})} 
+                      autoFocus 
+                    />
+                  </div>
+                  <Button className="w-full mt-6" size="lg" onClick={nextStep} disabled={!quizData.team_size || parseInt(quizData.team_size) < 1}>Next</Button>
+                </div>
+              )}
+              {step === 4 && (
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-semibold text-balance">What&apos;s your average monthly revenue?</h2>
+                    <p className="text-sm text-muted-foreground opacity-80 text-balance">This helps us estimate your lead volume accurately.</p>
+                  </div>
+                  {quizData.monthly_revenue !== "undisclosed" ? (
+                    <div className="flex flex-col items-stretch">
+                      <div className="w-full bg-black border border-border rounded-2xl p-8 flex items-center justify-center shadow-lg transition-all focus-within:border-brand hover:border-brand/40 group overflow-hidden">
+                        <div className="flex items-center">
+                          <span className="text-4xl font-bold text-white pr-2 select-none">$</span>
+                          <input
+                            type="number"
+                            className="bg-transparent border-none outline-hidden text-5xl font-bold text-white tabular-nums p-0 focus:ring-0 placeholder:text-white/20"
+                            placeholder="175000"
+                            style={{ width: `${Math.max(quizData.monthly_revenue?.length || 0, 6)}ch` }}
+                            value={quizData.monthly_revenue}
+                            onChange={e => setQuizData({ ...quizData, monthly_revenue: e.target.value })}
+                            autoFocus
+                            min={0}
+                          />
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground/60 text-center mt-4 uppercase tracking-[0.2em] font-bold">USD per month</p>
+                    </div>
+                  ) : (
+                    <div className="p-8 border border-border rounded-xl text-center text-muted-foreground bg-muted/20">
+                      <p className="text-lg font-medium text-foreground">Revenue not disclosed</p>
+                      <p className="text-sm mt-1 mb-4">We&apos;ll estimate based on your team size.</p>
+                      <button 
+                        type="button"
+                        onClick={() => setQuizData({ ...quizData, monthly_revenue: "" })}
+                        className="text-xs font-semibold text-brand hover:underline underline-offset-4 cursor-pointer"
+                      >
+                        Enter revenue to help our estimates be more accurate.
+                      </button>
+                    </div>
+                  )}
+                  <div
+                    onClick={() => setQuizData({ ...quizData, monthly_revenue: quizData.monthly_revenue === "undisclosed" ? "" : "undisclosed" })}
+                    className={cn("p-4 border border-border rounded-xl cursor-pointer hover:border-brand transition-all flex items-center justify-between", quizData.monthly_revenue === "undisclosed" && "border-brand bg-brand/10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.1)]")}
+                  >
+                    <span className="font-medium">Prefer not to say</span>
+                    <div className={cn("size-5 rounded-full border-2 flex items-center justify-center transition-colors", quizData.monthly_revenue === "undisclosed" ? "border-brand" : "border-muted-foreground/30")}>
+                      {quizData.monthly_revenue === "undisclosed" && <div className="size-2.5 rounded-full bg-brand animate-in fade-in zoom-in duration-300" />}
+                    </div>
+                  </div>
+                  <Button className="w-full mt-4" size="lg" onClick={nextStep} disabled={!quizData.monthly_revenue || (quizData.monthly_revenue !== "undisclosed" && (parseFloat(quizData.monthly_revenue) || 0) < 1)}>Next</Button>
+                </div>
+              )}
+
+              {step === 5 && (
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-semibold text-balance">What is your average job value?</h2>
+                    <p className="text-sm text-muted-foreground opacity-80 text-balance">What does a typical customer pay you per job or engagement?</p>
+                  </div>
+                  {quizData.avg_job_value !== "undisclosed" ? (
+                    <div className="flex flex-col items-stretch">
+                      <div className="w-full bg-black border border-border rounded-2xl p-8 flex items-center justify-center shadow-lg transition-all focus-within:border-brand hover:border-brand/40 group overflow-hidden">
+                        <div className="flex items-center">
+                          <span className="text-4xl font-bold text-white pr-2 select-none">$</span>
+                          <input
+                            type="number"
+                            className="bg-transparent border-none outline-hidden text-5xl font-bold text-white tabular-nums p-0 focus:ring-0 placeholder:text-white/20"
+                            placeholder="6000"
+                            style={{ width: `${Math.max(quizData.avg_job_value?.length || 0, 4)}ch` }}
+                            value={quizData.avg_job_value}
+                            onChange={e => setQuizData({ ...quizData, avg_job_value: e.target.value })}
+                            autoFocus
+                            min={1}
+                          />
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground/60 text-center mt-4 uppercase tracking-[0.2em] font-bold">USD per job</p>
+                    </div>
+                  ) : (
+                    <div className="p-8 border border-border rounded-xl text-center text-muted-foreground bg-muted/20">
+                      <p className="text-lg font-medium text-foreground">Job value not disclosed</p>
+                      <p className="text-sm mt-1 mb-4">We&apos;ll estimate based on your industry.</p>
+                      <button 
+                        type="button"
+                        onClick={() => setQuizData({ ...quizData, avg_job_value: "" })}
+                        className="text-xs font-semibold text-brand hover:underline underline-offset-4 cursor-pointer"
+                      >
+                        Enter job value to help our estimates be more accurate.
+                      </button>
+                    </div>
+                  )}
+                  <div
+                    onClick={() => setQuizData({ ...quizData, avg_job_value: quizData.avg_job_value === "undisclosed" ? "" : "undisclosed" })}
+                    className={cn("p-4 border border-border rounded-xl cursor-pointer hover:border-brand transition-all flex items-center justify-between", quizData.avg_job_value === "undisclosed" && "border-brand bg-brand/10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.1)]")}
+                  >
+                    <span className="font-medium">Prefer not to say</span>
+                    <div className={cn("size-5 rounded-full border-2 flex items-center justify-center transition-colors", quizData.avg_job_value === "undisclosed" ? "border-brand" : "border-muted-foreground/30")}>
+                      {quizData.avg_job_value === "undisclosed" && <div className="size-2.5 rounded-full bg-brand animate-in fade-in zoom-in duration-300" />}
+                    </div>
+                  </div>
+                  <Button className="w-full mt-6" size="lg" onClick={nextStep} disabled={!quizData.avg_job_value || (quizData.avg_job_value !== "undisclosed" && parseFloat(quizData.avg_job_value) < 1)}>Next</Button>
+                </div>
+              )}
+
+              {step === 6 && (
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-semibold text-balance">How many inbound leads do you get per month?</h2>
+                    <p className="text-sm text-muted-foreground opacity-80 text-balance">Calls, form fills, messages — any new inquiry counts.</p>
+                  </div>
+                  {quizData.monthly_leads !== "not_sure" ? (
+                    <div className="flex flex-col items-stretch">
+                      <div className="w-full bg-black border border-border rounded-2xl p-8 flex items-center justify-center shadow-lg transition-all focus-within:border-brand hover:border-brand/40 group overflow-hidden">
+                        <input
+                          type="number"
+                          className="bg-transparent border-none outline-hidden text-5xl font-bold text-white text-center tabular-nums p-0 focus:ring-0 placeholder:text-white/20 w-full"
+                          placeholder="50"
+                          value={quizData.monthly_leads}
+                          onChange={e => setQuizData({ ...quizData, monthly_leads: e.target.value })}
+                          autoFocus
+                          min={0}
+                        />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground/60 text-center mt-4 uppercase tracking-[0.2em] font-bold">leads per month</p>
+                    </div>
+                  ) : (
+                    <div className="p-8 border border-border rounded-xl text-center text-muted-foreground bg-muted/20">
+                      <p className="text-lg font-medium text-foreground">Lead volume not provided</p>
+                      <p className="text-sm mt-1 mb-4">We&apos;ll estimate based on your revenue and job value.</p>
+                      <button
+                        type="button"
+                        onClick={() => setQuizData({ ...quizData, monthly_leads: "" })}
+                        className="text-xs font-semibold text-brand hover:underline underline-offset-4 cursor-pointer"
+                      >
+                        Enter lead volume for more accurate results.
+                      </button>
+                    </div>
+                  )}
+                  <div
+                    onClick={() => setQuizData({ ...quizData, monthly_leads: quizData.monthly_leads === "not_sure" ? "" : "not_sure" })}
+                    className={cn("p-4 border border-border rounded-xl cursor-pointer hover:border-brand transition-all flex items-center justify-between", quizData.monthly_leads === "not_sure" && "border-brand bg-brand/10 shadow-[0_0_20px_rgba(var(--brand-rgb),0.1)]")}
+                  >
+                    <span className="font-medium">Not sure</span>
+                    <div className={cn("size-5 rounded-full border-2 flex items-center justify-center transition-colors", quizData.monthly_leads === "not_sure" ? "border-brand" : "border-muted-foreground/30")}>
+                      {quizData.monthly_leads === "not_sure" && <div className="size-2.5 rounded-full bg-brand animate-in fade-in zoom-in duration-300" />}
+                    </div>
+                  </div>
+                  <Button className="w-full mt-4" size="lg" onClick={nextStep} disabled={!quizData.monthly_leads || (quizData.monthly_leads !== "not_sure" && (parseFloat(quizData.monthly_leads) || 0) < 1)}>Next</Button>
+                </div>
+              )}
+
+              {step === 7 && (
+                <div className="space-y-4">
+                  <div className="space-y-2 mb-6 text-balance">
+                    <h2 className="text-2xl font-semibold">What challenges are you facing?</h2>
+                    <p className="text-sm text-muted-foreground opacity-80">Select all that apply.</p>
+                  </div>
+                  {renderMultiselectOption('missed_leads', "Missing calls from leads and customers")}
+                  {renderMultiselectOption('pipeline_stuck', "Inconsistent sales")}
+                  {renderMultiselectOption('manual_tasks', "Doing too much manual work")}
+                  {renderMultiselectOption('tool_disconnect', "Apps and tools lack integration")}
+                  {renderMultiselectOption('unsure_ai', "Not sure how AI could actually help")}
+                  <Button className="w-full mt-6" size="lg" onClick={nextStep} disabled={quizData.biggest_challenges.length === 0}>Next</Button>
+                </div>
+              )}
+              {step === 8 && (
+                <div className="space-y-6">
+                  <h2 className="text-2xl font-semibold mb-6 text-balance">What happens when you can&apos;t answer the phone?</h2>
+                  {renderOption('voicemail', "Voicemail", 'lead_response')}
+                  {renderOption('office_pickup', "Third-party answering service", 'lead_response')}
+                  {renderOption('auto_response', "Auto text-back", 'lead_response')}
+                  {renderOption('ai_system', "AI receptionist", 'lead_response')}
+                </div>
+              )}
+              {step === 9 && (
+                <div className="space-y-6 text-balance">
+                  <h2 className="text-2xl font-semibold mb-6">What is your AI Experience?</h2>
+                  {renderOption('no_ai', "None", 'ai_experience', false)}
+                  {renderOption('ai_poor_results', "Poor results so far", 'ai_experience')}
+                  {renderOption('ai_some_results', "Some success, want more", 'ai_experience', false)}
+                  {renderOption('ai_advanced', "Advanced user", 'ai_experience', false)}
+                  {quizData.ai_experience === 'no_ai' && (
+                    <div className="space-y-3 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <label className="text-sm font-medium text-muted-foreground pl-1">What&apos;s holding you back from trying AI?</label>
+                      <textarea className="w-full bg-background border rounded-lg px-4 py-2.5 outline-hidden min-h-[100px] focus:border-brand" placeholder="e.g. Not sure where to start, concerned about cost, don't trust the technology..."
+                                  value={quizData.ai_detail} onChange={e => setQuizData({...quizData, ai_detail: e.target.value})} />
+                    </div>
+                  )}
+                  {(quizData.ai_experience === 'ai_some_results' || quizData.ai_experience === 'ai_advanced') && (
+                    <div className="space-y-3 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <label className="text-sm font-medium text-muted-foreground pl-1">Tell us more about your current setup</label>
+                      <textarea className="w-full bg-background border rounded-lg px-4 py-2.5 outline-hidden min-h-[100px] focus:border-brand" placeholder="e.g. Using ChatGPT for content, Zapier for lead alerts, or an AI chatbot on our site..."
+                                  value={quizData.ai_detail} onChange={e => setQuizData({...quizData, ai_detail: e.target.value})} />
+                    </div>
+                  )}
+                  {quizData.ai_experience && <Button className="w-full mt-4" size="lg" onClick={nextStep}>Next</Button>}
+                </div>
+              )}
+              {step === 10 && (
+                <div className="space-y-6 text-balance">
+                  <h2 className="text-2xl font-semibold mb-6">How soon are you looking to implement new systems?</h2>
+                  {renderOption('urgent', "Immediately", 'urgency')}
+                  {renderOption('1_3_months', "1–3 months", 'urgency')}
+                  {renderOption('3_6_months', "3–6 months", 'urgency')}
+                  {renderOption('exploring', "Exploring", 'urgency')}
+                </div>
+              )}
+              {step === 11 && (
+                <form onSubmit={handleFinalSubmit} className="space-y-6 text-balance">
+                  <h2 className="text-2xl font-semibold mb-6">Anything else?</h2>
+                  <textarea className="w-full bg-background border rounded-lg px-4 py-2.5 min-h-[120px] focus:border-brand" placeholder="e.g. We're looking to scale to $200k/mo by year end and need better lead recovery."
+                            value={quizData.additional_notes} onChange={e => setQuizData({...quizData, additional_notes: e.target.value})} />
+                  <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Calculating..." : "Get Results"}</Button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mounted && process.env.NODE_ENV === "development" && createPortal(
+        <div className="fixed bottom-4 right-4 z-[9999] flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const next = !ghlEnabled;
+              localStorage.setItem("ms_ghl_enabled", String(next));
+              setGhlEnabled(next);
+              window.location.reload();
+            }}
+            className="opacity-80 hover:opacity-100 transition-all bg-background/80 backdrop-blur-md border-muted-foreground/20 shadow-xl flex items-center gap-2"
+          >
+            <input type="checkbox" checked={ghlEnabled} readOnly className="accent-brand pointer-events-none" />
+            <span>GHL Tracking</span>
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => { sessionStorage.clear(); window.location.reload(); }}
+                  className="opacity-80 hover:opacity-100 transition-all bg-background/80 backdrop-blur-md border-muted-foreground/20 shadow-xl">
+            Clear Session
+          </Button>
+          <Button variant="outline" size="sm" onClick={devAutofill}
+                  className="opacity-80 hover:opacity-100 transition-all bg-background/80 backdrop-blur-md border-muted-foreground/20 shadow-xl">
+            Auto Step
+          </Button>
+          <Button variant="outline" size="sm" onClick={devAutoSubmit}
+                  className="opacity-80 hover:opacity-100 transition-all bg-background/80 backdrop-blur-md border-muted-foreground/20 shadow-xl">
+            Auto Submit
+          </Button>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

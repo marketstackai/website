@@ -32,22 +32,21 @@ export default function FooterSection({
       links: [
         { text: "Services", href: "/services" },
         { text: "AI Audit", href: "/audit" },
-        { text: "Book a Call", href: "/book" },
       ],
     },
     {
       title: "Connect",
       links: [
-        { text: "LinkedIn", href: "https://www.linkedin.com/in/teddybenz" },
+        { text: "LinkedIn", href: siteConfig.links.linkedin },
         { text: "X / Twitter", href: siteConfig.links.twitter },
-        { text: "GitHub", href: "https://github.com/teddybenzdev" },
+        { text: "GitHub", href: siteConfig.links.github },
       ],
     },
   ],
   copyright = `© ${new Date().getFullYear()} Market Stack. All rights reserved`,
   policies = [
-    { text: "Privacy Policy", href: "/privacy-policy" },
-    { text: "Terms of Service", href: "/terms-of-service" },
+    { text: "Privacy Policy", href: "/privacy" },
+    { text: "Terms of Service", href: "/terms" },
   ],
   showThemeToggle = true,
 }: FooterProps) {
@@ -64,6 +63,7 @@ export default function FooterSection({
                     key={linkIndex}
                     href={link.href}
                     className="text-muted-foreground text-sm"
+                    {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   >
                     {link.text}
                   </a>

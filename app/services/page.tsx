@@ -6,7 +6,7 @@ import Footer from "@/components/sections/footer/default";
 import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Zap, Blocks, Palette, ArrowUpRight } from "lucide-react";
+import { Zap, ArrowUpRight, ArrowRightIcon, Blocks, Palette } from "lucide-react";
 import Link from "next/link";
 import { PricingColumn } from "@/components/ui/pricing-column";
 import Glow from "@/components/ui/glow";
@@ -42,7 +42,7 @@ export default function ServicesPage() {
                 <ArrowUpRight className="size-3" />
               </Link>
             </Badge>
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-semibold mb-6 animate-appear">Your Stack</h1>
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-semibold mb-6 animate-appear">The Stack</h1>
             <p className="text-muted-foreground text-lg sm:text-xl max-w-[640px] mx-auto text-balance animate-appear delay-100">
               Whether you need a DIY toolkit, a fully deployed system, or a strategic partner — start anywhere, go as deep as you need.
             </p>
@@ -61,13 +61,13 @@ export default function ServicesPage() {
                 </>
               }
               priceNote="DIY implementation — go at your own pace."
-              cta={{ variant: "glow", label: "Get the Kit", href: "/checkout?ref=foundation" }}
+              cta={{ variant: "glow", label: "Get the Kit", href: "/book?ref=foundation" }}
               features={[
-                "Conversion website template",
-                "Email + SMS follow-up templates",
+                "Standard website template",
+                "Email + SMS follow-up blueprint",
                 "Google Business Profile optimization guide",
                 "Review generation playbook",
-                "Loom training library"
+                "Training library"
               ]}
               variant="default"
               className="w-full h-full"
@@ -87,13 +87,12 @@ export default function ServicesPage() {
               priceNote="Done For You with ongoing support options."
               cta={{ variant: "default", label: "Deploy My System", href: "/book?ref=os" }}
               features={[
-                "Custom conversion website, built for you",
-                "Speed-to-lead: instant response to every inquiry",
-                "AI receptionist + missed-call text-back",
-                "60–90 day automated nurture sequences",
-                "Dormant lead reactivation campaign",
-                "Review automation + lead tracking dashboard",
-                "90-Day Guarantee: 20 new warm conversations"
+                "Custom website",
+                "Instant response to every inquiry",
+                "Automated nurture sequences",
+                "Lead reactivation campaigns",
+                "Review automation",
+                "Lead tracking dashboard",
               ]}
               variant="glow-brand"
               className="w-full h-full md:-translate-y-4"
@@ -107,12 +106,10 @@ export default function ServicesPage() {
               priceNote="Strategic relationship to deliver your unique infrastructure."
               cta={{ variant: "glow", label: "Book a Discovery Call", href: "/book?ref=studio" }}
               features={[
-                "Full AI Operations Audit with ROI roadmap",
-                "Everything in the Market Stack OS",
+                "Full Operations Audit with ROI roadmap",
                 "Custom workflow builds for your specific bottlenecks",
-                "Bespoke AI agent development",
-                "Integration with your existing tech stack",
-                "Ongoing advisory + quarterly roadmap refresh"
+                "AI agent development",
+                "Ongoing advisory + roadmap refresh"
               ]}
               variant="default"
               className="w-full h-full"
@@ -148,9 +145,12 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm">
-                    90-minute hands-on session for your team. Covers practical AI applications they can start using in their daily roles immediately. No technical background required. Ideal for owners who want to build team buy-in before committing to a full system build.
-                  </p>
+                  <p className="text-muted-foreground text-sm font-semibold">Hands-on session to build team buy-in before committing to a full system build.</p>
+                  <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
+                    <li>Practical AI applications your team can use in daily roles immediately</li>
+                    <li>No technical background required</li>
+                    <li>90 minutes, in-person or virtual</li>
+                  </ul>
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
@@ -176,9 +176,12 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm">
-                    2–3 week engagement where we train specific roles on your team — office manager, dispatcher, estimator, project manager — on AI tools and workflows customized to their actual daily job. Each person walks away with workflows they built during the training.
-                  </p>
+                  <p className="text-muted-foreground text-sm font-semibold">Train specific roles on AI tools and workflows customized to their actual daily job.</p>
+                  <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
+                    <li>Covers office managers, dispatchers, estimators, project managers</li>
+                    <li>Each person walks away with workflows they built during training</li>
+                    <li>2&#8211;3 week engagement</li>
+                  </ul>
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
@@ -204,9 +207,12 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm">
-                    6–8 week comprehensive program. Covers tool selection, prompt engineering, workflow design, and building internal SOPs around AI. Your operations lead or office manager becomes the in-house AI person. For businesses that want to build internal AI capability, not just buy a system.
-                  </p>
+                  <p className="text-muted-foreground text-sm font-semibold">Build internal AI capability — your ops lead becomes the in-house AI person.</p>
+                  <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
+                    <li>Tool selection, prompt engineering, workflow design, and internal SOPs</li>
+                    <li>6&#8211;8 week comprehensive program</li>
+                    <li>For businesses that want to own the capability, not just buy a system</li>
+                  </ul>
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
@@ -249,16 +255,18 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm">
-                    60-minute paid diagnostic. We map your current lead flow, tech stack, and operational bottlenecks. You leave with a clear picture of where you&apos;re leaking revenue and what to fix first. The $500 fee credits toward any package purchase. A free self-assessment version is available at /audit.
-                  </p>
+                  <p className="text-muted-foreground text-sm font-semibold">Map your lead flow, tech stack, and bottlenecks in one session.</p>
+                  <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
+                    <li>Clear picture of where you&apos;re leaking revenue and what to fix first</li>
+                    <li>$500 fee credits toward any package purchase</li>
+                    <li>Free self-assessment version available at /audit</li>
+                  </ul>
                 </CardContent>
                 <CardFooter className="flex flex-col items-start gap-4">
                   <div className="flex gap-4">
-                    <Button asChild className="group">
+                    <Button variant="outline" asChild className="group">
                       <Link href="/audit" className="flex items-center gap-1">
-                        Get Your Free Audit
-                        <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+                        Free Audit <ArrowRightIcon className="size-3" />
                       </Link>
                     </Button>
                     <Button variant="outline" asChild className="group">
@@ -285,14 +293,17 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm">
-                    Deep 2-week engagement. Full workflow mapping across your entire operation, opportunity identification, and a prioritized implementation roadmap with real ROI projections. Includes one quick-win build so you see value immediately. This is the natural entry point for Strategic Partnership clients — the audit fee credits toward the full engagement.
-                  </p>
+                  <p className="text-muted-foreground text-sm font-semibold">Full workflow mapping with a prioritized implementation roadmap and real ROI projections.</p>
+                  <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
+                    <li>Covers your entire operation over a deep 2-week engagement</li>
+                    <li>Includes one quick-win build so you see value immediately</li>
+                    <li>Natural entry point for Studio clients — audit fee credits toward the full engagement</li>
+                  </ul>
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
                     <Link href="/book?ref=ops-audit" className="flex items-center gap-1">
-                      Start Your Audit
+                      Inquire
                       <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                     </Link>
                   </Button>
@@ -313,14 +324,17 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm">
-                    Full-scope strategy engagement. We map every revenue-touching workflow in your business, design the target operating model, and deliver a phased implementation plan with architecture, tooling recommendations, and ROI projections for each phase.
-                  </p>
+                  <p className="text-muted-foreground text-sm font-semibold">Design your target operating model with a phased implementation plan.</p>
+                  <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
+                    <li>Map every revenue-touching workflow in your business</li>
+                    <li>Architecture and tooling recommendations per phase</li>
+                    <li>ROI projections for each phase of implementation</li>
+                  </ul>
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
                     <Link href="/book?ref=growth-plan" className="flex items-center gap-1">
-                      Start Your Audit
+                      Inquire
                       <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                     </Link>
                   </Button>
@@ -460,11 +474,11 @@ export default function ServicesPage() {
           },
           {
             question: "How fast before I see results?",
-            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">The Foundation Kit is instant access — implementation speed depends on you. The Market Stack OS launches in 30 days with a 60-day optimization window. Strategic Partnership timelines depend on scope but always start with quick wins during the audit phase. You&apos;ll see working output within the first week of any build engagement.</p>
+            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">The Foundation Kit is instant access — implementation speed depends on you. The Operating System launches in 30 days with a 60-day optimization window. Studio timelines depend on scope but always start with quick wins during the audit phase. You&apos;ll see working output within the first week of any build engagement.</p>
           },
           {
             question: "What's the difference between the packages? How do I know which one I need?",
-            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">If you have no systems and need to start somewhere, the Foundation Kit gives you the templates and training to DIY. If you want it built, launched, and running for you, the OS is the move. If you have a complex operation with existing tools and need someone to diagnose and architect a custom solution, the Strategic Partnership is for you. Not sure? Take the free Stack Audit at /audit — it&apos;ll tell you exactly where you stand.</p>
+            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">If you have no systems and need to start somewhere, the Foundation Kit gives you the templates and training to DIY. If you want it built, launched, and running for you, the OS is the move. If you have a complex operation with existing tools and need someone to diagnose and architect a custom solution, Studio is for you. Not sure? Take the free Stack Audit at /audit — it&apos;ll tell you exactly where you stand.</p>
           },
           {
             question: "Can I start small and upgrade later?",
@@ -472,7 +486,7 @@ export default function ServicesPage() {
           },
           {
             question: "How long does a typical implementation take?",
-            answer: "Most Market Stack OS deployments are live in 30 days. Bespoke 'Studio' projects typically range from 8 to 12 weeks depending on complexity."
+            answer: "Most Operating System deployments are live in 30 days. Bespoke 'Studio' projects typically range from 8 to 12 weeks depending on complexity."
           },
           {
             question: "Do I need to hire an AI engineer to maintain this?",

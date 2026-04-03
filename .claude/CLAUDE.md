@@ -1,2 +1,2 @@
 # Core Context
-@../.agents/CORE.md
+@../.agents/core.md

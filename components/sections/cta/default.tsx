@@ -2,7 +2,7 @@ import { Section } from "../../ui/section";
 import { Button, type ButtonProps } from "../../ui/button";
 import { siteConfig } from "@/config/site";
 import Glow from "../../ui/glow";
-import { ArrowRightIcon, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { ReactNode } from "react";
 
 interface CTAButtonProps {

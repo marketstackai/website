@@ -80,7 +80,7 @@ export default function Navbar({
                   }
                 ]}
                 logoTitle="The Stack"
-                logoDescription="Your entire revenue engine running on autopilot. Built for modern operators."
+                logoDescription="Automation for your specific needs. Built for modern operators."
                 logoHref="/services#stack"
                 introItems={[
                   {

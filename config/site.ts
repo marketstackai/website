@@ -7,7 +7,9 @@ export const siteConfig = {
     "We implement AI-powered systems and agentic workflows to streamline pipelines and eliminate bottlenecks for small businesses.",
   links: {
     twitter: "https://x.com/xteddybenz",
-    linkedin: "https://linkedin.com/company/marketstackai",
+    github: "https://github.com/teddybenzdev",
+    linkedin: "https://www.linkedin.com/in/teddybenz",
+    companyLinkedin: "https://linkedin.com/company/marketstackai",
     email: "mailto:hello@marketstack.ai",
   },
 };

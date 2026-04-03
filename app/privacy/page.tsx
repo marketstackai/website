@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/sections/navbar/default";
+
+export const metadata: Metadata = { title: "Privacy Policy" };
 import Footer from "@/components/sections/footer/default";
 import { Section } from "@/components/ui/section";
 

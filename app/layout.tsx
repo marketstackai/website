@@ -3,12 +3,11 @@ import "@/app/globals.css";
 import { inter } from "@/lib/fonts";
 import { ThemeProvider } from "@/components/contexts/theme-provider";
 import { siteConfig } from "../config/site";
-import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    template: `%s | ${siteConfig.name}`,
   },
   metadataBase: new URL(siteConfig.url),
   description: siteConfig.description,
@@ -67,12 +66,8 @@ export default function RootLayout({
     <html lang="en" style={{ colorScheme: "dark" }} className="dark">
       <body className={`${inter.className} bg-background antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
-        <Script 
-          src="https://link.marketstack.ai/js/external-tracking.js"
-          data-tracking-id="tk_2a1c91aa54a24bba81a4f2271ad991d9"
-          strategy="afterInteractive"
-        />
       </body>
+
     </html>
   );
 }

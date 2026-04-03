@@ -24,7 +24,7 @@ export default function NotFound() {
         <h2 className="text-8xl font-bold tracking-tight mb-4 text-primary">404</h2>
         <h3 className="text-2xl font-semibold mb-6">Page not found</h3>
         <p className="text-muted-foreground mb-8 max-w-md">
-          Sorry, the page you're looking for doesn't exist or has been moved. 
+          Sorry, the page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <div className="flex gap-4">
           <Button onClick={handleBack} variant="outline" size="lg">

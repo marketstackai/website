@@ -92,15 +92,15 @@ export default function Navigation({
         {menuItems.map((item, index) => (
           <NavigationMenuItem key={index}>
             {item.isLink ? (
-              <Link href={item.href || ""} legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <Link href={item.href || ""}>
                   {item.title}
-                </NavigationMenuLink>
-              </Link>
+                </Link>
+              </NavigationMenuLink>
             ) : (
               <>
                 {item.href ? (
-                  <Link href={item.href} legacyBehavior passHref>
+                  <Link href={item.href}>
                     <NavigationMenuTrigger className="cursor-pointer">
                       {item.title}
                     </NavigationMenuTrigger>

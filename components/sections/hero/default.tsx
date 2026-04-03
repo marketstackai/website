@@ -34,6 +34,8 @@ export default function Hero({
       alt="Market Stack platform preview"
       width={1248}
       height={765}
+      priority
+      className="w-full h-auto"
     />
   ),
   badge = (

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npx tsc:*)",
+      "Bash(find c:Userstbenzcodemarketstackwebsiteappapi -type f -name *.ts)",
+      "Bash(ls -la /c/Users/tbenz/code/marketstack/website/*.ts /c/Users/tbenz/code/marketstack/website/*.js)",
+      "Bash(grep -E \"\\\\.\\(ts|js|mjs|json|css|md\\)$\")",
+      "Bash(grep -r external-tracking c:Userstbenzcodemarketstackwebsite --include=*.tsx --include=*.ts --include=*.js)",
+      "WebFetch(domain:vercel.com)",
+      "Bash(pnpm run:*)",
+      "Bash(pnpm build:*)",
+      "Bash(npx next:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(grep -r GHL_ /c/Users/tbenz/code/marketstack/website --include=*.ts --include=*.tsx --include=*.env* -h)",
+      "WebFetch(domain:marketplace.gohighlevel.com)",
+      "mcp__ghl__locations_get-location",
+      "WebFetch(domain:highlevel.stoplight.io)",
+      "WebFetch(domain:public-api.gohighlevel.com)",
+      "Bash(curl -s -H \"Authorization: Bearer pit-ba94b0eb-7246-4915-b008-7a815dde9a21\" -H \"Version: 2021-07-28\" \"https://services.leadconnectorhq.com/objects/custom_objects.audit?locationId=7IHHPc72ZMaVdQaeetLf\")",
+      "Bash(curl -s \"https://services.leadconnectorhq.com/associations/relations?locationId=7IHHPc72ZMaVdQaeetLf\" -H \"Authorization: Bearer pit-ba94b0eb-7246-4915-b008-7a815dde9a21\" -H \"Version: 2021-07-28\")",
+      "Bash(python -m json.tool)"
+    ]
+  }
+}
