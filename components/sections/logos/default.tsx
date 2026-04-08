@@ -21,7 +21,7 @@ export default function Logos({
   ],
 }: LogosProps) {
   return (
-    <Section className="py-6 sm:py-10">
+    <Section className="py-4 sm:py-6">
       <div className="max-w-container mx-auto flex flex-col items-center gap-8 text-center">
         <div className="flex flex-col items-center gap-6">
           {badge !== false && badge}

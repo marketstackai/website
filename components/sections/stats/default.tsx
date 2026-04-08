@@ -14,26 +14,28 @@ interface StatsProps {
 export default function Stats({
   items = [
     {
-      label: "used by",
-      value: 0,
-      suffix: "k",
-      description: "designers on Figma Community",
+      label: "Reclaim",
+      value: "40",
+      suffix: "hours",
+      description: "per month by systemizing manual tasks and record keeping",
     },
     {
-      label: "over",
-      value: 0,
-      description: "clones and forks of the template on Github",
+      label: "Recover",
+      value: "12",
+      suffix: "hours",
+      description: "per week by automating handling routine customer questions and updates",
     },
     {
-      label: "already",
-      value: 0,
-      suffix: "k",
-      description: "installations with shadcn/ui CLI",
+      label: "Eliminate",
+      value: "90",
+      suffix: "%",
+      description: "of manual errors by replacing repetitive tasks with agentic workflows",
     },
     {
-      label: "includes",
-      value: 0,
-      description: "blocks and sections",
+      label: "Scale",
+      value: "2",
+      suffix: "x",
+      description: "to manage double the job capacity without adding office headcount",
     },
   ],
 }: StatsProps) {
@@ -57,7 +59,7 @@ export default function Stats({
                     {item.value}
                   </div>
                   {item.suffix && (
-                    <div className="text-brand text-2xl font-semibold">
+                    <div className="text-muted-foreground text-2xl font-semibold">
                       {item.suffix}
                     </div>
                   )}

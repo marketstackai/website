@@ -43,8 +43,8 @@ export default function Hero({
       <span className="text-muted-foreground">
         Now Offering Free Operations Audits
       </span>
-      <a href={siteConfig.auditUrl} className="flex items-center gap-1">
-        Learn more
+      <a href={siteConfig.auditUrl} className="flex items-center gap-1 hover:text-brand transition-colors">
+        Start
         <ArrowUpRight className="size-3" />
       </a>
     </Badge>
