@@ -4,7 +4,7 @@ import React from "react";
 import { ArrowUpRight, Clock, DollarSign, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+import { BookingLink } from "@/components/ui/booking-link";
 import type { QuickWin } from "@/lib/audit/types";
 
 function CardContent({ win }: { win: QuickWin }) {
@@ -48,10 +48,10 @@ function CardContent({ win }: { win: QuickWin }) {
         asChild
         className="group/btn w-full sm:w-auto"
       >
-        <Link href={win.ctaHref} className="flex items-center gap-1.5">
+        <BookingLink interest={win.interest ?? ""} source="audit" className="flex items-center gap-1.5">
           {win.ctaLabel}
           <ArrowUpRight className="size-3.5 opacity-50 group-hover/btn:opacity-100 transition-opacity" />
-        </Link>
+        </BookingLink>
       </Button>
     </>
   );

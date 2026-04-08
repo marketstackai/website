@@ -4,6 +4,7 @@ import React from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { BookingLink } from "@/components/ui/booking-link";
 import type { TierLabel } from "@/lib/audit/types";
 
 interface CTAFooterProps {
@@ -13,10 +14,10 @@ interface CTAFooterProps {
   onStartOver: () => void;
 }
 
-const TIER_CTA_HREF: Record<TierLabel, string> = {
-  Foundation: "/book?ref=foundation&source=audit",
-  Growth: "/book?ref=os&source=audit",
-  Optimization: "/book?ref=studio&source=audit",
+const TIER_INTEREST: Record<TierLabel, string> = {
+  Foundation: "kit",
+  Growth: "os",
+  Optimization: "studio",
 };
 
 export function CTAFooter({
@@ -25,7 +26,7 @@ export function CTAFooter({
   email,
   onStartOver,
 }: CTAFooterProps) {
-  const primaryHref = TIER_CTA_HREF[tierLabel];
+  const primaryInterest = TIER_INTEREST[tierLabel];
   const primaryLabel =
     recommendedPackage === "Foundation Kit"
       ? "Get the Foundation Kit"
@@ -34,10 +35,10 @@ export function CTAFooter({
   return (
     <div className="pt-24 border-t text-center space-y-6 animate-appear delay-700">
       <Button asChild size="lg" className="w-full sm:w-auto px-12">
-        <Link href={primaryHref} className="flex items-center gap-2">
+        <BookingLink interest={primaryInterest} source="audit" className="flex items-center gap-2">
           {primaryLabel}
           <ArrowRightIcon className="size-4 ml-1" />
-        </Link>
+        </BookingLink>
       </Button>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -46,9 +47,9 @@ export function CTAFooter({
         </Button>
 
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/book?ref=stack-audit&source=audit">
+          <BookingLink interest="stackaudit" source="audit">
             Book a Paid Audit — $500 credit toward a project
-          </Link>
+          </BookingLink>
         </Button>
       </div>
 

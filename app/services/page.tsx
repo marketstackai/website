@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Zap, ArrowUpRight, ArrowRightIcon, Blocks, Palette } from "lucide-react";
 import Link from "next/link";
+import { BookingLink } from "@/components/ui/booking-link";
 import { PricingColumn } from "@/components/ui/pricing-column";
 import Glow from "@/components/ui/glow";
 import {
@@ -61,7 +62,7 @@ export default function ServicesPage() {
                 </>
               }
               priceNote="DIY implementation — go at your own pace."
-              cta={{ variant: "glow", label: "Get the Kit", href: "/book?ref=foundation" }}
+              cta={{ variant: "glow", label: "Get the Kit", href: "/book", interest: "kit" }}
               features={[
                 "Standard website template",
                 "Email + SMS follow-up blueprint",
@@ -84,8 +85,8 @@ export default function ServicesPage() {
                   <span className="text-muted-foreground text-sm">Two weeks</span>
                 </>
               }
-              priceNote="Done For You with ongoing support options."
-              cta={{ variant: "default", label: "Deploy My System", href: "/book?ref=os" }}
+              priceNote="Done for you with ongoing support options."
+              cta={{ variant: "default", label: "Deploy the System", href: "/book", interest: "os" }}
               features={[
                 "Custom website",
                 "Instant response to every inquiry",
@@ -104,10 +105,10 @@ export default function ServicesPage() {
               description="Designed for you."
               price={"Custom"}
               priceNote="Strategic relationship to deliver your unique infrastructure."
-              cta={{ variant: "glow", label: "Book a Discovery Call", href: "/book?ref=studio" }}
+              cta={{ variant: "glow", label: "Book a Discovery Call", href: "/book", interest: "studio" }}
               features={[
-                "Full Operations Audit with ROI roadmap",
-                "Custom workflow builds for your specific bottlenecks",
+                "Complete operations audit",
+                "Custom workflows",
                 "AI agent development",
                 "Ongoing advisory + roadmap refresh"
               ]}
@@ -115,7 +116,7 @@ export default function ServicesPage() {
               className="w-full h-full"
             />
           </div>
-          <Glow variant="bottom" className="opacity-60 scale-x-75 -translate-y-8" />
+          <Glow variant="bottom" className="opacity-60 scale-x-75 -translate-y-24" />
         </div>
       </Section>
 
@@ -135,11 +136,10 @@ export default function ServicesPage() {
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <Badge variant="secondary" className="mb-2">ENTRY</Badge>
                       <CardTitle>AI Starter Workshop</CardTitle>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold whitespace-nowrap">$1,000 – $2,000</p>
+                      <p className="font-semibold whitespace-nowrap">$1,000+</p>
                       <p className="text-sm text-muted-foreground">90 minutes</p>
                     </div>
                   </div>
@@ -154,10 +154,10 @@ export default function ServicesPage() {
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
-                    <Link href="/book?ref=workshop" className="flex items-center gap-1">
+                    <BookingLink interest="workshop" className="flex items-center gap-1">
                       Inquire
                       <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                    </BookingLink>
                   </Button>
                 </CardFooter>
               </Card>
@@ -166,11 +166,10 @@ export default function ServicesPage() {
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <Badge variant="secondary" className="mb-2">CORE</Badge>
                       <CardTitle>Role-Based AI Sprint</CardTitle>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold whitespace-nowrap">$3,000 – $5,000</p>
+                      <p className="font-semibold whitespace-nowrap">$3,000+</p>
                       <p className="text-sm text-muted-foreground">2–3 weeks</p>
                     </div>
                   </div>
@@ -185,10 +184,10 @@ export default function ServicesPage() {
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
-                    <Link href="/book?ref=role-sprint" className="flex items-center gap-1">
+                    <BookingLink interest="rolesprint" className="flex items-center gap-1">
                       Inquire
                       <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                    </BookingLink>
                   </Button>
                 </CardFooter>
               </Card>
@@ -197,11 +196,10 @@ export default function ServicesPage() {
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <Badge variant="secondary" className="mb-2">PREMIUM</Badge>
                       <CardTitle>AI Bootcamp</CardTitle>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold whitespace-nowrap">$5,000 – $10,000</p>
+                      <p className="font-semibold whitespace-nowrap">$5,000+</p>
                       <p className="text-sm text-muted-foreground">6–8 weeks</p>
                     </div>
                   </div>
@@ -216,16 +214,16 @@ export default function ServicesPage() {
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
-                    <Link href="/book?ref=bootcamp" className="flex items-center gap-1">
+                    <BookingLink interest="bootcamp" className="flex items-center gap-1">
                       Inquire
                       <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                    </BookingLink>
                   </Button>
                 </CardFooter>
               </Card>
             </div>
           </div>
-          <Glow variant="bottom" className="opacity-50 scale-x-75 -translate-y-8" />
+          <Glow variant="bottom" className="opacity-50 scale-x-75 translate-y-72" />
         </div>
       </Section>
 
@@ -245,11 +243,10 @@ export default function ServicesPage() {
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <Badge variant="secondary" className="mb-2">FREE / $500</Badge>
                       <CardTitle>Stack Audit</CardTitle>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold whitespace-nowrap">$0 / $500</p>
+                      <p className="font-semibold whitespace-nowrap">$500+</p>
                       <p className="text-sm text-muted-foreground">60 minutes</p>
                     </div>
                   </div>
@@ -264,16 +261,16 @@ export default function ServicesPage() {
                 </CardContent>
                 <CardFooter className="flex flex-col items-start gap-4">
                   <div className="flex gap-4">
-                    <Button variant="outline" asChild className="group">
+                    <Button variant="default" asChild className="group">
                       <Link href="/audit" className="flex items-center gap-1">
-                        Free Audit <ArrowRightIcon className="size-3" />
+                        Free Audit
                       </Link>
                     </Button>
                     <Button variant="outline" asChild className="group">
-                      <Link href="/book?ref=stack-audit" className="flex items-center gap-1">
-                        Book a Stack Audit
+                      <BookingLink interest="stackaudit" className="flex items-center gap-1">
+                        Book Audit Call
                         <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                      </Link>
+                      </BookingLink>
                     </Button>
                   </div>
                 </CardFooter>
@@ -283,7 +280,6 @@ export default function ServicesPage() {
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <Badge variant="secondary" className="mb-2">CORE</Badge>
                       <CardTitle>AI Operations Audit</CardTitle>
                     </div>
                     <div className="text-right">
@@ -302,10 +298,10 @@ export default function ServicesPage() {
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
-                    <Link href="/book?ref=ops-audit" className="flex items-center gap-1">
+                    <BookingLink interest="opsaudit" className="flex items-center gap-1">
                       Inquire
                       <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                    </BookingLink>
                   </Button>
                 </CardFooter>
               </Card>
@@ -314,7 +310,6 @@ export default function ServicesPage() {
                 <CardHeader>
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <Badge variant="secondary" className="mb-2">PREMIUM</Badge>
                       <CardTitle>AI Growth Infrastructure Plan</CardTitle>
                     </div>
                     <div className="text-right">
@@ -333,16 +328,16 @@ export default function ServicesPage() {
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild className="group">
-                    <Link href="/book?ref=growth-plan" className="flex items-center gap-1">
+                    <BookingLink interest="growthplan" className="flex items-center gap-1">
                       Inquire
                       <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                    </BookingLink>
                   </Button>
                 </CardFooter>
               </Card>
             </div>
           </div>
-          <Glow variant="bottom" className="opacity-50 scale-x-75 -translate-y-8" />
+          <Glow variant="bottom" className="opacity-50 scale-x-75 translate-y-72" />
         </div>
       </Section>
 
@@ -351,79 +346,98 @@ export default function ServicesPage() {
         <div className="max-w-[1000px] mx-auto px-6 relative">
           <div className="relative z-10">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-semibold mb-4">Implementation & Build (À La Carte)</h2>
+              <h2 className="text-3xl font-semibold mb-4">Customized Builds</h2>
               <p className="text-muted-foreground text-lg text-balance">
                 Working systems, not strategy decks. Individual builds available standalone or as add-ons to any package.
               </p>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border bg-card text-card-foreground shadow-sm">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-muted text-muted-foreground uppercase border-b">
-                  <tr>
-                    <th className="px-6 py-4 font-medium">Service</th>
-                    <th className="px-6 py-4 font-medium">Description</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Price</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Timeline</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {[
-                    {
-                      name: "Reactivation Campaign",
-                      desc: "One-time dormant lead blast + automated follow-up sequence build. Re-engage existing dead leads.",
-                      price: "$1,500 – $2,500",
-                      timeline: "1–2 weeks"
-                    },
-                    {
-                      name: "Speed-to-Lead Build",
-                      desc: "Automated instant response system for every new inquiry. Includes setup, copy, and lead source integration.",
-                      price: "$2,000 – $3,000",
-                      timeline: "1–2 weeks"
-                    },
-                    {
-                      name: "AI Receptionist / Voice Agent",
-                      desc: "Conversational AI that answers calls, qualifies leads, and books appointments 24/7. Trained on your business. Every missed call is money walking out the door. Let's fix that.",
-                      price: "$2,500 – $4,000",
-                      timeline: "2–3 weeks"
-                    },
-                    {
-                      name: "Custom Workflow Build (single)",
-                      desc: "One high-impact workflow, end-to-end. Estimate follow-up, job status notifications, vendor coordination, scheduling, etc.",
-                      price: "$3,000 – $7,000",
-                      timeline: "2–4 weeks"
-                    },
-                    {
-                      name: "Website / Microsite Build",
-                      desc: "AI-generated, conversion-focused website or landing page. Industry-optimized, deployed and ready.",
-                      price: "$1,500 – $3,000",
-                      timeline: "1–2 weeks"
-                    },
-                    {
-                      name: "AI Front Office System",
-                      desc: "Full AI-powered front office: voice agents, automated lead response, smart routing, follow-up, CRM integration.",
-                      price: "$8,000 – $15,000",
-                      timeline: "6–10 weeks"
-                    },
-                    {
-                      name: "Custom AI Agent Build",
-                      desc: "Purpose-built AI agents, internal tools, or complex multi-system integrations. Scope determined after discovery.",
-                      price: "Custom",
-                      timeline: "Varies"
-                    }
-                  ].map((item, i) => (
-                    <tr key={i} className="hover:bg-muted/50 transition-colors">
-                      <td className="px-6 py-4 font-medium">{item.name}</td>
-                      <td className="px-6 py-4 text-muted-foreground">{item.desc}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.price}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{item.timeline}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {(() => {
+              const builds = [
+                {
+                  name: "Reactivation",
+                  desc: "Dormant lead blast + automated follow-up sequence build. Re-engage existing dead leads.",
+                  price: "$1,000+",
+                  timeline: "1–2 weeks"
+                },
+                {
+                  name: "Speed-to-Lead",
+                  desc: "Automated instant response system for every new inquiry. Includes setup, copy, and lead source integration.",
+                  price: "$2,000+",
+                  timeline: "1–2 weeks"
+                },
+                {
+                  name: "Website",
+                  desc: "AI-generated, conversion-focused website or landing page. Industry-optimized, deployed and ready.",
+                  price: "$2,000+",
+                  timeline: "1–2 weeks"
+                },
+                {
+                  name: "Custom Workflow",
+                  desc: "One high-impact workflow, end-to-end. Estimate follow-up, job status notifications, vendor coordination, scheduling, etc.",
+                  price: "$2,000+",
+                  timeline: "2–4 weeks"
+                },
+                {
+                  name: "AI Receptionist",
+                  desc: "Conversational AI that answers calls, qualifies leads, and books appointments 24/7. Trained on your business.",
+                  price: "$4,000+",
+                  timeline: "2–3 weeks"
+                },
+                {
+                  name: "AI Agent",
+                  desc: "Purpose-built AI agents, internal tools, or complex multi-system integrations. Scope determined after discovery.",
+                  price: "Custom",
+                  timeline: "Varies"
+                }
+              ];
+
+              return (
+                <>
+                  {/* Mobile: stacked cards */}
+                  <div className="flex flex-col gap-4 md:hidden">
+                    {builds.map((item, i) => (
+                      <div key={i} className="rounded-xl border bg-card p-5">
+                        <div className="flex items-start justify-between gap-4 mb-2">
+                          <p className="font-medium">{item.name}</p>
+                          <div className="text-right shrink-0">
+                            <p className="font-semibold text-sm">{item.price}</p>
+                            <p className="text-xs text-muted-foreground">{item.timeline}</p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{item.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop: table */}
+                  <div className="hidden md:block overflow-x-auto rounded-xl border bg-card text-card-foreground shadow-sm">
+                    <table className="w-full text-sm text-left">
+                      <thead className="bg-muted text-muted-foreground uppercase border-b">
+                        <tr>
+                          <th className="px-6 py-4 font-medium">Service</th>
+                          <th className="px-6 py-4 font-medium">Description</th>
+                          <th className="px-6 py-4 font-medium whitespace-nowrap">Price</th>
+                          <th className="px-6 py-4 font-medium whitespace-nowrap">Timeline</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {builds.map((item, i) => (
+                          <tr key={i} className="hover:bg-muted/50 transition-colors">
+                            <td className="px-6 py-4 font-medium">{item.name}</td>
+                            <td className="px-6 py-4 text-muted-foreground">{item.desc}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item.price}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item.timeline}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              );
+            })()}
           </div>
-          <Glow variant="bottom" className="opacity-50 scale-x-75 -translate-y-8" />
+          <Glow variant="bottom" className="opacity-50 scale-x-[0.6] translate-y-72" />
         </div>
       </Section>
 
@@ -452,52 +466,11 @@ export default function ServicesPage() {
               </CardContent>
             </Card>
           </div>
-          <Glow variant="bottom" className="opacity-40 scale-x-75 -translate-y-8" />
         </div>
       </Section>
 
       {/* FAQ Overlay */}
-      <FAQ 
-        title="Frequently Asked Questions" 
-        items={[
-          {
-            question: "How do I know this will actually pay for itself?",
-            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">Every engagement starts with diagnosis, not a pitch. Before we build anything, we identify the specific workflows where AI creates measurable impact: leads captured, response time reduced, revenue recovered. For the OS specifically, if your average job is worth $5,000 and the system books even 2 extra jobs per month, that&apos;s $10,000 in new revenue against a $4,500 investment. We don&apos;t move forward unless the math works — and we guarantee 20 warm conversations in 90 days.</p>
-          },
-          {
-            question: "We already tried AI tools and they didn't stick. Why would this be different?",
-            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">Tools fail when they&apos;re layered on top of broken workflows. A chatbot doesn&apos;t fix a lead follow-up problem if nobody&apos;s looking at the leads. We start with your people and processes first, then build technology that fits how your team actually works. That&apos;s the difference between installing a tool and building a system.</p>
-          },
-          {
-            question: "I'm not technical. Will I be able to use what you build?",
-            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">Yes. Everything we build is designed for the people who use it daily, not for engineers. If your team can use email and a calendar, they can use what we build. Training is included in every implementation engagement, and retainer clients get ongoing support as tools evolve.</p>
-          },
-          {
-            question: "How fast before I see results?",
-            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">The Foundation Kit is instant access — implementation speed depends on you. The Operating System launches in 30 days with a 60-day optimization window. Studio timelines depend on scope but always start with quick wins during the audit phase. You&apos;ll see working output within the first week of any build engagement.</p>
-          },
-          {
-            question: "What's the difference between the packages? How do I know which one I need?",
-            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">If you have no systems and need to start somewhere, the Foundation Kit gives you the templates and training to DIY. If you want it built, launched, and running for you, the OS is the move. If you have a complex operation with existing tools and need someone to diagnose and architect a custom solution, Studio is for you. Not sure? Take the free Stack Audit at /audit — it&apos;ll tell you exactly where you stand.</p>
-          },
-          {
-            question: "Can I start small and upgrade later?",
-            answer: <p className="text-muted-foreground text-sm mb-4 max-w-[640px] text-balance">Absolutely. Many clients start with a Stack Audit or the Foundation Kit, see the value, and upgrade to the OS. Foundation Kit buyers get their purchase price credited toward an OS upgrade. The path is designed to let you go at your own pace.</p>
-          },
-          {
-            question: "How long does a typical implementation take?",
-            answer: "Most Operating System deployments are live in 30 days. Bespoke 'Studio' projects typically range from 8 to 12 weeks depending on complexity."
-          },
-          {
-            question: "Do I need to hire an AI engineer to maintain this?",
-            answer: "No. We build for reliability and user-friendliness. We also provide ongoing support retainers so you can focus on running your business while we ensure your systems evolve with the technology."
-          },
-          {
-            question: "Can these systems integrate with my existing CRM?",
-            answer: "Yes. We specialize in connecting modern AI workflows to the tools you already use, whether it's ServiceTitan, Housecall Pro, HubSpot, or custom proprietary software."
-          }
-        ]}
-      />
+      <FAQ title="Frequently Asked Questions" />
 
       <CTA />
       <Footer />

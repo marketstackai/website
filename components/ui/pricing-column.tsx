@@ -1,7 +1,10 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { CircleCheckBig, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { BookingLink } from "./booking-link";
 import { ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -35,6 +38,7 @@ export interface PricingColumnProps
     variant: "glow" | "default";
     label: string;
     href: string;
+    interest?: string;
   };
   features: string[];
 }
@@ -104,10 +108,17 @@ export function PricingColumn({
 
         <div className="flex flex-col gap-3">
           <Button variant={cta.variant} size="lg" asChild className="w-full group">
-            <Link href={cta.href} className="flex items-center gap-1">
-              {cta.label}
-              <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-            </Link>
+            {cta.interest ? (
+              <BookingLink interest={cta.interest} className="flex items-center gap-1">
+                {cta.label}
+                <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+              </BookingLink>
+            ) : (
+              <Link href={cta.href} className="flex items-center gap-1">
+                {cta.label}
+                <ArrowUpRight className="size-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+              </Link>
+            )}
           </Button>
           <p className="text-muted-foreground max-w-[220px] text-sm">
             {priceNote}
