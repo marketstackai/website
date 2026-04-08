@@ -1,78 +1,131 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 import Navbar from "@/components/sections/navbar/default";
 import Footer from "@/components/sections/footer/default";
 import Glow from "@/components/ui/glow";
-
-const REF_SUBHEADINGS: Record<string, string> = {
-  foundation: "Schedule a time to discuss the Foundation Kit.",
-  os: "Let\u2019s get your Operating System deployed.",
-  studio: "Tell us about your project in a discovery call.",
-  workshop: "Let\u2019s plan your AI Starter Workshop.",
-  "role-sprint": "Let\u2019s scope your Role-Based AI Sprint.",
-  bootcamp: "Let\u2019s design your AI Bootcamp program.",
-  "stack-audit":
-    "Book your Stack Audit \u2014 $500 credits toward any project.",
-  "ops-audit": "Let\u2019s scope your AI Operations Audit.",
-  "growth-plan": "Let\u2019s map your AI Growth Infrastructure Plan.",
-  "ai-receptionist": "Let\u2019s set up your AI Receptionist.",
-  "speed-to-lead": "Let\u2019s build your Speed-to-Lead system.",
-  workflow: "Let\u2019s scope your custom workflow automation.",
-  "front-office": "Let\u2019s explore the AI Front Office system.",
-};
+import { getBookingIntent, INTEREST_SUBHEADINGS } from "@/lib/booking";
 
 const DEFAULT_SUBHEADING =
   "Pick a time that works for you. We\u2019ll handle the rest.";
 
-const IFRAME_MIN_HEIGHT = 700;
-
 export default function BookingContent() {
   const searchParams = useSearchParams();
-  const ref = searchParams.get("ref");
-  const source = searchParams.get("source");
   const [ready, setReady] = useState(false);
+  const [iframeHeight, setIframeHeight] = useState(700);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // sessionStorage first, URL params as fallback (for direct/shared links)
+  const stored = getBookingIntent();
+  const interest =
+    stored.interest ||
+    searchParams.get("interest") ||
+    searchParams.get("ref"); // legacy compat
+  const source = stored.source || searchParams.get("source");
 
   const iframeUrl = new URL(
     "https://link.marketstack.ai/widget/booking/3kaQEdii0FF1El7xKgWY"
   );
-  if (ref) iframeUrl.searchParams.set("ref", ref);
-  if (source) iframeUrl.searchParams.set("source", source);
+  // Always attach UTMs for GHL attribution
+  iframeUrl.searchParams.set("utm_source", "marketstack.ai");
+  iframeUrl.searchParams.set("utm_medium", "website");
+  if (interest) {
+    iframeUrl.searchParams.set("utm_content", interest);
+    iframeUrl.searchParams.set("interest", interest);
+  }
+  if (source) iframeUrl.searchParams.set("utm_campaign", source);
 
   const subheading =
-    (ref && REF_SUBHEADINGS[ref]) || DEFAULT_SUBHEADING;
+    (interest &&
+      INTEREST_SUBHEADINGS[interest as keyof typeof INTEREST_SUBHEADINGS]) ||
+    DEFAULT_SUBHEADING;
 
-  // Listen for GHL form_embed.js resize messages — the first resize
-  // means the calendar has rendered and measured itself.
+  const taggedRef = useRef(false);
+  const contactIdRef = useRef<string | null>(null);
+
+  // form_embed.js is required for GHL custom CSS to apply inside the iframe.
+  // Neutralize its scroll side-effects: kill scrollIntoView on the iframe
+  // and revert any scrolling/overflow changes it makes.
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    iframe.scrollIntoView = () => {};
+
+    const observer = new MutationObserver(() => {
+      if (iframe.style.overflow !== "hidden") {
+        iframe.style.overflow = "hidden";
+      }
+      if (iframe.getAttribute("scrolling") !== "no") {
+        iframe.setAttribute("scrolling", "no");
+      }
+    });
+    observer.observe(iframe, {
+      attributes: true,
+      attributeFilter: ["style", "scrolling"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  // Listen for GHL postMessage events (all messages are arrays: [type, ...args]).
+  // "highlevel.setHeight" → update iframe height + reveal on first fire.
+  // "set-sticky-contacts" + "_ud" → contact data including GHL contact ID.
+  // "msgsndr-booking-complete" → booking confirmed, update interests.
   useEffect(() => {
     function onMessage(e: MessageEvent) {
-      if (
-        typeof e.data === "object" &&
-        e.data !== null &&
-        "type" in e.data &&
-        String(e.data.type).includes("resize")
-      ) {
+      if (!Array.isArray(e.data)) return;
+
+      const type = String(e.data[0] ?? "");
+
+      if (type === "highlevel.setHeight") {
+        const h = (e.data[1] as { height?: number })?.height;
+        if (typeof h === "number" && h > 0) {
+          const scrollY = window.scrollY;
+          document.documentElement.style.overflow = "hidden";
+          setIframeHeight(h + 32);
+          setTimeout(() => {
+            document.documentElement.style.overflow = "";
+            window.scrollTo(0, scrollY);
+          }, 500);
+        }
         setReady(true);
+      }
+
+      if (type === "set-sticky-contacts" && e.data[1] === "_ud") {
+        try {
+          const contact = JSON.parse(String(e.data[2]));
+          if (typeof contact.id === "string" && contact.id.length > 0) {
+            contactIdRef.current = contact.id;
+          }
+        } catch {
+          // malformed payload — ignore
+        }
+      }
+
+      if (
+        type === "msgsndr-booking-complete" &&
+        !taggedRef.current &&
+        interest &&
+        contactIdRef.current
+      ) {
+        taggedRef.current = true;
+        fetch("/api/booking/interest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contactId: contactIdRef.current, interest }),
+        }).catch(() => {
+          // Non-critical — don't block the user
+        });
       }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [interest]);
 
-  // Fallback: if the postMessage never fires, reveal after a timeout.
+  // Fallback: if highlevel.setHeight never fires, reveal after timeout.
   useEffect(() => {
     const id = setTimeout(() => setReady(true), 4000);
-    return () => clearTimeout(id);
-  }, []);
-
-  const handleLoad = useCallback(() => {
-    // iframe document loaded — give a brief moment for form_embed.js
-    // to run its first resize before revealing via the postMessage listener.
-    // If postMessage already fired, this is a no-op.
-    const id = setTimeout(() => setReady(true), 800);
     return () => clearTimeout(id);
   }, []);
 
@@ -91,7 +144,7 @@ export default function BookingContent() {
 
         <div
           className="rounded-2xl animate-appear [animation-delay:100ms] relative overflow-hidden max-w-[90%] mx-auto"
-          style={{ minHeight: `${IFRAME_MIN_HEIGHT}px` }}
+          style={{ minHeight: `${iframeHeight}px` }}
         >
           {/* Loading overlay — fully opaque to mask iframe white flash */}
           <div
@@ -112,21 +165,22 @@ export default function BookingContent() {
           <iframe
             ref={iframeRef}
             src={iframeUrl.toString()}
-            onLoad={handleLoad}
             className="transition-opacity duration-700"
             style={{
               width: "100%",
               border: "none",
-              overflow: "hidden",
-              minHeight: `${IFRAME_MIN_HEIGHT}px`,
+              height: `${iframeHeight}px`,
               opacity: ready ? 1 : 0,
               visibility: ready ? "visible" : "hidden",
+              transition: "opacity 700ms",
+              scrollMarginTop: "200px",
             }}
             scrolling="no"
             id="3kaQEdii0FF1El7xKgWY_1775158114885"
             title="Book a call with Market Stack"
           />
         </div>
+
         <Script
           src="https://link.marketstack.ai/js/form_embed.js"
           strategy="afterInteractive"
