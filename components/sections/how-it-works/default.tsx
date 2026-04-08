@@ -3,7 +3,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { ArrowRightIcon, Search, Wrench, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import Glow from "../../ui/glow";
 
 export default function HowItWorks() {
   return (
@@ -12,7 +11,7 @@ export default function HowItWorks() {
         <div className="text-center mb-16">
           <h2 className="text-3xl font-semibold sm:text-5xl mb-6">How it works</h2>
           <p className="text-muted-foreground text-lg text-balance max-w-2xl mx-auto">
-            We don't just sell software. We diagnose your bottlenecks, build custom systems, and help you scale intelligently.
+            We don&apos;t just sell software. We diagnose your bottlenecks, build custom systems, and help you scale intelligently.
           </p>
         </div>
 
@@ -27,7 +26,7 @@ export default function HowItWorks() {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Map your current lead flow, tech stack, and daily operations to find precisely where you're leaking revenue.
+                Map your current lead flow, tech stack, and daily operations to find precisely where you&apos;re leaking revenue.
               </p>
             </CardContent>
           </Card>
