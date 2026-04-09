@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { RotateCcw, Minus, Plus } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import {
   Accordion,
   AccordionContent,

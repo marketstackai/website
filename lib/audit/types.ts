@@ -92,6 +92,7 @@ export interface QuickWin {
   roiProjection: string;
   ctaLabel: string;
   ctaHref: string;
+  interest?: string;
   priority: number;
   isPrimary?: boolean;
 }

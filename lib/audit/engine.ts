@@ -31,7 +31,6 @@ function computeLeads(
   closeRate: number,
 ): number {
   const industryMult = INDUSTRY_MULTIPLIERS[industry] ?? 1.0;
-  const industryLabel = INDUSTRY_LABELS[industry] ?? industry;
 
   const revenueNum = parseFloat(revenue);
   if (!isNaN(revenueNum) && revenueNum > 0 && jobValue > 0) {
@@ -59,8 +58,6 @@ function computeLeakRate(
   const baseRate = BASE_LEAK_RATES[responseMethod] ?? 0.40;
   const modifier = INDUSTRY_LEAK_MODIFIERS[industry] ?? 0;
   const leakRate = clamp(baseRate + modifier, 0.05, 0.85);
-  const methodLabel = RESPONSE_METHOD_LABELS[responseMethod] ?? responseMethod;
-  const industryLabel = INDUSTRY_LABELS[industry] ?? industry;
 
   return leakRate;
 }

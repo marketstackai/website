@@ -11,8 +11,8 @@ interface RevenuLeakHeroProps {
   realisticAnnual: number;
   conservativeMonthly: number;
   optimisticMonthly: number;
-  isAdjusted: boolean;
-  originalMaxImpact: number;
+  isAdjusted?: boolean;
+  originalMaxImpact?: number;
   isRevenueUndisclosed: boolean;
   isJobValueUndisclosed: boolean;
 }
@@ -47,8 +47,6 @@ export function RevenuLeakHero({
   realisticAnnual,
   conservativeMonthly,
   optimisticMonthly,
-  isAdjusted,
-  originalMaxImpact,
   isRevenueUndisclosed,
   isJobValueUndisclosed,
 }: RevenuLeakHeroProps) {

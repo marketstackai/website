@@ -80,7 +80,7 @@ export default function FooterSection({
                 </a>
               ))}
               {showThemeToggle && <ThemeToggle type={"dropdown"} />}
-              <MarketStack className="size-6 text-foreground/50 ml-2" />
+              <MarketStack className="size-6 text-primary ml-2" />
             </div>
           </FooterBottom>
         </Footer>

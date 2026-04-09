@@ -55,7 +55,8 @@ export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPack
       recoveredAnnual,
       roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, recoveredLeads, recoveredMonthly),
       ctaLabel: "Learn About AI Receptionists",
-      ctaHref: "/book?ref=ai-receptionist&source=audit",
+      ctaHref: "/book",
+      interest: "aireceptionist",
       priority: 1,
     });
   }
@@ -76,7 +77,8 @@ export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPack
       recoveredAnnual: stlMonthly * 12,
       roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, stlRecovered, stlMonthly),
       ctaLabel: "Build My Speed-to-Lead",
-      ctaHref: "/book?ref=speed-to-lead&source=audit",
+      ctaHref: "/book",
+      interest: "speedtolead",
       priority: 2,
     });
   }
@@ -97,7 +99,8 @@ export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPack
       recoveredAnnual: cwMonthly * 12,
       roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, cwRecovered, cwMonthly),
       ctaLabel: "Scope Your Workflow",
-      ctaHref: "/book?ref=workflow&source=audit",
+      ctaHref: "/book",
+      interest: "workflow",
       priority: 3,
     });
   }
@@ -118,7 +121,8 @@ export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPack
       recoveredAnnual: foMonthly * 12,
       roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, foRecovered, foMonthly),
       ctaLabel: "Explore AI Front Office",
-      ctaHref: "/book?ref=front-office&source=audit",
+      ctaHref: "/book",
+      interest: "frontoffice",
       priority: 4,
     });
   }
@@ -137,7 +141,8 @@ export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPack
       recoveredAnnual: Math.round(leakedLeads * 0.20) * closeRate * jobValue * 12,
       roiProjection: "The foundational infrastructure required to stop the bleeding and start scaling.",
       ctaLabel: "Get the Kit",
-      ctaHref: "/book?ref=foundation&source=audit",
+      ctaHref: "/book",
+      interest: "kit",
       priority: -1,
       isPrimary: true,
     });
@@ -154,7 +159,8 @@ export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPack
       recoveredAnnual: Math.round(leakedLeads * 0.50) * closeRate * jobValue * 12,
       roiProjection: "Professional scale. Every lead is captured, nurtured, and tracked automatically.",
       ctaLabel: "Book Your OS Setup",
-      ctaHref: "/book?ref=os&source=audit",
+      ctaHref: "/book",
+      interest: "os",
       priority: -1,
       isPrimary: true,
     });
@@ -171,7 +177,8 @@ export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPack
       recoveredAnnual: Math.round(leakedLeads * 0.70) * closeRate * jobValue * 12,
       roiProjection: "Maximum leverage. Custom-tailored systems designed for your specific business bottlenecks.",
       ctaLabel: "Book Studio Strategy Call",
-      ctaHref: "/book?ref=studio&source=audit",
+      ctaHref: "/book",
+      interest: "studio",
       priority: -1,
       isPrimary: true,
     });
@@ -196,7 +203,7 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
       win: (() => {
         const r = Math.round(leakedLeads * RECOVERY_RATE);
         const m = r * closeRate * jobValue;
-        return { id: "ai_receptionist", title: "AI Receptionist", description: "24/7 conversational AI that answers calls, qualifies leads, and books appointments.", service: "AI Receptionist / Voice Agent", priceRange: "$2,500 – $4,000", timeline: "2–3 weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, r, m), ctaLabel: "Learn About AI Receptionists", ctaHref: "/book?ref=ai-receptionist&source=audit", priority: 1 };
+        return { id: "ai_receptionist", title: "AI Receptionist", description: "24/7 conversational AI that answers calls, qualifies leads, and books appointments.", service: "AI Receptionist / Voice Agent", priceRange: "$2,500 – $4,000", timeline: "2–3 weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, r, m), ctaLabel: "Learn About AI Receptionists", ctaHref: "/book", interest: "aireceptionist", priority: 1 };
       })(),
     },
     {
@@ -205,7 +212,7 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
       win: (() => {
         const r = Math.round(leakedLeads * 0.40);
         const m = r * closeRate * jobValue;
-        return { id: "speed_to_lead", title: "Speed-to-Lead System", description: "Automated instant response to every new inquiry.", service: "Speed-to-Lead Build", priceRange: "$2,000 – $3,000", timeline: "1–2 weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, r, m), ctaLabel: "Build My Speed-to-Lead", ctaHref: "/book?ref=speed-to-lead&source=audit", priority: 2 };
+        return { id: "speed_to_lead", title: "Speed-to-Lead System", description: "Automated instant response to every new inquiry.", service: "Speed-to-Lead Build", priceRange: "$2,000 – $3,000", timeline: "1–2 weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, r, m), ctaLabel: "Build My Speed-to-Lead", ctaHref: "/book", interest: "speedtolead", priority: 2 };
       })(),
     },
     {
@@ -214,7 +221,7 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
       win: (() => {
         const r = Math.round(leakedLeads * 0.30);
         const m = r * closeRate * jobValue;
-        return { id: "custom_workflow", title: "Custom Workflow Automation", description: "One high-impact automated workflow.", service: "Custom Workflow Build", priceRange: "$3,000 – $7,000", timeline: "2–4 weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, r, m), ctaLabel: "Scope Your Workflow", ctaHref: "/book?ref=workflow&source=audit", priority: 3 };
+        return { id: "custom_workflow", title: "Custom Workflow Automation", description: "One high-impact automated workflow.", service: "Custom Workflow Build", priceRange: "$3,000 – $7,000", timeline: "2–4 weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, r, m), ctaLabel: "Scope Your Workflow", ctaHref: "/book", interest: "workflow", priority: 3 };
       })(),
     },
     {
@@ -223,7 +230,7 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
       win: (() => {
         const r = Math.round(leakedLeads * 0.45);
         const m = r * closeRate * jobValue;
-        return { id: "ai_front_office", title: "AI Front Office System", description: "Unified AI-powered front office.", service: "AI Front Office System", priceRange: "$8,000 – $15,000", timeline: "6–10 weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, r, m), ctaLabel: "Explore AI Front Office", ctaHref: "/book?ref=front-office&source=audit", priority: 4 };
+        return { id: "ai_front_office", title: "AI Front Office System", description: "Unified AI-powered front office.", service: "AI Front Office System", priceRange: "$8,000 – $15,000", timeline: "6–10 weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: buildRoiString(leads, leakRate, closeRate, jobValue, r, m), ctaLabel: "Explore AI Front Office", ctaHref: "/book", interest: "frontoffice", priority: 4 };
       })(),
     },
   ];
@@ -235,7 +242,7 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
       win: (() => {
         const r = Math.round(leakedLeads * 0.20);
         const m = r * closeRate * jobValue;
-        return { id: "foundation_kit_primary", title: "Foundation Kit", description: "Capture missed leads and build a professional brand foundation.", service: "Foundation Product", priceRange: "$497", timeline: "Instant Access", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Foundational infrastructure to stop the bleeding and start scaling.", ctaLabel: "Get the Kit", ctaHref: "/book?ref=foundation&source=audit", priority: -1, isPrimary: true };
+        return { id: "foundation_kit_primary", title: "Foundation Kit", description: "Capture missed leads and build a professional brand foundation.", service: "Foundation Product", priceRange: "$497", timeline: "Instant Access", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Foundational infrastructure to stop the bleeding and start scaling.", ctaLabel: "Get the Kit", ctaHref: "/book", interest: "kit", priority: -1, isPrimary: true };
       })(),
     },
     "Operating System": {
@@ -243,7 +250,7 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
       win: (() => {
         const r = Math.round(leakedLeads * 0.50);
         const m = r * closeRate * jobValue;
-        return { id: "os_primary", title: "Operating System", description: "Fully automated lead response, CRM workflows, and website deployment.", service: "Core Operating System", priceRange: "$4,500", timeline: "2 Weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Every lead captured, nurtured, and tracked automatically.", ctaLabel: "Book Your OS Setup", ctaHref: "/book?ref=os&source=audit", priority: -1, isPrimary: true };
+        return { id: "os_primary", title: "Operating System", description: "Fully automated lead response, CRM workflows, and website deployment.", service: "Core Operating System", priceRange: "$4,500", timeline: "2 Weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Every lead captured, nurtured, and tracked automatically.", ctaLabel: "Book Your OS Setup", ctaHref: "/book", interest: "os", priority: -1, isPrimary: true };
       })(),
     },
     "Studio": {
@@ -251,7 +258,7 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
       win: (() => {
         const r = Math.round(leakedLeads * 0.70);
         const m = r * closeRate * jobValue;
-        return { id: "studio_primary", title: "Studio", description: "Bespoke automation and AI ops for maximum leverage.", service: "Custom AI & Ops", priceRange: "Custom", timeline: "4–8 Weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Custom-tailored systems for your specific bottlenecks.", ctaLabel: "Book Studio Strategy Call", ctaHref: "/book?ref=studio&source=audit", priority: -1, isPrimary: true };
+        return { id: "studio_primary", title: "Studio", description: "Bespoke automation and AI ops for maximum leverage.", service: "Custom AI & Ops", priceRange: "Custom", timeline: "4–8 Weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Custom-tailored systems for your specific bottlenecks.", ctaLabel: "Book Studio Strategy Call", ctaHref: "/book", interest: "studio", priority: -1, isPrimary: true };
       })(),
     },
   };
