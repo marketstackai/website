@@ -25,6 +25,45 @@ export const metadata = {
     "Explore our packages, from DIY toolkits to fully deployed systems and strategic partnerships.",
 };
 
+const BUILDS = [
+  {
+    name: "Reactivation",
+    desc: "Dormant lead blast + automated follow-up sequence build. Re-engage existing dead leads.",
+    price: "$1,000+",
+    timeline: "1–2 weeks",
+  },
+  {
+    name: "Speed-to-Lead",
+    desc: "Automated instant response system for every new inquiry. Includes setup, copy, and lead source integration.",
+    price: "$2,000+",
+    timeline: "1–2 weeks",
+  },
+  {
+    name: "Website",
+    desc: "AI-generated, conversion-focused website or landing page. Industry-optimized, deployed and ready.",
+    price: "$2,000+",
+    timeline: "1–2 weeks",
+  },
+  {
+    name: "Custom Workflow",
+    desc: "One high-impact workflow, end-to-end. Estimate follow-up, job status notifications, vendor coordination, scheduling, etc.",
+    price: "$2,000+",
+    timeline: "2–4 weeks",
+  },
+  {
+    name: "AI Receptionist",
+    desc: "Conversational AI that answers calls, qualifies leads, and books appointments 24/7. Trained on your business.",
+    price: "$4,000+",
+    timeline: "2–3 weeks",
+  },
+  {
+    name: "AI Agent",
+    desc: "Purpose-built AI agents, internal tools, or complex multi-system integrations. Scope determined after discovery.",
+    price: "Custom",
+    timeline: "Varies",
+  },
+];
+
 export default function ServicesPage() {
   return (
     <main className="min-h-screen w-full bg-background text-foreground">
@@ -352,51 +391,10 @@ export default function ServicesPage() {
               </p>
             </div>
 
-            {(() => {
-              const builds = [
-                {
-                  name: "Reactivation",
-                  desc: "Dormant lead blast + automated follow-up sequence build. Re-engage existing dead leads.",
-                  price: "$1,000+",
-                  timeline: "1–2 weeks"
-                },
-                {
-                  name: "Speed-to-Lead",
-                  desc: "Automated instant response system for every new inquiry. Includes setup, copy, and lead source integration.",
-                  price: "$2,000+",
-                  timeline: "1–2 weeks"
-                },
-                {
-                  name: "Website",
-                  desc: "AI-generated, conversion-focused website or landing page. Industry-optimized, deployed and ready.",
-                  price: "$2,000+",
-                  timeline: "1–2 weeks"
-                },
-                {
-                  name: "Custom Workflow",
-                  desc: "One high-impact workflow, end-to-end. Estimate follow-up, job status notifications, vendor coordination, scheduling, etc.",
-                  price: "$2,000+",
-                  timeline: "2–4 weeks"
-                },
-                {
-                  name: "AI Receptionist",
-                  desc: "Conversational AI that answers calls, qualifies leads, and books appointments 24/7. Trained on your business.",
-                  price: "$4,000+",
-                  timeline: "2–3 weeks"
-                },
-                {
-                  name: "AI Agent",
-                  desc: "Purpose-built AI agents, internal tools, or complex multi-system integrations. Scope determined after discovery.",
-                  price: "Custom",
-                  timeline: "Varies"
-                }
-              ];
-
-              return (
-                <>
+            <>
                   {/* Mobile: stacked cards */}
                   <div className="flex flex-col gap-4 md:hidden">
-                    {builds.map((item, i) => (
+                    {BUILDS.map((item, i) => (
                       <div key={i} className="rounded-xl border bg-card p-5">
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <p className="font-medium">{item.name}</p>
@@ -422,7 +420,7 @@ export default function ServicesPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {builds.map((item, i) => (
+                        {BUILDS.map((item, i) => (
                           <tr key={i} className="hover:bg-muted/50 transition-colors">
                             <td className="px-6 py-4 font-medium">{item.name}</td>
                             <td className="px-6 py-4 text-muted-foreground">{item.desc}</td>
@@ -434,8 +432,6 @@ export default function ServicesPage() {
                     </table>
                   </div>
                 </>
-              );
-            })()}
           </div>
           <Glow variant="bottom" className="opacity-50 scale-x-[0.6] translate-y-72" />
         </div>

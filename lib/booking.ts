@@ -16,17 +16,17 @@ export type BookingInterest =
 export const INTEREST_SUBHEADINGS: Record<BookingInterest, string> = {
   kit: "Schedule a time to discuss the Foundation Kit.",
   os: "Let\u2019s get your Operating System deployed.",
-  studio: "Tell us about your project in a discovery call.",
-  workshop: "Let\u2019s plan your AI Starter Workshop.",
+  studio: "Tell us about your project.",
+  workshop: "Let\u2019s plan your AI Workshop.",
   rolesprint: "Let\u2019s scope your Role-Based AI Sprint.",
-  bootcamp: "Let\u2019s design your AI Bootcamp program.",
+  bootcamp: "Let\u2019s design your AI Bootcamp.",
   stackaudit: "Book your Stack Audit \u2014 $500 credits toward any project.",
   opsaudit: "Let\u2019s scope your AI Operations Audit.",
   growthplan: "Let\u2019s map your AI Growth Infrastructure Plan.",
   aireceptionist: "Let\u2019s set up your AI Receptionist.",
   speedtolead: "Let\u2019s build your Speed-to-Lead system.",
-  workflow: "Let\u2019s scope your custom workflow automation.",
-  frontoffice: "Let\u2019s explore the AI Front Office system.",
+  workflow: "Let\u2019s scope your custom workflow.",
+  frontoffice: "Let\u2019s explore how your AI Front Office system will look.",
 };
 
 const STORAGE_KEY_INTEREST = "ms_booking_interest";

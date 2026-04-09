@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 import Navbar from "@/components/sections/navbar/default";
@@ -13,22 +13,17 @@ const DEFAULT_SUBHEADING =
 
 export default function BookingContent() {
   const searchParams = useSearchParams();
-  const [ready, setReady] = useState(false);
-  const [iframeHeight, setIframeHeight] = useState(700);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // sessionStorage first, URL params as fallback (for direct/shared links)
   const stored = getBookingIntent();
   const interest =
     stored.interest ||
     searchParams.get("interest") ||
-    searchParams.get("ref"); // legacy compat
+    searchParams.get("ref");
   const source = stored.source || searchParams.get("source");
 
   const iframeUrl = new URL(
     "https://link.marketstack.ai/widget/booking/3kaQEdii0FF1El7xKgWY"
   );
-  // Always attach UTMs for GHL attribution
   iframeUrl.searchParams.set("utm_source", "marketstack.ai");
   iframeUrl.searchParams.set("utm_medium", "website");
   if (interest) {
@@ -45,56 +40,37 @@ export default function BookingContent() {
   const taggedRef = useRef(false);
   const contactIdRef = useRef<string | null>(null);
 
-  // form_embed.js is required for GHL custom CSS to apply inside the iframe.
-  // Neutralize its scroll side-effects: kill scrollIntoView on the iframe
-  // and revert any scrolling/overflow changes it makes.
-  useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-    iframe.scrollIntoView = () => {};
+  // Patch GHL scroll APIs as no-ops before form_embed.js loads.
+  // The container jump is prevented by overflow:clip on the outer div, but GHL
+  // also calls window.scrollTo(0,0) on transition — block that too.
+  useLayoutEffect(() => {
+    const origScrollTo = window.scrollTo.bind(window);
+    const origScrollBy = window.scrollBy.bind(window);
+    const origScrollIntoView = Element.prototype.scrollIntoView;
 
-    const observer = new MutationObserver(() => {
-      if (iframe.style.overflow !== "hidden") {
-        iframe.style.overflow = "hidden";
-      }
-      if (iframe.getAttribute("scrolling") !== "no") {
-        iframe.setAttribute("scrolling", "no");
-      }
-    });
-    observer.observe(iframe, {
-      attributes: true,
-      attributeFilter: ["style", "scrolling"],
-    });
-    return () => observer.disconnect();
+    window.scrollTo = (() => {}) as typeof window.scrollTo;
+    window.scroll = (() => {}) as typeof window.scroll;
+    window.scrollBy = (() => {}) as typeof window.scrollBy;
+    Element.prototype.scrollIntoView = function () {};
+
+    return () => {
+      window.scrollTo = origScrollTo;
+      window.scroll = origScrollTo as typeof window.scroll;
+      window.scrollBy = origScrollBy;
+      Element.prototype.scrollIntoView = origScrollIntoView;
+    };
   }, []);
 
-  // Listen for GHL postMessage events (all messages are arrays: [type, ...args]).
-  // "highlevel.setHeight" → update iframe height + reveal on first fire.
-  // "set-sticky-contacts" + "_ud" → contact data including GHL contact ID.
-  // "msgsndr-booking-complete" → booking confirmed, update interests.
+  // Listen for GHL postMessage events for contact tracking only.
   useEffect(() => {
     function onMessage(e: MessageEvent) {
       if (!Array.isArray(e.data)) return;
-
       const type = String(e.data[0] ?? "");
-
-      if (type === "highlevel.setHeight") {
-        const h = (e.data[1] as { height?: number })?.height;
-        if (typeof h === "number" && h > 0) {
-          const scrollY = window.scrollY;
-          document.documentElement.style.overflow = "hidden";
-          setIframeHeight(h + 32);
-          setTimeout(() => {
-            document.documentElement.style.overflow = "";
-            window.scrollTo(0, scrollY);
-          }, 500);
-        }
-        setReady(true);
-      }
 
       if (type === "set-sticky-contacts" && e.data[1] === "_ud") {
         try {
-          const contact = JSON.parse(String(e.data[2]));
+          const rawData = e.data[2];
+          const contact = typeof rawData === "string" ? JSON.parse(rawData) : rawData;
           if (typeof contact.id === "string" && contact.id.length > 0) {
             contactIdRef.current = contact.id;
           }
@@ -114,25 +90,17 @@ export default function BookingContent() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contactId: contactIdRef.current, interest }),
-        }).catch(() => {
-          // Non-critical — don't block the user
-        });
+        }).catch(() => {});
       }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
   }, [interest]);
 
-  // Fallback: if highlevel.setHeight never fires, reveal after timeout.
-  useEffect(() => {
-    const id = setTimeout(() => setReady(true), 4000);
-    return () => clearTimeout(id);
-  }, []);
-
   return (
     <main className="min-h-screen w-full bg-background text-foreground flex flex-col">
       <Navbar />
-      <div className="flex-1 w-full max-w-container mx-auto px-4 pt-32 pb-24 relative overflow-hidden">
+      <div className="flex-1 w-full max-w-container mx-auto px-4 pt-32 pb-24 relative" style={{ overflow: "clip" }}>
         <div className="text-center mb-6 animate-appear">
           <h1 className="text-3xl sm:text-4xl font-semibold mb-4">
             Book a Call
@@ -143,39 +111,12 @@ export default function BookingContent() {
         </div>
 
         <div
-          className="rounded-2xl animate-appear [animation-delay:100ms] relative overflow-hidden max-w-[90%] mx-auto"
-          style={{ minHeight: `${iframeHeight}px` }}
+          className="relative rounded-2xl animate-appear [animation-delay:100ms] max-w-[90%] mx-auto"
+          style={{ height: "800px", overflow: "clip" }}
         >
-          {/* Loading overlay — fully opaque to mask iframe white flash */}
-          <div
-            className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-background transition-opacity duration-700"
-            style={{
-              opacity: ready ? 0 : 1,
-              pointerEvents: ready ? "none" : "auto",
-            }}
-          >
-            <div className="flex flex-col items-center gap-4 animate-pulse">
-              <div className="size-10 border-3 border-brand border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-muted-foreground">
-                Loading calendar...
-              </p>
-            </div>
-          </div>
-
           <iframe
-            ref={iframeRef}
             src={iframeUrl.toString()}
-            className="transition-opacity duration-700"
-            style={{
-              width: "100%",
-              border: "none",
-              height: `${iframeHeight}px`,
-              opacity: ready ? 1 : 0,
-              visibility: ready ? "visible" : "hidden",
-              transition: "opacity 700ms",
-              scrollMarginTop: "200px",
-            }}
-            scrolling="no"
+            style={{ width: "100%", height: "100%", border: "none" }}
             id="3kaQEdii0FF1El7xKgWY_1775158114885"
             title="Book a call with Market Stack"
           />

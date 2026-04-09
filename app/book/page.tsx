@@ -6,7 +6,7 @@ import BookingContent from "./booking-content";
 export const metadata = {
   title: "Book a Call",
   description:
-    "Schedule a discovery call with Market Stack to discuss AI-powered systems for your business.",
+    "Schedule a discovery call to discuss AI-powered systems for your business.",
 };
 
 export default function BookPage() {

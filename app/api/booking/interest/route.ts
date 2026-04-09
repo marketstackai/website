@@ -96,7 +96,7 @@ export async function POST(request: Request) {
       headers: ghlHeaders(apiKey),
       body: JSON.stringify({
         customFields: [
-          { id: INTERESTS_FIELD_ID, field_value: [...currentInterests, interest] },
+          { id: INTERESTS_FIELD_ID, value: [...currentInterests, interest] },
         ],
       }),
     });
