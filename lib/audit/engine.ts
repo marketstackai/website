@@ -3,7 +3,7 @@ import {
   INDUSTRY_MULTIPLIERS, INDUSTRY_LEAK_MODIFIERS,
   BASE_LEAK_RATES, DEFAULT_CLOSE_RATES, TEAM_SIZE_BASE_LEADS,
   getLeadBoundsForRevenue, getRevenueScore,
-  SCORES, INDUSTRY_LABELS, RESPONSE_METHOD_LABELS,
+  SCORES,
   INDUSTRY_DEFAULT_JOB_VALUES,
 } from "./constants";
 import { getQuickWins } from "./recommendations";

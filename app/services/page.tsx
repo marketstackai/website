@@ -6,7 +6,7 @@ import Footer from "@/components/sections/footer/default";
 import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Zap, ArrowUpRight, ArrowRightIcon, Blocks, Palette } from "lucide-react";
+import { Zap, ArrowUpRight, Blocks, Palette } from "lucide-react";
 import Link from "next/link";
 import { BookingLink } from "@/components/ui/booking-link";
 import { PricingColumn } from "@/components/ui/pricing-column";
