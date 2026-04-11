@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "check": "tsc --noEmit && next build",
     "ai:sync": "lnai sync && node lib/fix-gitignore-slashes.js",
     "ai:skills": "npx -y skills add vercel-labs/agent-skills --all -a claude-code -a opencode -a antigravity -y || echo 'Failed to fetch skills'",
-    "postinstall": "pnpm run ai:sync && pnpm run ai:skills"
+    "postinstall": "pnpm run ai:sync && pnpm run ai:skills",
+    "prepare": "husky"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
@@ -38,6 +40,7 @@
     "@types/react-dom": "19.0.2",
     "eslint": "^9",
     "eslint-config-next": "15.5.14",
+    "husky": "^9.1.7",
     "lnai": "^0.6.8",
     "playwright": "^1.59.1",
     "postcss": "^8",
