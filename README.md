@@ -1,7 +1,6 @@
 # Market Stack — Website
 
-The marketing website for [Market Stack](https://marketstack.ai). Built with Next.js 15, Tailwind CSS, and shadcn/ui.
-
+The marketing website for [Market Stack](https://marketstack.ai).
 ## Quick Start
 
 1. Install dependencies:
@@ -25,3 +24,7 @@ pnpm dev
 - **Icons**: Lucide
 - **Backend CRM**: GoHighLevel (GHL)
 - **Package Manager**: pnpm
+
+## AI Configuration & Agents
+
+This project uses [LNAI](https://lnai.sh) to maintain a unified cross-platform rule-set and configuration for AI coding assistants (Claude Code, OpenCode, and Gemini/Antigravity). Centralized configuration lives within `.ai/` and get pushed to respecitve configuration directories post install, at start of a new session, or when `pnpm run ai:sync` is run.

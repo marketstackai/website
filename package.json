@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ai:sync": "lnai sync && node lib/fix-gitignore-slashes.js",
+    "postinstall": "pnpm run ai:sync"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
@@ -35,6 +37,7 @@
     "@types/react-dom": "19.0.2",
     "eslint": "^9",
     "eslint-config-next": "15.5.14",
+    "lnai": "^0.6.8",
     "playwright": "^1.59.1",
     "postcss": "^8",
     "prettier": "^3.3.3",
