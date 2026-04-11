@@ -50,6 +50,12 @@ lint*.txt
 # AI local settings
 .claude/settings.local.json
 
+# Vercel Skills
+.claude/skills/
+.agents/skills/
+skills-lock.json
+skills/
+
 # lnai-generated
 .ai/.lnai-manifest.json
 .claude/CLAUDE.md
