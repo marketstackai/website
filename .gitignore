@@ -54,7 +54,7 @@ lint*.txt
 .claude/skills/
 .agents/skills/
 skills-lock.json
-skills/
+/skills/
 
 # lnai-generated
 .ai/.lnai-manifest.json
