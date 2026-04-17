@@ -65,8 +65,8 @@ skills-lock.json
 .claude/settings.json
 .cursor/cli.json
 .gemini/settings.json
-.gemini/workflows\sync.md
-.opencode/plugins\sync.js
-AGENTS.md
-opencode.json
+.gemini/workflows/sync.md
+.opencode/plugins/sync.js
+/AGENTS.md
+/opencode.json
 # end lnai-generated
