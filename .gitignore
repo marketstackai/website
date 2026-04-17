@@ -53,8 +53,11 @@ lint*.txt
 # Vercel Skills
 .claude/skills/
 .agents/skills/
+.gemini/skills/
+.opencode/skills/
+.codex/skills/
 skills-lock.json
-skills/
+/skills/
 
 # lnai-generated
 .ai/.lnai-manifest.json

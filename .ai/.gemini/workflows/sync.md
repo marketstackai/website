@@ -7,6 +7,6 @@
 
 ## Action
 When triggered, please run:
-`pnpm exec lnai sync`
+`pnpm run ai:sync`
 
 This ensures that the unified LNAI configurations are propagated to all AI coding tools.

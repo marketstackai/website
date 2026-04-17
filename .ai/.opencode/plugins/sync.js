@@ -5,7 +5,7 @@ module.exports = {
     if (event.type === 'session.created') {
       try {
         console.log("Running lnai sync from OpenCode hook...");
-        execSync("pnpm exec lnai sync", { stdio: 'inherit' });
+        execSync("pnpm run ai:sync", { stdio: 'inherit' });
       } catch (e) {
         console.error("Failed to run lnai sync", e);
       }

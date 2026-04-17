@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "pnpm exec lnai sync"
+            "command": "pnpm run ai:sync"
           }
         ]
       }
