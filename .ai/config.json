@@ -4,7 +4,15 @@
       "enabled": true,
       "versionControl": false
     },
+    "gemini": {
+      "enabled": true,
+      "versionControl": false
+    },
     "opencode": {
+      "enabled": true,
+      "versionControl": false
+    },
+    "codex": {
       "enabled": true,
       "versionControl": false
     },
@@ -17,14 +25,6 @@
       "versionControl": false
     },
     "windsurf": {
-      "enabled": false,
-      "versionControl": false
-    },
-    "gemini": {
-      "enabled": true,
-      "versionControl": false
-    },
-    "codex": {
       "enabled": false,
       "versionControl": false
     }

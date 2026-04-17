@@ -85,8 +85,8 @@ importers:
         specifier: ^9.1.7
         version: 9.1.7
       lnai:
-        specifier: ^0.6.8
-        version: 0.6.8(@types/node@20.17.25)
+        specifier: ^0.6.9
+        version: 0.6.9(@types/node@20.17.25)
       playwright:
         specifier: ^1.59.1
         version: 1.59.1
@@ -468,8 +468,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@lnai/core@0.6.8':
-    resolution: {integrity: sha512-GRAdfT2TwDI1inBQepxaDtcXfJ/BU4wQ3e18MxtB6n95QLVv6Y69c/FhRx6gO1lJj3NBWGeeFbw+QZeOhzIVew==}
+  '@lnai/core@0.6.9':
+    resolution: {integrity: sha512-4nBXa5/UgmvhvV6xagupUeWqPowPqgQk771OR1oHo52n7EJCSzDvjbWRmbQOWUqLg1x70jitHOQIS27gDF03PA==}
 
   '@napi-rs/wasm-runtime@0.2.7':
     resolution: {integrity: sha512-5yximcFK5FNompXfJFoWanu5l8v1hNGqNHh9du1xETp9HWk/B/PzvchX55WYOPaIeNglG8++68AAiauBAtbnzw==}
@@ -2178,8 +2178,8 @@ packages:
     resolution: {integrity: sha512-6b6gd/RUXKaw5keVdSEtqFVdzWnU5jMxTUjA2bVcMNPLwSQ08Sv/UodBVtETLCn7k4S1Ibxwh7k68IwLZPgKaA==}
     engines: {node: '>= 12.0.0'}
 
-  lnai@0.6.8:
-    resolution: {integrity: sha512-jSLwCzHkq+zivCdSsU/8RyO2PaPny4TfOjZDQtYbUb9XDNgcIn2SLuudEywyF1XajcccFKgKD2KC4tRDpMIMZA==}
+  lnai@0.6.9:
+    resolution: {integrity: sha512-75ykMqSllqEaYVg1iUjRM8FMMKxqkKursC983QZDu3ZQOxIpj42Owg3G2t9qHAvKtXcO9rbR5wtKmA0A4V7T4w==}
     hasBin: true
 
   locate-path@6.0.0:
@@ -3150,7 +3150,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.17.25
 
-  '@lnai/core@0.6.8':
+  '@lnai/core@0.6.9':
     dependencies:
       gray-matter: 4.0.3
       zod: 4.3.6
@@ -4927,10 +4927,10 @@ snapshots:
       lightningcss-win32-arm64-msvc: 1.29.2
       lightningcss-win32-x64-msvc: 1.29.2
 
-  lnai@0.6.8(@types/node@20.17.25):
+  lnai@0.6.9(@types/node@20.17.25):
     dependencies:
       '@inquirer/prompts': 7.10.1(@types/node@20.17.25)
-      '@lnai/core': 0.6.8
+      '@lnai/core': 0.6.9
       chalk: 5.6.2
       commander: 14.0.3
       ora: 9.3.0
