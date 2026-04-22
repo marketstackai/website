@@ -24,12 +24,19 @@ function standardizeUrl(raw: string): string {
 
 interface ContactFormProps {
   onSuccess: (data: ContactFormData) => void;
-  onValuesChange?: (data: ContactFormData) => void;
   submitLabel?: string;
   initialValues?: ContactFormData;
 }
 
-export function ContactForm({ onSuccess, onValuesChange, submitLabel = "Next", initialValues }: ContactFormProps) {
+const OFFSCREEN: React.CSSProperties = {
+  position: "absolute",
+  left: "-9999px",
+  width: 1,
+  height: 1,
+  opacity: 0,
+};
+
+export function ContactForm({ onSuccess, submitLabel = "Next", initialValues }: ContactFormProps) {
   const [formData, setFormData] = useState<ContactFormData>(
     initialValues ?? {
       first_name: "", last_name: "", email: "", phone: "", business_name: "", website: "",
@@ -61,17 +68,12 @@ export function ContactForm({ onSuccess, onValuesChange, submitLabel = "Next", i
   };
 
   const update = (patch: Partial<ContactFormData>) => {
-    const next = { ...formData, ...patch };
-    setFormData(next);
-    onValuesChange?.(next);
+    setFormData(prev => ({ ...prev, ...patch }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Trigger the always-in-DOM GHL form that the parent page renders.
-    document.forms.namedItem("contact")?.requestSubmit();
 
     setTimeout(() => {
       setIsSubmitting(false);
@@ -95,7 +97,7 @@ export function ContactForm({ onSuccess, onValuesChange, submitLabel = "Next", i
 
   return (
     <div className="relative group/form">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form name="contact" onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">First Name</label>
@@ -110,7 +112,7 @@ export function ContactForm({ onSuccess, onValuesChange, submitLabel = "Next", i
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium">Business Name</label>
-          <input required type="text" name="company" placeholder="e.g. Market Stack" className="w-full bg-background border rounded-lg px-4 py-2.5 outline-hidden focus:border-brand"
+          <input required type="text" name="company_name" placeholder="e.g. Market Stack" className="w-full bg-background border rounded-lg px-4 py-2.5 outline-hidden focus:border-brand"
                  value={formData.business_name} onChange={e => update({ business_name: e.target.value })} />
         </div>
         <div className="space-y-2">
@@ -131,17 +133,17 @@ export function ContactForm({ onSuccess, onValuesChange, submitLabel = "Next", i
           <p className="text-xs text-muted-foreground">Add your number to receive your results via text</p>
         </div>
         <div className="space-y-4 pt-4">
+          <input type="text" readOnly name="sms_consent" value={formData.sms_consent ? "Yes" : "No"} style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
+          <input type="text" readOnly name="marketing_consent" value={formData.marketing_consent ? "Yes" : "No"} style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
           <label className="flex items-start gap-3 cursor-pointer">
-            <input type="hidden" name="sms_consent" value="No" />
-            <input type="checkbox" name="sms_consent" value="Yes" className="mt-1 size-4 accent-brand border-muted-foreground"
+            <input type="checkbox" className="mt-1 size-4 accent-brand border-muted-foreground"
                    checked={formData.sms_consent} onChange={e => update({ sms_consent: e.target.checked })} />
             <span className="text-xs text-muted-foreground/90 leading-tight">
               I consent to receive non-marketing sms notifications and alerts from Market Stack. Message frequency varies. Message &amp; data rates may apply. Reply STOP to unsubscribe at any time.
             </span>
           </label>
           <label className="flex items-start gap-3 cursor-pointer">
-            <input type="hidden" name="marketing_consent" value="No" />
-            <input type="checkbox" name="marketing_consent" value="Yes" className="mt-1 size-4 accent-brand border-muted-foreground"
+            <input type="checkbox" className="mt-1 size-4 accent-brand border-muted-foreground"
                    checked={formData.marketing_consent} onChange={e => update({ marketing_consent: e.target.checked })} />
             <span className="text-xs text-muted-foreground/90 leading-tight">
               I consent to receive occasional marketing sms messages and offers from Market Stack. Message frequency varies. Message &amp; data rates may apply. Reply STOP to unsubscribe at any time.

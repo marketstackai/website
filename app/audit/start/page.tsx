@@ -11,30 +11,17 @@ import { GHLTracker } from "@/components/ghl-tracker";
 
 import { cn } from "@/lib/utils";
 
-const emptyContact: ContactFormData = {
-  first_name: "", last_name: "", email: "", phone: "", business_name: "", website: "",
-  sms_consent: false, marketing_consent: false,
-};
-
 export default function AuditStartPage() {
   const router = useRouter();
-  // Default to 0 (hero view) so the persistent GHL form and page content
-  // are included in the static HTML from the very first render.
-  // GHL's scanner runs before useEffect, so null-guarding with "return null"
-  // produces empty static HTML that GHL sees as having no forms.
   const [view, setView] = useState<0 | 1>(0);
-  // Mirrors whatever the user is typing in ContactForm so the GHL hidden form stays in sync.
-  const [ghlValues, setGhlValues] = useState<ContactFormData>(emptyContact);
   const [savedContact, setSavedContact] = useState<ContactFormData | undefined>();
 
   useEffect(() => {
-    // If returning from quiz, pre-populate the contact form
     const saved = sessionStorage.getItem("ms_audit_contact");
     if (saved) {
       try {
         const parsed: ContactFormData = JSON.parse(saved);
         setSavedContact(parsed);
-        setGhlValues(parsed);
       } catch { /* ignore */ }
       setView(1);
       return;
@@ -68,21 +55,6 @@ export default function AuditStartPage() {
   return (
     <>
       <GHLTracker />
-      <div style={{ position: "fixed", top: 0, left: 0, opacity: 0.001, pointerEvents: "none", zIndex: -9999 }}>
-        <form name="contact" onSubmit={e => e.preventDefault()}>
-          <input type="text" name="first_name" value={ghlValues.first_name} onChange={() => {}} />
-          <input type="text" name="last_name" value={ghlValues.last_name} onChange={() => {}} />
-          <input type="email" name="email" value={ghlValues.email} onChange={() => {}} />
-          <input type="tel" name="phone" value={ghlValues.phone} onChange={() => {}} />
-          <input type="text" name="company" value={ghlValues.business_name} onChange={() => {}} />
-          <input type="text" name="website" value={ghlValues.website} onChange={() => {}} />
-          <input type="hidden" name="sms_consent" value={ghlValues.sms_consent === true ? "Yes" : "No"} />
-          <input type="hidden" name="marketing_consent" value={ghlValues.marketing_consent === true ? "Yes" : "No"} />
-          <input type="hidden" name="source" value="audit" />
-          <button type="submit">Submit</button>
-        </form>
-      </div>
-
       <main className="min-h-screen w-full bg-background text-foreground flex flex-col relative overflow-hidden">
         <Section className={cn("flex-1 flex flex-col items-center sm:justify-center pt-16 sm:pt-0", view === 0 ? "justify-center" : "px-4")}>
           <div className="max-w-container mx-auto flex flex-col items-center gap-8 text-center px-4 relative z-10 w-full sm:pt-0">
@@ -118,7 +90,6 @@ export default function AuditStartPage() {
                   </div>
                   <ContactForm
                     onSuccess={handleSuccess}
-                    onValuesChange={setGhlValues}
                     initialValues={savedContact}
                   />
                 </div>
