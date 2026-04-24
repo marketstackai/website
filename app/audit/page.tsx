@@ -224,7 +224,7 @@ export default function AuditPage() {
 
     sessionStorage.setItem(
       `ms_audit_report_${reportId}`,
-      JSON.stringify({ version: 1, results: computed, email: effectiveContact.email }),
+      JSON.stringify({ version: 2, results: computed, email: effectiveContact.email }),
     );
     sessionStorage.removeItem("ms_audit_step");
 

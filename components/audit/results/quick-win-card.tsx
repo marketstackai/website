@@ -25,13 +25,6 @@ function CardContent({ win }: { win: QuickWin }) {
         </div>
       </div>
 
-      <div className="rounded-xl p-4 text-sm text-muted-foreground leading-relaxed border border-brand/30">
-        <p className="font-medium text-foreground text-xs uppercase tracking-wider mb-2">
-          Projected Impact
-        </p>
-        {win.roiProjection}
-      </div>
-
       <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
           <DollarSign className="size-4 text-brand" />
@@ -49,7 +42,7 @@ function CardContent({ win }: { win: QuickWin }) {
         className="group/btn w-full sm:w-auto"
       >
         <BookingLink interest={win.interest ?? ""} source="audit" className="flex items-center gap-1.5">
-          {win.ctaLabel}
+          Get Started
           <ArrowUpRight className="size-3.5 opacity-50 group-hover/btn:opacity-100 transition-opacity" />
         </BookingLink>
       </Button>

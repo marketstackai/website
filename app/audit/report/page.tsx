@@ -7,7 +7,7 @@ import type { AuditResults } from "@/lib/audit/types";
 import { AuditResultsView } from "@/components/audit/results";
 
 // Bump this when computeResults output shape or values change materially
-const CACHE_VERSION = 1;
+const CACHE_VERSION = 2;
 
 type ReportState =
   | { status: "loading" }

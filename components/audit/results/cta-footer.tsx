@@ -3,7 +3,6 @@
 import React from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { BookingLink } from "@/components/ui/booking-link";
 import type { TierLabel } from "@/lib/audit/types";
 
@@ -41,19 +40,7 @@ export function CTAFooter({
         </BookingLink>
       </Button>
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/services#stack">View Your Recommended Stack</Link>
-        </Button>
-
-        <Button variant="ghost" size="sm" asChild>
-          <BookingLink interest="stackaudit" source="audit">
-            Book a Paid Audit — $500 credit toward a project
-          </BookingLink>
-        </Button>
-      </div>
-
-      <p className="text-xs text-muted-foreground/50 pt-4">
+      <p className="text-xs text-muted-foreground/50">
         Your results are saved. We&apos;ll be in touch at {email}.
       </p>
 
