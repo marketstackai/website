@@ -11,6 +11,18 @@ import { GHLTracker } from "@/components/ghl-tracker";
 
 import { cn } from "@/lib/utils";
 
+function isGhlSyncEnabled() {
+  if (process.env.NODE_ENV !== "development") {
+    return true;
+  }
+
+  try {
+    return localStorage.getItem("ms_ghl_enabled") === "true";
+  } catch {
+    return false;
+  }
+}
+
 export default function AuditStartPage() {
   const router = useRouter();
   const [view, setView] = useState<0 | 1>(0);
@@ -47,8 +59,27 @@ export default function AuditStartPage() {
   }, []);
 
   const handleSuccess = (data: ContactFormData) => {
-    sessionStorage.setItem("ms_audit_contact", JSON.stringify(data));
-    sessionStorage.removeItem("ms_audit_step");
+    try {
+      sessionStorage.setItem("ms_audit_contact", JSON.stringify(data));
+      sessionStorage.removeItem("ms_audit_step");
+    } catch {
+      // Ignore storage failures and continue the audit flow.
+    }
+
+    if (isGhlSyncEnabled()) {
+      void fetch("/api/audit/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          company_name: data.company_name,
+          sms_consent: data.sms_consent,
+          marketing_consent: data.marketing_consent,
+        }),
+        keepalive: true,
+      });
+    }
+
     router.push("/audit");
   };
 
@@ -63,10 +94,10 @@ export default function AuditStartPage() {
             {view === 0 && (
               <>
                 <h1 className="animate-appear from-foreground to-foreground dark:to-muted-foreground bg-linear-to-r bg-clip-text text-4xl leading-tight font-semibold text-balance text-transparent drop-shadow-2xl sm:text-6xl sm:leading-tight md:text-7xl">
-                  Find out where you&apos;re leaking revenue — in under 5 minutes.
+                  Analyze your business for AI potential.
                 </h1>
                 <p className="text-md animate-appear text-muted-foreground max-w-3xl font-medium text-balance opacity-0 delay-100 sm:text-xl">
-                  Answer a few questions about your business and we&apos;ll show you exactly how much revenue your current systems are leaving on the table — and what to fix first.
+                  Discover where agentic workflows can eliminate bottlenecks and recover leaking revenue — in under 5 minutes.
                 </p>
                 <div className="animate-appear opacity-0 delay-200 flex flex-col items-center gap-4 mt-4">
                   <Button size="lg" onClick={() => setView(1)}>
@@ -85,8 +116,8 @@ export default function AuditStartPage() {
               <>
                 <div className="w-full max-w-lg text-left">
                   <div className="mb-6">
-                    <h1 className="text-3xl font-semibold mb-2 text-balance">Let&apos;s start with you.</h1>
-                    <p className="text-muted-foreground font-medium opacity-80 text-balance">So we can send your personalized report.</p>
+                    <h1 className="text-3xl font-semibold mb-2 text-balance">Ready to deploy AI?</h1>
+                    <p className="text-muted-foreground font-medium opacity-80 text-balance">Let&apos;s start with some basic info so we can calculate your personalized AI Readiness Score.</p>
                   </div>
                   <ContactForm
                     onSuccess={handleSuccess}

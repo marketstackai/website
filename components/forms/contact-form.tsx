@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export interface ContactFormData {
@@ -10,7 +12,7 @@ export interface ContactFormData {
   last_name: string;
   email: string;
   phone: string;
-  business_name: string;
+  company_name: string;
   website: string;
   sms_consent: boolean;
   marketing_consent: boolean;
@@ -28,18 +30,11 @@ interface ContactFormProps {
   initialValues?: ContactFormData;
 }
 
-const OFFSCREEN: React.CSSProperties = {
-  position: "absolute",
-  left: "-9999px",
-  width: 1,
-  height: 1,
-  opacity: 0,
-};
 
 export function ContactForm({ onSuccess, submitLabel = "Next", initialValues }: ContactFormProps) {
   const [formData, setFormData] = useState<ContactFormData>(
     initialValues ?? {
-      first_name: "", last_name: "", email: "", phone: "", business_name: "", website: "",
+      first_name: "", last_name: "", email: "", phone: "", company_name: "", website: "",
       sms_consent: false, marketing_consent: false,
     }
   );
@@ -82,12 +77,14 @@ export function ContactForm({ onSuccess, submitLabel = "Next", initialValues }: 
   };
 
   const devAutofill = () => {
+    const ts = Date.now();
+    const rand = Math.floor(Math.random() * 10000);
     const data: ContactFormData = {
-      first_name: "Dev",
+      first_name: "Test",
       last_name: "Test",
-      email: "dev@marketstack.ai",
-      phone: "1234567890",
-      business_name: "Dev Test Co",
+      email: `test+audit-${ts}-${rand}@marketstack.ai`,
+      phone: "",
+      company_name: "The Testing Company",
       website: "https://example.com",
       sms_consent: true,
       marketing_consent: true,
@@ -111,9 +108,20 @@ export function ContactForm({ onSuccess, submitLabel = "Next", initialValues }: 
           </div>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium">Business Name</label>
-          <input required type="text" name="company_name" placeholder="e.g. Market Stack" className="w-full bg-background border rounded-lg px-4 py-2.5 outline-hidden focus:border-brand"
-                 value={formData.business_name} onChange={e => update({ business_name: e.target.value })} />
+          <label htmlFor="company_name" className="text-sm font-medium">
+            Business Name
+            <span className="ghl-capture-only"> (Company Name)</span>
+          </label>
+          <input 
+            id="company_name" 
+            required 
+            type="text" 
+            name="company_name" 
+            placeholder="e.g. Market Stack" 
+            className="w-full bg-background border rounded-lg px-4 py-2.5 outline-hidden focus:border-brand"
+            value={formData.company_name} 
+            onChange={e => update({ company_name: e.target.value })} 
+          />
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium">Business Website</label>
@@ -133,22 +141,65 @@ export function ContactForm({ onSuccess, submitLabel = "Next", initialValues }: 
           <p className="text-xs text-muted-foreground">Add your number to receive your results via text</p>
         </div>
         <div className="space-y-4 pt-4">
-          <input type="text" readOnly name="sms_consent" value={formData.sms_consent ? "Yes" : "No"} style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-          <input type="text" readOnly name="marketing_consent" value={formData.marketing_consent ? "Yes" : "No"} style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input type="checkbox" className="mt-1 size-4 accent-brand border-muted-foreground"
-                   checked={formData.sms_consent} onChange={e => update({ sms_consent: e.target.checked })} />
+          {/* Hidden consent values for GHL form tracking visibility.
+              GHL's heuristic may mismap these — the API sets correct values server-side. */}
+          <label htmlFor="sms_consent_input" className="ghl-capture-only">SMS Notifications</label>
+          <input
+            id="sms_consent_input"
+            type="text"
+            readOnly
+            name="sms_consent"
+            value={formData.sms_consent ? "Yes" : "No"}
+            className="ghl-capture-only"
+            tabIndex={-1}
+            aria-hidden="true"
+          />
+          <label htmlFor="marketing_consent_input" className="ghl-capture-only">Marketing Updates</label>
+          <input
+            id="marketing_consent_input"
+            type="text"
+            readOnly
+            name="marketing_consent"
+            value={formData.marketing_consent ? "Yes" : "No"}
+            className="ghl-capture-only"
+            tabIndex={-1}
+            aria-hidden="true"
+          />
+          {/* User UI (Buttons instead of checkboxes to hide from GHL heuristic) */}
+          <div className="flex items-start gap-3">
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={formData.sms_consent}
+              onClick={() => update({ sms_consent: !formData.sms_consent })}
+              className={cn(
+                "mt-0.5 size-4 rounded border transition-all flex items-center justify-center shrink-0",
+                formData.sms_consent ? "bg-brand border-brand" : "bg-background border-muted-foreground/30"
+              )}
+            >
+              {formData.sms_consent && <Check className="size-3 text-white" />}
+            </button>
             <span className="text-xs text-muted-foreground/90 leading-tight">
               I consent to receive non-marketing sms notifications and alerts from Market Stack. Message frequency varies. Message &amp; data rates may apply. Reply STOP to unsubscribe at any time.
             </span>
-          </label>
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input type="checkbox" className="mt-1 size-4 accent-brand border-muted-foreground"
-                   checked={formData.marketing_consent} onChange={e => update({ marketing_consent: e.target.checked })} />
+          </div>
+          <div className="flex items-start gap-3">
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={formData.marketing_consent}
+              onClick={() => update({ marketing_consent: !formData.marketing_consent })}
+              className={cn(
+                "mt-0.5 size-4 rounded border transition-all flex items-center justify-center shrink-0",
+                formData.marketing_consent ? "bg-brand border-brand" : "bg-background border-muted-foreground/30"
+              )}
+            >
+              {formData.marketing_consent && <Check className="size-3 text-white" />}
+            </button>
             <span className="text-xs text-muted-foreground/90 leading-tight">
               I consent to receive occasional marketing sms messages and offers from Market Stack. Message frequency varies. Message &amp; data rates may apply. Reply STOP to unsubscribe at any time.
             </span>
-          </label>
+          </div>
         </div>
         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Saving..." : submitLabel}

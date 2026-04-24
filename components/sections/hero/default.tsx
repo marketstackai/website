@@ -6,6 +6,7 @@ import { Mockup, MockupFrame } from "../../ui/mockup";
 import Glow from "../../ui/glow";
 import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
+import Link from "next/link";
 import Screenshot from "../../ui/screenshot";
 
 interface HeroButtonProps {
@@ -24,6 +25,10 @@ interface HeroProps {
   buttons?: HeroButtonProps[] | false;
 }
 
+function isInternalHref(href: string) {
+  return href.startsWith("/");
+}
+
 export default function Hero({
   title = "AI-Powered Systems for Smarter Operations",
   description = "We build agentic workflows that automate pipelines, eliminate bottlenecks, and give small businesses the operational edge of enterprises.",
@@ -35,7 +40,7 @@ export default function Hero({
       width={1248}
       height={765}
       priority
-      className="w-full h-auto"
+      className="h-auto w-full"
     />
   ),
   badge = (
@@ -43,10 +48,23 @@ export default function Hero({
       <span className="text-muted-foreground">
         Now Offering Free Operations Audits
       </span>
-      <a href={siteConfig.auditUrl} className="flex items-center gap-1 hover:text-brand transition-colors">
-        Start
-        <ArrowUpRight className="size-3" />
-      </a>
+      {isInternalHref(siteConfig.auditUrl) ? (
+        <Link
+          href={siteConfig.auditUrl}
+          className="hover:text-brand flex items-center gap-1 transition-colors"
+        >
+          Start
+          <ArrowUpRight className="size-3" />
+        </Link>
+      ) : (
+        <a
+          href={siteConfig.auditUrl}
+          className="hover:text-brand flex items-center gap-1 transition-colors"
+        >
+          Start
+          <ArrowUpRight className="size-3" />
+        </a>
+      )}
     </Badge>
   ),
   buttons = [
@@ -78,11 +96,19 @@ export default function Hero({
                   size="lg"
                   asChild
                 >
-                  <a href={button.href}>
-                    {button.icon}
-                    {button.text}
-                    {button.iconRight}
-                  </a>
+                  {isInternalHref(button.href) ? (
+                    <Link href={button.href}>
+                      {button.icon}
+                      {button.text}
+                      {button.iconRight}
+                    </Link>
+                  ) : (
+                    <a href={button.href}>
+                      {button.icon}
+                      {button.text}
+                      {button.iconRight}
+                    </a>
+                  )}
                 </Button>
               ))}
             </div>

@@ -12,7 +12,7 @@ import { computeResults } from "@/lib/audit/engine";
 import type { AuditResults, GHLAuditRecord } from "@/lib/audit/types";
 
 const initialContactData: ContactFormData = {
-  first_name: "", last_name: "", email: "", phone: "", business_name: "", website: "",
+  first_name: "", last_name: "", email: "", phone: "", company_name: "", website: "",
   sms_consent: false, marketing_consent: false,
 };
 
@@ -27,13 +27,6 @@ const initialQuizData = {
 const QUIZ_START = 2;
 const TOTAL_STEPS = 11;
 
-const OFFSCREEN: React.CSSProperties = {
-  position: "absolute",
-  left: "-9999px",
-  width: 1,
-  height: 1,
-  opacity: 0,
-};
 
 export default function AuditPage() {
   const router = useRouter();
@@ -139,7 +132,12 @@ export default function AuditPage() {
       }
     : null;
 
-  const submitToGHL = async (contact: ContactFormData, quiz: typeof quizData, computed: AuditResults): Promise<string | null> => {
+
+  const submitToGHL = async (
+    contact: ContactFormData, 
+    quiz: typeof quizData, 
+    computed: AuditResults,
+  ): Promise<string | null> => {
     const tags: string[] = [];
     if (computed.hotLead) tags.push("hot");
     if (computed.highTicket) tags.push("high ticket");
@@ -175,7 +173,9 @@ export default function AuditPage() {
         body: JSON.stringify({
           email: contact.email,
           full_name: `${contact.first_name} ${contact.last_name}`,
-          business_name: contact.business_name,
+          company_name: contact.company_name,
+          sms_consent: contact.sms_consent,
+          marketing_consent: contact.marketing_consent,
           contact_updates: { 
             tags_add: tags, 
             customField: { recommended: computed.recommendedPackage } 
@@ -207,22 +207,24 @@ export default function AuditPage() {
     }
   };
 
-  const handleFinalSubmit = async (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent, overrides?: { contact: ContactFormData; quiz: typeof quizData }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // `results` is already in the DOM via JSX off-screen inputs, so GHL's
-    // submit capture (which ran just before this handler) saw it.
-    const computed = results ?? computeResults(formData);
+    const effectiveContact = overrides?.contact ?? contactData;
+    const effectiveQuiz = overrides?.quiz ?? quizData;
+    const effectiveForm = { ...effectiveContact, ...effectiveQuiz };
+
+    const computed = computeResults(effectiveForm);
 
     setStep(11.5);
 
-    const recordId = await submitToGHL(contactData, quizData, computed);
+    const recordId = await submitToGHL(effectiveContact, effectiveQuiz, computed);
     const reportId = recordId ?? crypto.randomUUID();
 
     sessionStorage.setItem(
       `ms_audit_report_${reportId}`,
-      JSON.stringify({ version: 1, results: computed, email: contactData.email }),
+      JSON.stringify({ version: 1, results: computed, email: effectiveContact.email }),
     );
     sessionStorage.removeItem("ms_audit_step");
 
@@ -250,9 +252,11 @@ export default function AuditPage() {
   };
 
   const devAutoSubmit = async () => {
+    const ts = Date.now();
+    const rand = Math.floor(Math.random() * 10000);
     const fullContact: ContactFormData = {
-      first_name: "Dev", last_name: "Test", email: "dev@marketstack.ai", phone: "1234567890",
-      business_name: "Dev Test Co", website: "https://example.com", sms_consent: true, marketing_consent: true,
+      first_name: "Test", last_name: "Test", email: `test+audit-${ts}-${rand}@marketstack.ai`, phone: "",
+      company_name: "The Testing Company", website: "https://example.com", sms_consent: true, marketing_consent: true,
     };
     const fullQuiz: typeof quizData = {
       industry: "other", industry_other: "Magician", team_size: "12", monthly_revenue: "175000",
@@ -266,9 +270,9 @@ export default function AuditPage() {
     sessionStorage.setItem("ms_audit_contact", JSON.stringify(fullContact));
     setStep(11);
 
-    // Wait for step 11 to render so GHL can see the populated form before we submit it
+    // Wait for step 11 to render so we can see the populated form before we submit it
     await new Promise(r => setTimeout(r, 80));
-    auditFormRef.current?.requestSubmit();
+    handleFinalSubmit(new Event('submit') as unknown as React.FormEvent, { contact: fullContact, quiz: fullQuiz });
   };
 
   const renderOption = (value: string, label: string, field: keyof typeof quizData, autoNext = true) => {
@@ -311,7 +315,7 @@ export default function AuditPage() {
         <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
           <div className="flex flex-col items-center gap-4 animate-pulse">
             <div className="size-12 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-            <p className="text-xl font-medium">Analyzing your business...</p>
+            <p className="text-xl font-medium">Running AI analysis...</p>
           </div>
         </div>
       )}
@@ -570,37 +574,55 @@ export default function AuditPage() {
                 </div>
               )}
               {step === 11 && (
-                <form ref={auditFormRef} name="audit" onSubmit={handleFinalSubmit} className="space-y-6 text-balance">
+                <div className="space-y-6 text-balance">
                   <h2 className="text-2xl font-semibold mb-6">Anything else?</h2>
-                  <textarea name="additional_notes" className="w-full bg-background border rounded-lg px-4 py-2.5 min-h-[120px] focus:border-brand" placeholder="e.g. We're looking to scale to $200k/mo by year end and need better lead recovery."
+                  <textarea name="additional_notes" className="w-full bg-background border rounded-lg px-4 py-2.5 min-h-[120px] focus:border-brand" placeholder="e.g. We're looking to scale to $200k/mo and are interested in AI lead qualification and automated appointment booking."
                             value={quizData.additional_notes} onChange={e => setQuizData({...quizData, additional_notes: e.target.value})} />
 
-                  <input type="text" readOnly name="first_name"          value={contactData.first_name}    style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="last_name"           value={contactData.last_name}     style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="email" readOnly name="email"              value={contactData.email}         style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="tel" readOnly name="phone"                value={contactData.phone}         style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="company_name"        value={contactData.business_name} style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="website"             value={contactData.website}       style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="sms_consent"         value={contactData.sms_consent ? "Yes" : "No"}       style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="marketing_consent"   value={contactData.marketing_consent ? "Yes" : "No"} style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="industry"            value={quizData.industry}            style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="industry_other"      value={quizData.industry_other}      style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="team_size"           value={quizData.team_size}           style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="monthly_revenue"     value={quizData.monthly_revenue}     style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="avg_job_value"       value={quizData.avg_job_value}       style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="monthly_leads"       value={quizData.monthly_leads}       style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="biggest_challenges"  value={quizData.biggest_challenges.join(", ")} style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="lead_response"       value={quizData.lead_response}       style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="ai_experience"       value={quizData.ai_experience}       style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="ai_detail"           value={quizData.ai_detail}           style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  <input type="text" readOnly name="urgency"             value={quizData.urgency}             style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
+                  {/* Hidden Captures for debugging/manual checks, but ghl-capture-only hides them from the auto-tracker */}
+                  <div className="ghl-capture-only" aria-hidden="true">
+                    <label>Email</label>
+                    <input type="email" readOnly name="email"              value={contactData.email}         className="ghl-capture-only" tabIndex={-1} />
+                    
+                    <label>Company Name</label>
+                    <input type="text" readOnly name="company_name"         value={contactData.company_name} className="ghl-capture-only" tabIndex={-1} />
 
-                  {computedFields && Object.entries(computedFields).map(([k, v]) => (
-                    <input key={k} type="text" readOnly name={k} value={v} style={OFFSCREEN} tabIndex={-1} aria-hidden="true" />
-                  ))}
+                    <label>Industry</label>
+                    <input type="text" readOnly name="industry"            value={quizData.industry}            className="ghl-capture-only" tabIndex={-1} />
+                    <label>Industry Other</label>
+                    <input type="text" readOnly name="industry_other"      value={quizData.industry_other}      className="ghl-capture-only" tabIndex={-1} />
+                    <label>Team Size</label>
+                    <input type="text" readOnly name="team_size"           value={quizData.team_size}           className="ghl-capture-only" tabIndex={-1} />
+                    <label>Monthly Revenue</label>
+                    <input type="text" readOnly name="monthly_revenue"     value={quizData.monthly_revenue}     className="ghl-capture-only" tabIndex={-1} />
+                    <label>Avg Job Value</label>
+                    <input type="text" readOnly name="avg_job_value"       value={quizData.avg_job_value}       className="ghl-capture-only" tabIndex={-1} />
+                    <label>Monthly Leads</label>
+                    <input type="text" readOnly name="monthly_leads"       value={quizData.monthly_leads}       className="ghl-capture-only" tabIndex={-1} />
+                    <label>Biggest Challenges</label>
+                    <input type="text" readOnly name="biggest_challenges"  value={quizData.biggest_challenges.join(", ")} className="ghl-capture-only" tabIndex={-1} />
+                    <label>Lead Response</label>
+                    <input type="text" readOnly name="lead_response"       value={quizData.lead_response}       className="ghl-capture-only" tabIndex={-1} />
+                    <label>AI Experience</label>
+                    <input type="text" readOnly name="ai_experience"       value={quizData.ai_experience}       className="ghl-capture-only" tabIndex={-1} />
+                    <label>AI Detail</label>
+                    <input type="text" readOnly name="ai_detail"           value={quizData.ai_detail}           className="ghl-capture-only" tabIndex={-1} />
+                    <label>Urgency</label>
+                    <input type="text" readOnly name="urgency"             value={quizData.urgency}             className="ghl-capture-only" tabIndex={-1} />
 
-                  <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Calculating..." : "Get Results"}</Button>
-                </form>
+                    {computedFields && Object.entries(computedFields).map(([k, v]) => {
+                      const labelText = k.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                      return (
+                        <React.Fragment key={k}>
+                          <label className="ghl-capture-only">{labelText}</label>
+                          <input type="text" readOnly name={k} value={v} className="ghl-capture-only" tabIndex={-1} />
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+
+                  <Button onClick={handleFinalSubmit} size="lg" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Calculating..." : "Get Results"}</Button>
+                </div>
               )}
             </div>
           </div>

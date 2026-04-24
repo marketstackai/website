@@ -5,8 +5,15 @@ import {
   NavbarRight,
 } from "../../ui/navbar";
 import { ThemeToggle } from "../../ui/theme-toggle";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "../../ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+} from "../../ui/sheet";
 import { Menu } from "lucide-react";
+import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
 
@@ -39,13 +46,15 @@ interface NavbarProps {
   customNavigation?: ReactNode;
 }
 
+function isInternalHref(href: string) {
+  return href.startsWith("/");
+}
+
 export default function Navbar({
   logo = <MarketStack />,
   name = "MARKET STACK",
   homeUrl = "/",
-  mobileLinks = [
-    { text: "Services", href: "/services#stack" },
-  ],
+  mobileLinks = [{ text: "Services", href: "/services#stack" }],
   actions = [
     {
       text: "AI Audit",
@@ -63,21 +72,31 @@ export default function Navbar({
       <div className="max-w-container relative mx-auto">
         <NavbarComponent>
           <NavbarLeft>
-            <a
-              href={homeUrl}
-              className={`${peaceSans.className} text-primary flex items-center gap-2 lg:text-lg`}
-            >
-              {logo}
-              {name}
-            </a>
-            <div className="hidden ml-4 md:block">
-              <Navigation 
+            {isInternalHref(homeUrl) ? (
+              <Link
+                href={homeUrl}
+                className={`${peaceSans.className} text-primary flex items-center gap-2 lg:text-lg`}
+              >
+                {logo}
+                {name}
+              </Link>
+            ) : (
+              <a
+                href={homeUrl}
+                className={`${peaceSans.className} text-primary flex items-center gap-2 lg:text-lg`}
+              >
+                {logo}
+                {name}
+              </a>
+            )}
+            <div className="ml-4 hidden md:block">
+              <Navigation
                 menuItems={[
                   {
                     title: "Services",
                     content: "default",
                     href: "/services#stack",
-                  }
+                  },
                 ]}
                 logoTitle="The Stack"
                 logoDescription="Automation for your specific needs. Built for modern operators."
@@ -86,18 +105,21 @@ export default function Navbar({
                   {
                     title: "Train",
                     href: "/services#train",
-                    description: "Fast-track your team with highly actionable AI workshops."
+                    description:
+                      "Fast-track your team with highly actionable AI workshops.",
                   },
                   {
                     title: "Strategize",
                     href: "/services#strategize",
-                    description: "Map your bottlenecks and create custom strategy."
+                    description:
+                      "Map your bottlenecks and create custom strategy.",
                   },
                   {
                     title: "Build",
                     href: "/services#build",
-                    description: "Full-scale custom software development and AI engineering."
-                  }
+                    description:
+                      "Full-scale custom software development and AI engineering.",
+                  },
                 ]}
               />
             </div>
@@ -113,17 +135,33 @@ export default function Navbar({
                   className="hidden text-sm md:block"
                   asChild
                 >
-                  <a href={action.href}>
-                    {action.icon}
-                    {action.text}
-                    {action.iconRight}
-                  </a>
+                  {isInternalHref(action.href) ? (
+                    <Link href={action.href}>
+                      {action.icon}
+                      {action.text}
+                      {action.iconRight}
+                    </Link>
+                  ) : (
+                    <a href={action.href}>
+                      {action.icon}
+                      {action.text}
+                      {action.iconRight}
+                    </a>
+                  )}
                 </Button>
+              ) : isInternalHref(action.href) ? (
+                <Link
+                  key={index}
+                  href={action.href}
+                  className="text-muted-foreground hover:text-foreground hidden cursor-pointer text-sm font-medium transition-colors md:flex"
+                >
+                  {action.text}
+                </Link>
               ) : (
                 <a
                   key={index}
                   href={action.href}
-                  className="hidden text-sm font-medium cursor-pointer text-muted-foreground transition-colors hover:text-foreground md:flex"
+                  className="text-muted-foreground hover:text-foreground hidden cursor-pointer text-sm font-medium transition-colors md:flex"
                 >
                   {action.text}
                 </a>
@@ -146,20 +184,36 @@ export default function Navbar({
                     <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   </SheetHeader>
                   <nav className="grid gap-6 text-lg font-medium">
-                    <a
-                      href={homeUrl}
-                      className="flex items-center gap-2 text-xl font-bold"
-                    >
-                    </a>
-                    {mobileLinks.map((link, index) => (
+                    {isInternalHref(homeUrl) ? (
+                      <Link
+                        href={homeUrl}
+                        className="flex items-center gap-2 text-xl font-bold"
+                      ></Link>
+                    ) : (
                       <a
-                        key={index}
-                        href={link.href}
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        {link.text}
-                      </a>
-                    ))}
+                        href={homeUrl}
+                        className="flex items-center gap-2 text-xl font-bold"
+                      ></a>
+                    )}
+                    {mobileLinks.map((link, index) =>
+                      isInternalHref(link.href) ? (
+                        <Link
+                          key={index}
+                          href={link.href}
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          {link.text}
+                        </Link>
+                      ) : (
+                        <a
+                          key={index}
+                          href={link.href}
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          {link.text}
+                        </a>
+                      ),
+                    )}
                   </nav>
                 </SheetContent>
               </Sheet>
