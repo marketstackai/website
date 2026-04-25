@@ -18,7 +18,7 @@ export interface ContactFormData {
   last_name: string;
   email: string;
   phone: string;
-  business_name: string;
+  company_name: string;
   website: string;
   sms_consent: boolean;
   marketing_consent: boolean;

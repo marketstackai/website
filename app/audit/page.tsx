@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { computeResults } from "@/lib/audit/engine";
 import type { AuditResults, GHLAuditRecord } from "@/lib/audit/types";
 
 const initialContactData: ContactFormData = {
-  first_name: "", last_name: "", email: "", phone: "", business_name: "", website: "",
+  first_name: "", last_name: "", email: "", phone: "", company_name: "", website: "",
   sms_consent: false, marketing_consent: false,
 };
 
@@ -26,6 +26,7 @@ const initialQuizData = {
 
 const QUIZ_START = 2;
 const TOTAL_STEPS = 11;
+
 
 export default function AuditPage() {
   const router = useRouter();
@@ -98,38 +99,45 @@ export default function AuditPage() {
     }
   };
 
-  const injectResultsIntoForm = (computed: AuditResults) => {
-    const form = auditFormRef.current;
-    if (!form) return;
-    const set = (name: string, value: string) => {
-      let el = form.querySelector<HTMLInputElement>(`input[name="${name}"]`);
-      if (!el) { el = document.createElement("input"); el.type = "hidden"; el.name = name; form.appendChild(el); }
-      el.value = value;
-    };
-    set("estimated_leads_per_month", String(computed.leads));
-    set("leak_rate_pct", `${Math.round(computed.leakRate * 100)}%`);
-    set("close_rate_pct", `${Math.round(computed.closeRate * 100)}%`);
-    set("avg_job_value_dollars", `$${computed.jobValue.toLocaleString()}`);
-    set("industry_multiplier", String(computed.industryMultiplier));
-    set("monthly_revenue_leak", `$${Math.round(computed.maxImpactMonthly).toLocaleString()}`);
-    set("annual_revenue_leak", `$${Math.round(computed.maxImpactAnnual).toLocaleString()}`);
-    set("monthly_leak_realistic", `$${Math.round(computed.realisticMonthly).toLocaleString()}`);
-    set("monthly_leak_conservative", `$${Math.round(computed.conservativeMonthly).toLocaleString()}`);
-    set("monthly_leak_optimistic", `$${Math.round(computed.optimisticMonthly).toLocaleString()}`);
-    set("total_score", String(computed.totalScore));
-    set("tier_label", computed.tierLabel);
-    set("tier_text", computed.tierText);
-    set("recommended_package", computed.recommendedPackage);
-    set("flag_hot_lead", computed.hotLead ? "true" : "false");
-    set("flag_high_ticket", computed.highTicket ? "true" : "false");
-    set("flag_quick_win", computed.quickWinOpp ? "true" : "false");
-    set("flag_enterprise_signal", computed.enterpriseSignal ? "true" : "false");
-    set("flag_nurture_track", computed.nurtureTrack ? "true" : "false");
-    set("quick_wins", computed.quickWins.map(w => w.id).join(", "));
-    set("recommendation", computed.recommendedPackage);
-  };
+  const results = useMemo<AuditResults | null>(() => {
+    if (step !== 11 && step !== 11.5) return null;
+    return computeResults(formData);
+    // formData is recreated every render, so list its primitives as deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, contactData, quizData]);
 
-  const submitToGHL = async (contact: ContactFormData, quiz: typeof quizData, computed: AuditResults): Promise<string | null> => {
+  const computedFields = results
+    ? {
+        estimated_leads_per_month: String(results.leads),
+        leak_rate_pct: `${Math.round(results.leakRate * 100)}%`,
+        close_rate_pct: `${Math.round(results.closeRate * 100)}%`,
+        avg_job_value_dollars: `$${results.jobValue.toLocaleString()}`,
+        industry_multiplier: String(results.industryMultiplier),
+        monthly_revenue_leak: `$${Math.round(results.maxImpactMonthly).toLocaleString()}`,
+        annual_revenue_leak: `$${Math.round(results.maxImpactAnnual).toLocaleString()}`,
+        monthly_leak_realistic: `$${Math.round(results.realisticMonthly).toLocaleString()}`,
+        monthly_leak_conservative: `$${Math.round(results.conservativeMonthly).toLocaleString()}`,
+        monthly_leak_optimistic: `$${Math.round(results.optimisticMonthly).toLocaleString()}`,
+        total_score: String(results.totalScore),
+        tier_label: results.tierLabel,
+        tier_text: results.tierText,
+        recommended_package: results.recommendedPackage,
+        flag_hot_lead: results.hotLead ? "true" : "false",
+        flag_high_ticket: results.highTicket ? "true" : "false",
+        flag_quick_win: results.quickWinOpp ? "true" : "false",
+        flag_enterprise_signal: results.enterpriseSignal ? "true" : "false",
+        flag_nurture_track: results.nurtureTrack ? "true" : "false",
+        quick_wins: results.quickWins.map(w => w.id).join(", "),
+        recommendation: results.recommendedPackage,
+      }
+    : null;
+
+
+  const submitToGHL = async (
+    contact: ContactFormData, 
+    quiz: typeof quizData, 
+    computed: AuditResults,
+  ): Promise<string | null> => {
     const tags: string[] = [];
     if (computed.hotLead) tags.push("hot");
     if (computed.highTicket) tags.push("high ticket");
@@ -165,7 +173,9 @@ export default function AuditPage() {
         body: JSON.stringify({
           email: contact.email,
           full_name: `${contact.first_name} ${contact.last_name}`,
-          business_name: contact.business_name,
+          company_name: contact.company_name,
+          sms_consent: contact.sms_consent,
+          marketing_consent: contact.marketing_consent,
           contact_updates: { 
             tags_add: tags, 
             customField: { recommended: computed.recommendedPackage } 
@@ -197,22 +207,24 @@ export default function AuditPage() {
     }
   };
 
-  const handleFinalSubmit = async (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent, overrides?: { contact: ContactFormData; quiz: typeof quizData }) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const effectiveContact = overrides?.contact ?? contactData;
+    const effectiveQuiz = overrides?.quiz ?? quizData;
+    const effectiveForm = { ...effectiveContact, ...effectiveQuiz };
+
+    const computed = computeResults(effectiveForm);
+
     setStep(11.5);
 
-    const computed = computeResults(formData);
-    injectResultsIntoForm(computed);
-    auditFormRef.current?.requestSubmit();
-
-    const recordId = await submitToGHL(contactData, quizData, computed);
+    const recordId = await submitToGHL(effectiveContact, effectiveQuiz, computed);
     const reportId = recordId ?? crypto.randomUUID();
 
-    // Cache results in sessionStorage for instant load on the report page
     sessionStorage.setItem(
       `ms_audit_report_${reportId}`,
-      JSON.stringify({ version: 1, results: computed, email: contactData.email }),
+      JSON.stringify({ version: 2, results: computed, email: effectiveContact.email }),
     );
     sessionStorage.removeItem("ms_audit_step");
 
@@ -240,9 +252,11 @@ export default function AuditPage() {
   };
 
   const devAutoSubmit = async () => {
+    const ts = Date.now();
+    const rand = Math.floor(Math.random() * 10000);
     const fullContact: ContactFormData = {
-      first_name: "Dev", last_name: "Test", email: "dev@marketstack.ai", phone: "1234567890",
-      business_name: "Dev Test Co", website: "https://example.com", sms_consent: true, marketing_consent: true,
+      first_name: "Test", last_name: "Test", email: `test+audit-${ts}-${rand}@marketstack.ai`, phone: "",
+      company_name: "The Testing Company", website: "https://example.com", sms_consent: true, marketing_consent: true,
     };
     const fullQuiz: typeof quizData = {
       industry: "other", industry_other: "Magician", team_size: "12", monthly_revenue: "175000",
@@ -254,27 +268,11 @@ export default function AuditPage() {
     setContactData(fullContact);
     setQuizData(fullQuiz);
     sessionStorage.setItem("ms_audit_contact", JSON.stringify(fullContact));
-    setIsSubmitting(true);
-    setStep(11.5);
+    setStep(11);
 
-    // Small delay to let React flush state before computing
-    await new Promise(r => setTimeout(r, 50));
-
-    const fullData = { ...fullContact, ...fullQuiz };
-    const computed = computeResults(fullData);
-    injectResultsIntoForm(computed);
-    auditFormRef.current?.requestSubmit();
-
-    const recordId = await submitToGHL(fullContact, fullQuiz, computed);
-    const reportId = recordId ?? crypto.randomUUID();
-
-    sessionStorage.setItem(
-      `ms_audit_report_${reportId}`,
-      JSON.stringify({ version: 1, results: computed, email: fullContact.email }),
-    );
-    sessionStorage.removeItem("ms_audit_step");
-
-    router.replace(`/audit/report?id=${reportId}`);
+    // Wait for step 11 to render so we can see the populated form before we submit it
+    await new Promise(r => setTimeout(r, 80));
+    handleFinalSubmit(new Event('submit') as unknown as React.FormEvent, { contact: fullContact, quiz: fullQuiz });
   };
 
   const renderOption = (value: string, label: string, field: keyof typeof quizData, autoNext = true) => {
@@ -312,37 +310,12 @@ export default function AuditPage() {
   return (
     <>
       <GHLTracker />
-      <div style={{ position: "fixed", top: 0, left: 0, opacity: 0.001, pointerEvents: "none", zIndex: -9999 }}>
-        <form ref={auditFormRef} name="audit" onSubmit={e => e.preventDefault()}>
-          <input type="text" name="first_name" value={contactData.first_name} onChange={() => {}} />
-          <input type="text" name="last_name" value={contactData.last_name} onChange={() => {}} />
-          <input type="email" name="email" value={contactData.email} onChange={() => {}} />
-          <input type="tel" name="phone" value={contactData.phone} onChange={() => {}} />
-          <input type="text" name="company" value={contactData.business_name} onChange={() => {}} />
-          <input type="text" name="website" value={contactData.website} onChange={() => {}} />
-          <input type="text" name="industry" value={quizData.industry} onChange={() => {}} />
-          <input type="text" name="industry_other" value={quizData.industry_other} onChange={() => {}} />
-          <input type="text" name="team_size" value={quizData.team_size} onChange={() => {}} />
-          <input type="text" name="monthly_revenue" value={quizData.monthly_revenue} onChange={() => {}} />
-          <input type="text" name="biggest_challenges" value={quizData.biggest_challenges.join(", ")} onChange={() => {}} />
-          <input type="text" name="lead_response" value={quizData.lead_response} onChange={() => {}} />
-          <input type="text" name="ai_experience" value={quizData.ai_experience} onChange={() => {}} />
-          <input type="text" name="ai_detail" value={quizData.ai_detail} onChange={() => {}} />
-          <input type="text" name="urgency" value={quizData.urgency} onChange={() => {}} />
-          <input type="text" name="avg_job_value" value={quizData.avg_job_value} onChange={() => {}} />
-          <input type="text" name="monthly_leads" value={quizData.monthly_leads} onChange={() => {}} />
-          <textarea name="additional_notes" value={quizData.additional_notes} onChange={() => {}} />
-          <input type="hidden" name="recommendation" value="" />
-          <input type="hidden" name="source" value="audit" />
-          <button type="submit">Submit</button>
-        </form>
-      </div>
 
       {step === 11.5 && (
         <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
           <div className="flex flex-col items-center gap-4 animate-pulse">
             <div className="size-12 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-            <p className="text-xl font-medium">Analyzing your business...</p>
+            <p className="text-xl font-medium">Running AI analysis...</p>
           </div>
         </div>
       )}
@@ -601,12 +574,55 @@ export default function AuditPage() {
                 </div>
               )}
               {step === 11 && (
-                <form onSubmit={handleFinalSubmit} className="space-y-6 text-balance">
+                <div className="space-y-6 text-balance">
                   <h2 className="text-2xl font-semibold mb-6">Anything else?</h2>
-                  <textarea className="w-full bg-background border rounded-lg px-4 py-2.5 min-h-[120px] focus:border-brand" placeholder="e.g. We're looking to scale to $200k/mo by year end and need better lead recovery."
+                  <textarea name="additional_notes" className="w-full bg-background border rounded-lg px-4 py-2.5 min-h-[120px] focus:border-brand" placeholder="e.g. We're looking to scale to $200k/mo and are interested in AI lead qualification and automated appointment booking."
                             value={quizData.additional_notes} onChange={e => setQuizData({...quizData, additional_notes: e.target.value})} />
-                  <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Calculating..." : "Get Results"}</Button>
-                </form>
+
+                  {/* Hidden Captures for debugging/manual checks, but ghl-capture-only hides them from the auto-tracker */}
+                  <div className="ghl-capture-only" aria-hidden="true">
+                    <label>Email</label>
+                    <input type="email" readOnly name="email"              value={contactData.email}         className="ghl-capture-only" tabIndex={-1} />
+                    
+                    <label>Company Name</label>
+                    <input type="text" readOnly name="company_name"         value={contactData.company_name} className="ghl-capture-only" tabIndex={-1} />
+
+                    <label>Industry</label>
+                    <input type="text" readOnly name="industry"            value={quizData.industry}            className="ghl-capture-only" tabIndex={-1} />
+                    <label>Industry Other</label>
+                    <input type="text" readOnly name="industry_other"      value={quizData.industry_other}      className="ghl-capture-only" tabIndex={-1} />
+                    <label>Team Size</label>
+                    <input type="text" readOnly name="team_size"           value={quizData.team_size}           className="ghl-capture-only" tabIndex={-1} />
+                    <label>Monthly Revenue</label>
+                    <input type="text" readOnly name="monthly_revenue"     value={quizData.monthly_revenue}     className="ghl-capture-only" tabIndex={-1} />
+                    <label>Avg Job Value</label>
+                    <input type="text" readOnly name="avg_job_value"       value={quizData.avg_job_value}       className="ghl-capture-only" tabIndex={-1} />
+                    <label>Monthly Leads</label>
+                    <input type="text" readOnly name="monthly_leads"       value={quizData.monthly_leads}       className="ghl-capture-only" tabIndex={-1} />
+                    <label>Biggest Challenges</label>
+                    <input type="text" readOnly name="biggest_challenges"  value={quizData.biggest_challenges.join(", ")} className="ghl-capture-only" tabIndex={-1} />
+                    <label>Lead Response</label>
+                    <input type="text" readOnly name="lead_response"       value={quizData.lead_response}       className="ghl-capture-only" tabIndex={-1} />
+                    <label>AI Experience</label>
+                    <input type="text" readOnly name="ai_experience"       value={quizData.ai_experience}       className="ghl-capture-only" tabIndex={-1} />
+                    <label>AI Detail</label>
+                    <input type="text" readOnly name="ai_detail"           value={quizData.ai_detail}           className="ghl-capture-only" tabIndex={-1} />
+                    <label>Urgency</label>
+                    <input type="text" readOnly name="urgency"             value={quizData.urgency}             className="ghl-capture-only" tabIndex={-1} />
+
+                    {computedFields && Object.entries(computedFields).map(([k, v]) => {
+                      const labelText = k.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                      return (
+                        <React.Fragment key={k}>
+                          <label className="ghl-capture-only">{labelText}</label>
+                          <input type="text" readOnly name={k} value={v} className="ghl-capture-only" tabIndex={-1} />
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+
+                  <Button onClick={handleFinalSubmit} size="lg" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Calculating..." : "Get Results"}</Button>
+                </div>
               )}
             </div>
           </div>

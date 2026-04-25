@@ -13,7 +13,6 @@ import { FlagsInspector } from "@/components/audit/dev/flags-inspector";
 import { AllQuickWins } from "@/components/audit/dev/all-quick-wins";
 
 import { RevenuLeakHero } from "@/components/audit/results/revenue-leak-hero";
-import { MetricsGrid } from "@/components/audit/results/metrics-grid";
 import { AssumptionAdjuster } from "@/components/audit/results/assumption-adjuster";
 import { TierAssessment } from "@/components/audit/results/tier-assessment";
 import { QuickWinsSection } from "@/components/audit/results/quick-wins-section";
@@ -149,19 +148,13 @@ export default function AuditDevPage() {
                 isJobValueUndisclosed={results.isJobValueUndisclosed}
               />
 
-              <div className="space-y-4">
-                <AssumptionAdjuster
-                  params={adjParams}
-                  onChange={setParams}
-                  onReset={() => setParams(defaults)}
-                  isAdjusted={isAdjusted}
-                />
-
-                <MetricsGrid
-                  params={adjParams}
-                  onUpdateParam={(key, val) => setParams(prev => ({ ...prev, [key]: val }))}
-                />
-              </div>
+              <AssumptionAdjuster
+                params={adjParams}
+                onChange={setParams}
+                onReset={() => setParams(defaults)}
+                onUpdateParam={(key, val) => setParams(prev => ({ ...prev, [key]: val }))}
+                isAdjusted={isAdjusted}
+              />
 
               {/* DEV: Score Breakdown */}
               <ScoreBreakdown

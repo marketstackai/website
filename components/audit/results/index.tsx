@@ -3,10 +3,8 @@
 import React, { useState, useMemo } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RevenuLeakHero } from "./revenue-leak-hero";
-import { MetricsGrid } from "./metrics-grid";
 import { AssumptionAdjuster } from "./assumption-adjuster";
 import { TierAssessment } from "./tier-assessment";
-import { AIReadinessCard } from "./ai-readiness-card";
 import { QuickWinsSection } from "./quick-wins-section";
 import { CTAFooter } from "./cta-footer";
 import { recalculate } from "@/lib/audit/engine";
@@ -62,30 +60,19 @@ export function AuditResultsView({ results, email, onStartOver }: AuditResultsVi
             isJobValueUndisclosed={results.isJobValueUndisclosed}
           />
 
-          <div className="space-y-4">
-            <AssumptionAdjuster
-              params={params}
-              onChange={setParams}
-              onReset={() => setParams(defaults)}
-              isAdjusted={isAdjusted}
-            />
-
-            <MetricsGrid
-              params={params}
-              onUpdateParam={(key, val) => setParams(prev => ({ ...prev, [key]: val }))}
-            />
-          </div>
+          <AssumptionAdjuster
+            params={params}
+            onChange={setParams}
+            onReset={() => setParams(defaults)}
+            onUpdateParam={(key, val) => setParams(prev => ({ ...prev, [key]: val }))}
+            isAdjusted={isAdjusted}
+          />
 
           <TierAssessment
             tierLabel={results.tierLabel}
             tierText={results.tierText}
             hotLead={results.hotLead}
             aiReadiness={results.aiReadiness}
-          />
-
-          <AIReadinessCard
-            score={results.aiReadiness.score}
-            description={results.aiReadiness.description}
           />
 
           <QuickWinsSection quickWins={results.quickWins} />

@@ -3,6 +3,7 @@ import { Button, type ButtonProps } from "../../ui/button";
 import { siteConfig } from "@/config/site";
 import Glow from "../../ui/glow";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import { ReactNode } from "react";
 
 interface CTAButtonProps {
@@ -17,6 +18,10 @@ interface CTAProps {
   title?: string;
   buttons?: CTAButtonProps[] | false;
   subtext?: string | false;
+}
+
+function isInternalHref(href: string) {
+  return href.startsWith("/");
 }
 
 export default function CTA({
@@ -48,16 +53,27 @@ export default function CTA({
                   asChild
                   className="group"
                 >
-                  <a href={button.href} className="flex items-center gap-1">
-                    {button.icon}
-                    {button.text}
-                    {button.iconRight}
-                  </a>
+                  {isInternalHref(button.href) ? (
+                    <Link
+                      href={button.href}
+                      className="flex items-center gap-1"
+                    >
+                      {button.icon}
+                      {button.text}
+                      {button.iconRight}
+                    </Link>
+                  ) : (
+                    <a href={button.href} className="flex items-center gap-1">
+                      {button.icon}
+                      {button.text}
+                      {button.iconRight}
+                    </a>
+                  )}
                 </Button>
               ))}
             </div>
             {subtext && (
-              <p className="text-sm text-muted-foreground animate-appear delay-300">
+              <p className="text-muted-foreground animate-appear text-sm delay-300">
                 {subtext}
               </p>
             )}

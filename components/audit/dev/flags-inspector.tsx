@@ -17,10 +17,10 @@ interface FlagDef {
 
 export function FlagsInspector({ results, data }: FlagsInspectorProps) {
   const flags: FlagDef[] = [
-    { key: "hotLead", label: "Hot Lead", value: results.hotLead, trigger: `urgency="${data.urgency}" === "urgent" AND score ${results.totalScore} >= 13` },
-    { key: "highTicket", label: "High Ticket", value: results.highTicket, trigger: `revenue $${(parseFloat(data.monthly_revenue) || 0).toLocaleString()} > $50k` },
-    { key: "quickWinOpp", label: "Quick Win Opp", value: results.quickWinOpp, trigger: `"missed_leads" in challenges AND response score <= 2` },
-    { key: "enterpriseSignal", label: "Enterprise", value: results.enterpriseSignal, trigger: `team=${data.team_size} >= 50 OR (team > 10 AND revenue > $100k)` },
+    { key: "hotLead", label: "Hot Lead", value: results.hotLead, trigger: `urgency="${data.urgency}" === "urgent" AND score ${results.totalScore} >= 65` },
+    { key: "highTicket", label: "High Ticket", value: results.highTicket, trigger: `revenue $${(parseFloat(data.monthly_revenue) || 0).toLocaleString()} >= $100k/mo` },
+    { key: "quickWinOpp", label: "Quick Win Opp", value: results.quickWinOpp, trigger: `"missed_leads" in challenges AND response in {voicemail, office_pickup, auto_response}` },
+    { key: "enterpriseSignal", label: "Enterprise", value: results.enterpriseSignal, trigger: `team=${data.team_size} >= 50 OR (team >= 21 AND revenue >= $250k/mo)` },
     { key: "nurtureTrack", label: "Nurture", value: results.nurtureTrack, trigger: `urgency="${data.urgency}" === "exploring"` },
     { key: "needsReview", label: "Needs Review", value: results.needsReview, trigger: `industry="other" AND no custom text` },
     { key: "isRevenueUndisclosed", label: "Rev Undisclosed", value: results.isRevenueUndisclosed, trigger: `monthly_revenue="${data.monthly_revenue}"` },

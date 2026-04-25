@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildAuditEmail, type AuditEmailData } from "@/lib/audit/email";
+import { GHL_FIELDS, parseConsent } from "@/lib/ghl";
 
 const GHL_BASE = "https://services.leadconnectorhq.com";
 
@@ -28,16 +29,38 @@ async function lookupContactByEmail(
   );
   if (!res.ok) return null;
   const data = (await res.json()) as GHLContactsResponse;
-  return data.contacts?.find((c) => c.email === email)?.id ?? null;
+  const normalized = email.trim().toLowerCase();
+  return data.contacts?.find((c) => c.email?.trim().toLowerCase() === normalized)?.id ?? null;
+}
+
+// Users who submit the audit quickly can hit a race: the GHL external-form tracker
+// creates the contact asynchronously on form submit, and the search index is eventually
+// consistent. Retry for up to ~20s before giving up.
+const LOOKUP_RETRY_DELAYS_MS = [0, 1500, 2000, 2500, 3000, 3500, 4000, 4500] as const;
+
+async function lookupContactWithRetry(
+  email: string,
+  apiKey: string,
+  locationId: string,
+): Promise<string | null> {
+  for (const waitMs of LOOKUP_RETRY_DELAYS_MS) {
+    if (waitMs > 0) await new Promise((r) => setTimeout(r, waitMs));
+    const id = await lookupContactByEmail(email, apiKey, locationId);
+    if (id) return id;
+  }
+  return null;
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, full_name, business_name, contact_updates, audit_record, computed_email } = body as {
+    const { email, full_name, business_name, company_name, sms_consent, marketing_consent, contact_updates, audit_record, computed_email } = body as {
       email: string;
       full_name?: string;
       business_name?: string;
+      company_name?: string;
+      sms_consent?: boolean;
+      marketing_consent?: boolean;
       contact_updates?: {
         tags_add?: string[];
         customField?: Record<string, string>;
@@ -64,22 +87,50 @@ export async function POST(request: Request) {
       );
     }
 
-    // 1. Look up contact by email
-    const contactId = await lookupContactByEmail(email, apiKey, locationId);
+    // 1. Resolve contact ID via email lookup with retry
+    const contactId = await lookupContactWithRetry(email, apiKey, locationId);
+
     if (!contactId) {
       console.warn(`No GHL contact found for ${email}`);
       return NextResponse.json({ success: true });
     }
 
-    // 2. Update contact tags / custom fields
-    if (contact_updates) {
-      const headers = {
-        Authorization: `Bearer ${apiKey}`,
-        Version: "2021-07-28",
-        "Content-Type": "application/json",
-      };
+    const headers = {
+      Authorization: `Bearer ${apiKey}`,
+      Version: "2021-07-28",
+      "Content-Type": "application/json",
+    };
 
-      const tagsToAdd = contact_updates.tags_add || [];
+    // 2. Update contact details (name, company) if provided
+    const contactUpdatePayload: Partial<{
+      firstName: string;
+      lastName: string;
+      companyName: string;
+    }> = {};
+    if (full_name) {
+      const parts = full_name.split(" ");
+      contactUpdatePayload.firstName = parts[0];
+      contactUpdatePayload.lastName = parts.slice(1).join(" ");
+    }
+    const finalBusinessName = company_name || business_name;
+    if (finalBusinessName) {
+      contactUpdatePayload.companyName = finalBusinessName;
+    }
+
+    if (Object.keys(contactUpdatePayload).length > 0) {
+      const updateRes = await fetch(`${GHL_BASE}/contacts/${contactId}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(contactUpdatePayload),
+      });
+      if (!updateRes.ok) {
+        console.error("Failed to update contact base info:", updateRes.status, await updateRes.text());
+      }
+    }
+
+    // 3. Update contact tags / custom fields
+    {
+      const tagsToAdd = contact_updates?.tags_add ?? [];
       if (tagsToAdd.length > 0) {
         const tagRes = await fetch(`${GHL_BASE}/contacts/${contactId}/tags`, {
           method: "POST",
@@ -91,15 +142,32 @@ export async function POST(request: Request) {
         }
       }
 
-      if (contact_updates.customField) {
+      const customFieldIdMap: Record<string, string> = {
+        recommended: GHL_FIELDS.RECOMMENDATION,
+      };
+
+      // Build custom fields from contact_updates + consent
+      const customFields: { id: string; value: string }[] = [];
+
+      if (contact_updates?.customField) {
+        for (const [key, value] of Object.entries(contact_updates.customField)) {
+          const id = customFieldIdMap[key];
+          if (id) customFields.push({ id, value });
+        }
+      }
+
+      if (sms_consent !== undefined) {
+        customFields.push({ id: GHL_FIELDS.SMS_CONSENT, value: parseConsent(sms_consent) });
+      }
+      if (marketing_consent !== undefined) {
+        customFields.push({ id: GHL_FIELDS.MARKETING_CONSENT, value: parseConsent(marketing_consent) });
+      }
+
+      if (customFields.length > 0) {
         const cfRes = await fetch(`${GHL_BASE}/contacts/${contactId}`, {
           method: "PUT",
           headers,
-          body: JSON.stringify({
-            customFields: Object.entries(contact_updates.customField).map(
-              ([key, value]) => ({ id: key, field_value: value }),
-            ),
-          }),
+          body: JSON.stringify({ customFields }),
         });
         if (!cfRes.ok) {
           console.error("Failed to update custom fields:", cfRes.status, await cfRes.text());
@@ -122,7 +190,7 @@ export async function POST(request: Request) {
           body: JSON.stringify({
             locationId,
             properties: {
-              name: `${business_name || full_name || "Audit"} - ${email}`,
+              name: `${company_name || business_name || full_name || "Audit"} - ${email}`,
               ...audit_record,
               // NUMERICAL fields must be numbers
               team_size: Number(audit_record.team_size) || 0,
@@ -134,9 +202,9 @@ export async function POST(request: Request) {
                 ? audit_record.biggest_challenges
                 : audit_record.biggest_challenges
                   ? String(audit_record.biggest_challenges)
-                      .split(",")
-                      .map((s: string) => s.trim())
-                      .filter(Boolean)
+                    .split(",")
+                    .map((s: string) => s.trim())
+                    .filter(Boolean)
                   : [],
             },
           }),

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ShieldAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface RevenuLeakHeroProps {
   maxImpactMonthly: number;
@@ -91,15 +92,13 @@ export function RevenuLeakHero({
           <span>Optimistic: ${Math.round(optimisticMonthly).toLocaleString()}/mo</span>
         </div>
 
-        <div className="max-w-md mx-auto pt-4 space-y-1">
-          <div className="bg-card/50 border rounded-xl px-5 py-3 text-center">
-            <span className="text-sm text-muted-foreground">With Close Rate Factor: </span>
+        <div className="pt-4 flex justify-center">
+          <div className="bg-card/50 border rounded-xl px-5 py-3 inline-flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">With Close Rate Factor:</span>
             <span className="text-lg font-semibold text-foreground">
               ${Math.round(realisticMonthly).toLocaleString()}/mo
             </span>
-            <span className="text-sm text-muted-foreground">
-              {" "}(${Math.round(realisticAnnual).toLocaleString()}/yr)
-            </span>
+            <InfoTooltip content="The estimated revenue you'd actually recover after applying your close rate — a more realistic figure than max impact, which assumes every recovered lead converts." />
           </div>
         </div>
       </div>

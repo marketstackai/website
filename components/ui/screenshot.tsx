@@ -1,7 +1,5 @@
-"use client";
-
 import Image from "next/image";
-import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 interface ScreenshotProps {
   srcLight: string;
@@ -22,29 +20,39 @@ export default function Screenshot({
   className,
   priority,
 }: ScreenshotProps) {
-  const { resolvedTheme } = useTheme();
-  let src;
+  const darkSrc = srcDark || srcLight;
 
-  switch (resolvedTheme) {
-    case "light":
-      src = srcLight;
-      break;
-    case "dark":
-      src = srcDark || srcLight;
-      break;
-    default:
-      src = srcDark || srcLight;
-      break;
+  if (darkSrc === srcLight) {
+    return (
+      <Image
+        src={srcLight}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+        priority={priority}
+      />
+    );
   }
 
   return (
-    <Image
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      className={className}
-      priority={priority}
-    />
+    <>
+      <Image
+        src={srcLight}
+        alt={alt}
+        width={width}
+        height={height}
+        className={cn(className, "dark:hidden")}
+        priority={priority}
+      />
+      <Image
+        src={darkSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        className={cn(className, "hidden dark:block")}
+        priority={priority}
+      />
+    </>
   );
 }
