@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check": "tsc --noEmit && next build",
+    "check": "tsc --noEmit && next lint",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

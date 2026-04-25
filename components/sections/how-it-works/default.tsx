@@ -1,8 +1,27 @@
+"use client";
+
 import { Section } from "../../ui/section";
 import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { ArrowRightIcon, Search, Wrench, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import type { CSSProperties, PointerEvent } from "react";
+
+const glowStyle: CSSProperties = {
+  backgroundImage:
+    "radial-gradient(250px circle at calc(var(--mx, -9999) * 1px) calc(var(--my, -9999) * 1px), color-mix(in oklch, var(--color-brand) 12%, transparent), transparent 60%)",
+};
+
+function onGlowMove(e: PointerEvent<HTMLDivElement>) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty("--mx", (e.clientX - rect.left).toFixed(2));
+  e.currentTarget.style.setProperty("--my", (e.clientY - rect.top).toFixed(2));
+}
+
+function onGlowLeave(e: PointerEvent<HTMLDivElement>) {
+  e.currentTarget.style.setProperty("--mx", "-9999");
+  e.currentTarget.style.setProperty("--my", "-9999");
+}
 
 export default function HowItWorks() {
   return (
@@ -16,13 +35,17 @@ export default function HowItWorks() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <Card className="bg-background relative overflow-hidden group border-brand/20">
-            <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <CardHeader>
-              <div className="size-12 rounded-lg bg-brand/10 text-brand flex items-center justify-center mb-4">
-                <Search className="size-6" />
-              </div>
-              <CardTitle className="text-xl">1. Diagnose</CardTitle>
+          <Card
+            className="relative overflow-hidden"
+            style={glowStyle}
+            onPointerMove={onGlowMove}
+            onPointerLeave={onGlowLeave}
+          >
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Search className="size-5 text-brand" />
+                1. Diagnose
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
@@ -31,13 +54,17 @@ export default function HowItWorks() {
             </CardContent>
           </Card>
 
-          <Card className="bg-background relative overflow-hidden group border-brand/20">
-            <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <CardHeader>
-               <div className="size-12 rounded-lg bg-brand/10 text-brand flex items-center justify-center mb-4">
-                <Wrench className="size-6" />
-              </div>
-              <CardTitle className="text-xl">2. Build</CardTitle>
+          <Card
+            className="relative overflow-hidden"
+            style={glowStyle}
+            onPointerMove={onGlowMove}
+            onPointerLeave={onGlowLeave}
+          >
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Wrench className="size-5 text-brand" />
+                2. Build
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
@@ -46,13 +73,17 @@ export default function HowItWorks() {
             </CardContent>
           </Card>
 
-          <Card className="bg-background relative overflow-hidden group border-brand/20">
-            <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <CardHeader>
-               <div className="size-12 rounded-lg bg-brand/10 text-brand flex items-center justify-center mb-4">
-                <TrendingUp className="size-6" />
-              </div>
-              <CardTitle className="text-xl">3. Scale</CardTitle>
+          <Card
+            className="relative overflow-hidden"
+            style={glowStyle}
+            onPointerMove={onGlowMove}
+            onPointerLeave={onGlowLeave}
+          >
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <TrendingUp className="size-5 text-brand" />
+                3. Scale
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
