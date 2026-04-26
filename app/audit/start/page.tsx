@@ -29,6 +29,17 @@ export default function AuditStartPage() {
   const [savedContact, setSavedContact] = useState<ContactFormData | undefined>();
 
   useEffect(() => {
+    // Silently capture industry attribution from landing page links
+    const params = new URLSearchParams(window.location.search);
+    const industry = params.get("industry");
+    if (industry) {
+      try {
+        sessionStorage.setItem("ms_industry", industry);
+      } catch { /* ignore */ }
+    }
+  }, []);
+
+  useEffect(() => {
     const saved = sessionStorage.getItem("ms_audit_contact");
     if (saved) {
       try {

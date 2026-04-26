@@ -6,7 +6,7 @@ import Footer from "@/components/sections/footer/default";
 import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Zap, ArrowUpRight, Blocks, Palette } from "lucide-react";
+import { Zap, ArrowUpRight, Palette } from "lucide-react";
 import Link from "next/link";
 import { BookingLink } from "@/components/ui/booking-link";
 import { PricingColumn } from "@/components/ui/pricing-column";
@@ -88,7 +88,8 @@ export default function ServicesPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 relative z-10">
+          <div className="grid grid-cols-2 gap-8 max-w-3xl mx-auto w-full relative z-10">
+            {/* Foundation Kit — hidden until ready
             <PricingColumn
               icon={<Blocks className="size-10" />}
               name="Foundation Kit"
@@ -112,16 +113,17 @@ export default function ServicesPage() {
               variant="default"
               className="w-full h-full"
             />
-            
+            */}
+
             <PricingColumn
               icon={<Zap className="size-10" />}
               name="Operating System"
               description="Accelerated deployment."
-              price={"4,500"}
+              price={"497"}
               priceSubtext={
                 <>
-                  <span className="text-sm">Implementation</span>
-                  <span className="text-muted-foreground text-sm">Two weeks</span>
+                  <span className="text-sm">/ month</span>
+                  <span className="text-muted-foreground text-sm">$4970 setup fee</span>
                 </>
               }
               priceNote="Done for you with ongoing support options."
@@ -135,7 +137,7 @@ export default function ServicesPage() {
                 "Lead tracking dashboard",
               ]}
               variant="glow-brand"
-              className="w-full h-full md:-translate-y-4"
+              className="w-full h-full"
             />
 
             <PricingColumn
@@ -461,6 +463,53 @@ export default function ServicesPage() {
                 </Button>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </Section>
+
+      {/* Spoke Cross-Links */}
+      <Section id="solutions" className="py-12">
+        <div className="max-w-[1000px] mx-auto px-6 relative">
+          <div className="relative z-10">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-semibold mb-4">Explore by Solution</h2>
+              <p className="text-muted-foreground text-lg text-balance">
+                Each capability below has its own deep-dive page — outcomes, how it works, and the math behind the ROI.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {[
+                { label: "AI Receptionist", href: "/services/ai-receptionist", description: "24/7 call handling and booking" },
+                { label: "Converational AI", href: "/services/ai-conversational", description: "Engage leads across every channel" },
+                { label: "Lead Reactivation", href: "/services/lead-reactivation", description: "Revenue from dormant contacts" },
+                { label: "Reviews", href: "/services/reviews", description: "Build your reputation on autopilot" },
+                { label: "Quotes", href: "/services/quotes", description: "Close more estimates you send" },
+                { label: "Booking Recovery", href: "/services/booking-recovery", description: "Reduce no-shows and cancels" },
+                { label: "Agentic Workflows", href: "/services/agentic-workflows", description: "Custom multi-system automation" },
+                { label: "SEO", href: "/services/seo", description: "Rank where customers search" },
+                { label: "GEO", href: "/services/geo", description: "Optimize for AI-powered search" },
+                { label: "Websites", href: "/services/websites", description: "Fast, conversion-focused sites" },
+                { label: "Document Processing", href: "/services/document-processing", description: "AI extraction and routing" },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex flex-col gap-1 rounded-xl border bg-card p-5 hover:bg-accent transition-colors"
+                >
+                  <p className="font-medium group-hover:text-foreground transition-colors">{item.label}</p>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                </Link>
+              ))}
+              <BookingLink
+                interest="studio"
+                className="group relative flex flex-col gap-1 rounded-xl border border-brand/40 bg-white/[0.03] backdrop-blur-sm overflow-hidden p-5 cursor-pointer transition-colors hover:border-brand/60"
+              >
+                <div className="pointer-events-none absolute -top-8 left-1/2 h-16 w-3/4 -translate-x-1/2 rounded-full bg-brand-foreground/60 blur-2xl" />
+                <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/[0.04] via-brand/10 to-transparent" />
+                <p className="relative font-medium group-hover:text-foreground transition-colors">Custom Build</p>
+                <p className="relative text-sm text-muted-foreground">Studio-tier engagements for unique infrastructure</p>
+              </BookingLink>
+            </div>
           </div>
         </div>
       </Section>

@@ -61,6 +61,7 @@ export async function POST(request: Request) {
       company_name?: string;
       sms_consent?: boolean;
       marketing_consent?: boolean;
+      source_industry?: string;
       contact_updates?: {
         tags_add?: string[];
         customField?: Record<string, string>;

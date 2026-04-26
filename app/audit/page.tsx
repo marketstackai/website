@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -36,8 +36,6 @@ export default function AuditPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [ghlEnabled, setGhlEnabled] = useState(false);
-
-  const auditFormRef = useRef<HTMLFormElement>(null);
 
   const formData = { ...contactData, ...quizData };
 
@@ -134,14 +132,20 @@ export default function AuditPage() {
 
 
   const submitToGHL = async (
-    contact: ContactFormData, 
-    quiz: typeof quizData, 
+    contact: ContactFormData,
+    quiz: typeof quizData,
     computed: AuditResults,
   ): Promise<string | null> => {
+    let sourceIndustry: string | null = null;
+    try {
+      sourceIndustry = sessionStorage.getItem("ms_industry");
+    } catch { /* ignore */ }
+
     const tags: string[] = [];
     if (computed.hotLead) tags.push("hot");
     if (computed.highTicket) tags.push("high ticket");
     if (computed.enterpriseSignal) tags.push("enterprise");
+    if (sourceIndustry) tags.push(`industry:${sourceIndustry}`);
 
     const recommendedMap: Record<string, GHLAuditRecord["recommended"]> = {
       "Foundation Kit": "foundation_kit",
@@ -176,9 +180,10 @@ export default function AuditPage() {
           company_name: contact.company_name,
           sms_consent: contact.sms_consent,
           marketing_consent: contact.marketing_consent,
-          contact_updates: { 
-            tags_add: tags, 
-            customField: { recommended: computed.recommendedPackage } 
+          source_industry: sourceIndustry ?? undefined,
+          contact_updates: {
+            tags_add: tags,
+            customField: { recommended: computed.recommendedPackage },
           },
           audit_record: auditRecord,
           computed_email: {
@@ -227,6 +232,7 @@ export default function AuditPage() {
       JSON.stringify({ version: 2, results: computed, email: effectiveContact.email }),
     );
     sessionStorage.removeItem("ms_audit_step");
+    sessionStorage.removeItem("ms_industry");
 
     router.replace(`/audit/report?id=${reportId}`);
   };
