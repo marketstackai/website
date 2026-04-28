@@ -20,7 +20,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Manufactured home buyers have long consideration windows and complex financing situations. We build systems that keep every prospect warm through the full cycle — so when they're ready to buy, you're the one they remember.",
     ctaType: "audit",
-    industry: "manufactured-homes",
+    industry: "manufactured_homes",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

@@ -24,7 +24,7 @@ const copy: LandingPageCopy = {
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Call",
     secondaryCtaHref: "/book",
-    secondaryCtaInterest: "localseo",
+    interest: "seo",
   },
   problems: {
     sectionHeading: "You're invisible in the searches that matter most.",

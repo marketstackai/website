@@ -21,7 +21,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Acquisition costs keep climbing. The highest-leverage growth move for a DTC brand isn't more ads — it's recovering the revenue already leaving your store and building automated systems that monetize your existing customer base.",
     ctaType: "audit",
-    industry: "e-commerce",
+    industry: "e_commerce",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

@@ -24,7 +24,7 @@ const copy: LandingPageCopy = {
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",
-    secondaryCtaInterest: "documentprocessing",
+    interest: "documentprocessing",
   },
   problems: {
     sectionHeading: "Manual document handling is your hidden bottleneck.",

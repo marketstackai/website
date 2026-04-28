@@ -21,7 +21,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Professional services firms lose clients before they start — slow intake response, inconsistent follow-up, and administrative overhead that consumes the time that should go to client work. We fix the operational layer so your team can focus on delivery.",
     ctaType: "audit",
-    industry: "professional-services",
+    industry: "professional_services",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

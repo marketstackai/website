@@ -24,7 +24,7 @@ const copy: LandingPageCopy = {
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Call",
     secondaryCtaHref: "/book",
-    secondaryCtaInterest: "reactivation",
+    interest: "reactivation",
   },
   problems: {
     sectionHeading: "You're sitting on revenue and don't know it.",

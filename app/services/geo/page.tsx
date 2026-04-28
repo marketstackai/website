@@ -25,7 +25,7 @@ const copy: LandingPageCopy = {
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Call",
     secondaryCtaHref: "/book",
-    secondaryCtaInterest: "geo",
+    interest: "geo",
   },
   problems: {
     sectionHeading: "AI search doesn't work like Google. Most businesses aren't ready.",

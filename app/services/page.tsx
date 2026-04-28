@@ -88,7 +88,7 @@ export default function ServicesPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 max-w-3xl mx-auto w-full relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto w-full relative z-10">
             {/* Foundation Kit — hidden until ready
             <PricingColumn
               icon={<Blocks className="size-10" />}

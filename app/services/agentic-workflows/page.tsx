@@ -23,7 +23,7 @@ const copy: LandingPageCopy = {
     ctaType: "audit",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
-    secondaryCtaInterest: "agentic",
+    interest: "agentic",
     secondaryCtaHref: "/book",
   },
   problems: {

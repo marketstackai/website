@@ -24,7 +24,7 @@ export function LandingShell({ copy, ctaTitle }: LandingShellProps) {
       {copy.crossLinks && copy.crossLinks.length > 0 && (
         <LandingCrossLinks links={copy.crossLinks} />
       )}
-      <CTA title={ctaTitle} />
+      <CTA title={ctaTitle} industry={copy.hero.industry} interest={copy.hero.interest} />
       <Footer />
     </main>
   );

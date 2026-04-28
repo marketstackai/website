@@ -6,7 +6,6 @@ import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import type { ContactFormData } from "@/components/forms/contact-form";
 import { ArrowLeftIcon, Check } from "lucide-react";
-import { GHLTracker } from "@/components/ghl-tracker";
 import { cn } from "@/lib/utils";
 import { computeResults } from "@/lib/audit/engine";
 import type { AuditResults, GHLAuditRecord } from "@/lib/audit/types";
@@ -137,15 +136,16 @@ export default function AuditPage() {
     computed: AuditResults,
   ): Promise<string | null> => {
     let sourceIndustry: string | null = null;
+    let interest: string | null = null;
     try {
       sourceIndustry = sessionStorage.getItem("ms_industry");
+      interest = sessionStorage.getItem("ms_interest");
     } catch { /* ignore */ }
 
     const tags: string[] = [];
     if (computed.hotLead) tags.push("hot");
     if (computed.highTicket) tags.push("high ticket");
     if (computed.enterpriseSignal) tags.push("enterprise");
-    if (sourceIndustry) tags.push(`industry:${sourceIndustry}`);
 
     const recommendedMap: Record<string, GHLAuditRecord["recommended"]> = {
       "Foundation Kit": "foundation_kit",
@@ -181,6 +181,7 @@ export default function AuditPage() {
           sms_consent: contact.sms_consent,
           marketing_consent: contact.marketing_consent,
           source_industry: sourceIndustry ?? undefined,
+          interest: interest ?? undefined,
           contact_updates: {
             tags_add: tags,
             customField: { recommended: computed.recommendedPackage },
@@ -210,6 +211,17 @@ export default function AuditPage() {
       console.error("GHL API submission failed:", err);
       return null;
     }
+  };
+
+  const handleAuditFormSubmit = (e: React.FormEvent) => {
+    if (step !== 11) {
+      // Form is rendered from step 2 onward so GHL tracker registers it early,
+      // but we only want to actually submit on step 11.
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    void handleFinalSubmit(e);
   };
 
   const handleFinalSubmit = async (e: React.FormEvent, overrides?: { contact: ContactFormData; quiz: typeof quizData }) => {
@@ -258,9 +270,15 @@ export default function AuditPage() {
   };
 
   const devAutoSubmit = async () => {
+    // Reuse the contact already captured on /audit/start (so the e2e test's tracker-created
+    // contact in GHL is the one we look up). Fall back to a fresh test contact only when the
+    // dev tool is invoked without going through the contact form first.
     const ts = Date.now();
     const rand = Math.floor(Math.random() * 10000);
-    const fullContact: ContactFormData = {
+    const hasSavedContact = contactData.email && contactData.email.length > 0;
+    const fullContact: ContactFormData = hasSavedContact
+      ? contactData
+      : {
       first_name: "Test", last_name: "Test", email: `test+audit-${ts}-${rand}@marketstack.ai`, phone: "",
       company_name: "The Testing Company", website: "https://example.com", sms_consent: true, marketing_consent: true,
     };
@@ -315,8 +333,6 @@ export default function AuditPage() {
 
   return (
     <>
-      <GHLTracker />
-
       {step === 11.5 && (
         <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
           <div className="flex flex-col items-center gap-4 animate-pulse">
@@ -338,7 +354,7 @@ export default function AuditPage() {
             <span className="text-sm font-medium pr-2 pt-1.5 sm:pt-0">Step {step} of {TOTAL_STEPS}</span>
           </div>
           <div className="flex-1 flex flex-col items-center sm:justify-center pt-16 sm:pt-0 px-4 sm:px-6 animate-appear overflow-y-auto">
-            <div className="w-full max-w-lg mb-12 sm:mb-0">
+            <form name="audit" onSubmit={handleAuditFormSubmit} className="w-full max-w-lg mb-12 sm:mb-0">
               {step === 2 && (
                 <div className="space-y-6">
                   <h2 className="text-2xl font-semibold mb-6 text-balance">What type of business do you operate?</h2>
@@ -352,7 +368,7 @@ export default function AuditPage() {
                     <input type="text" className="w-full bg-background border rounded-lg px-4 py-2.5 outline-hidden focus:border-brand" placeholder="e.g. Solar Installation"
                            value={quizData.industry_other} onChange={e => setQuizData({...quizData, industry_other: e.target.value})} autoFocus />
                   )}
-                  {quizData.industry === 'other' && <Button className="w-full mt-4" size="lg" onClick={nextStep}>Next</Button>}
+                  {quizData.industry === 'other' && <Button type="button" className="w-full mt-4" size="lg" onClick={nextStep}>Next</Button>}
                 </div>
               )}
               {step === 3 && (
@@ -371,7 +387,7 @@ export default function AuditPage() {
                       autoFocus 
                     />
                   </div>
-                  <Button className="w-full mt-6" size="lg" onClick={nextStep} disabled={!quizData.team_size || parseInt(quizData.team_size) < 1}>Next</Button>
+                  <Button type="button" className="w-full mt-6" size="lg" onClick={nextStep} disabled={!quizData.team_size || parseInt(quizData.team_size) < 1}>Next</Button>
                 </div>
               )}
               {step === 4 && (
@@ -421,7 +437,7 @@ export default function AuditPage() {
                       {quizData.monthly_revenue === "undisclosed" && <div className="size-2.5 rounded-full bg-brand animate-in fade-in zoom-in duration-300" />}
                     </div>
                   </div>
-                  <Button className="w-full mt-4" size="lg" onClick={nextStep} disabled={!quizData.monthly_revenue || (quizData.monthly_revenue !== "undisclosed" && (parseFloat(quizData.monthly_revenue) || 0) < 1)}>Next</Button>
+                  <Button type="button" className="w-full mt-4" size="lg" onClick={nextStep} disabled={!quizData.monthly_revenue || (quizData.monthly_revenue !== "undisclosed" && (parseFloat(quizData.monthly_revenue) || 0) < 1)}>Next</Button>
                 </div>
               )}
 
@@ -472,7 +488,7 @@ export default function AuditPage() {
                       {quizData.avg_job_value === "undisclosed" && <div className="size-2.5 rounded-full bg-brand animate-in fade-in zoom-in duration-300" />}
                     </div>
                   </div>
-                  <Button className="w-full mt-6" size="lg" onClick={nextStep} disabled={!quizData.avg_job_value || (quizData.avg_job_value !== "undisclosed" && parseFloat(quizData.avg_job_value) < 1)}>Next</Button>
+                  <Button type="button" className="w-full mt-6" size="lg" onClick={nextStep} disabled={!quizData.avg_job_value || (quizData.avg_job_value !== "undisclosed" && parseFloat(quizData.avg_job_value) < 1)}>Next</Button>
                 </div>
               )}
 
@@ -519,7 +535,7 @@ export default function AuditPage() {
                       {quizData.monthly_leads === "not_sure" && <div className="size-2.5 rounded-full bg-brand animate-in fade-in zoom-in duration-300" />}
                     </div>
                   </div>
-                  <Button className="w-full mt-4" size="lg" onClick={nextStep} disabled={!quizData.monthly_leads || (quizData.monthly_leads !== "not_sure" && (parseFloat(quizData.monthly_leads) || 0) < 1)}>Next</Button>
+                  <Button type="button" className="w-full mt-4" size="lg" onClick={nextStep} disabled={!quizData.monthly_leads || (quizData.monthly_leads !== "not_sure" && (parseFloat(quizData.monthly_leads) || 0) < 1)}>Next</Button>
                 </div>
               )}
 
@@ -534,7 +550,7 @@ export default function AuditPage() {
                   {renderMultiselectOption('manual_tasks', "Doing too much manual work")}
                   {renderMultiselectOption('tool_disconnect', "Apps and tools lack integration")}
                   {renderMultiselectOption('unsure_ai', "Not sure how AI could actually help")}
-                  <Button className="w-full mt-6" size="lg" onClick={nextStep} disabled={quizData.biggest_challenges.length === 0}>Next</Button>
+                  <Button type="button" className="w-full mt-6" size="lg" onClick={nextStep} disabled={quizData.biggest_challenges.length === 0}>Next</Button>
                 </div>
               )}
               {step === 8 && (
@@ -567,7 +583,7 @@ export default function AuditPage() {
                                   value={quizData.ai_detail} onChange={e => setQuizData({...quizData, ai_detail: e.target.value})} />
                     </div>
                   )}
-                  {quizData.ai_experience && <Button className="w-full mt-4" size="lg" onClick={nextStep}>Next</Button>}
+                  {quizData.ai_experience && <Button type="button" className="w-full mt-4" size="lg" onClick={nextStep}>Next</Button>}
                 </div>
               )}
               {step === 10 && (
@@ -627,10 +643,10 @@ export default function AuditPage() {
                     })}
                   </div>
 
-                  <Button onClick={handleFinalSubmit} size="lg" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Calculating..." : "Get Results"}</Button>
+                  <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Calculating..." : "Get Results"}</Button>
                 </div>
               )}
-            </div>
+            </form>
           </div>
         </div>
       )}

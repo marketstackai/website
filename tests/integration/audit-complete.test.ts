@@ -132,6 +132,51 @@ describe.skipIf(!RUN)("POST /api/audit/complete — live GHL integration", () =>
     }
   }, 90_000);
 
+  it("normalizes source_industry into the canonical custom field value", async () => {
+    const email = makeTestEmail();
+    const { id: contactId } = await createTestContact({
+      email,
+      firstName: "Industry",
+      lastName: "Tester",
+      companyName: "Industry Test Co",
+    });
+    cleanupIds.push(contactId);
+
+    await waitForContactIndexed(email);
+
+    const res = await fetch(`${BASE}/api/audit/complete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        full_name: "Industry Tester",
+        company_name: "Industry Test Co",
+        source_industry: "home_services",
+        contact_updates: { tags_add: [], customField: {} },
+        audit_record: {
+          industry: "home_services",
+          team_size: "3",
+          monthly_revenue: "20000",
+          avg_job_value: "1000",
+          monthly_leads: "10",
+          biggest_challenges: ["missed_leads"],
+          recommended: "foundation_kit",
+        },
+      }),
+    });
+    expect(res.ok, `status ${res.status}`).toBe(true);
+
+    const industryHit = await pollContactCustomField(
+      contactId,
+      (c) => {
+        const val = extractCustomField(c, FIELD_IDS.sourceIndustry);
+        return val === "homeservices" ? val : null;
+      },
+      { timeoutMs: 15_000, intervalMs: 1_000 },
+    );
+    expect(industryHit, "source_industry should normalize 'home_services' → 'homeservices'").toBe("homeservices");
+  }, 60_000);
+
   it("returns success (no-op) when email does not match any GHL contact", async () => {
     const email = makeTestEmail();
     const res = await fetch(`${BASE}/api/audit/complete`, {

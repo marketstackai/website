@@ -22,9 +22,7 @@ const copy: LandingPageCopy = {
       "Your best customers rarely leave reviews without being asked. An automated review system makes the ask at exactly the right moment — and turns happy customers into your most effective marketing channel.",
     ctaType: "demo",
     interest: "reviews",
-    primaryCtaLabel: "Book a Demo",
-    secondaryCtaLabel: "Start Your AI Audit",
-    secondaryCtaHref: "/audit/start",
+    secondaryCtaLabel: "Book a Demo",
   },
   problems: {
     sectionHeading: "Your reputation is lagging behind the work you're doing.",

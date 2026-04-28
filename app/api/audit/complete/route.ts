@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import { buildAuditEmail, type AuditEmailData } from "@/lib/audit/email";
-import { GHL_FIELDS, parseConsent } from "@/lib/ghl";
+import { GHL_FIELDS, normalizeIndustry, parseConsent } from "@/lib/ghl";
+import { INTEREST_SUBHEADINGS } from "@/lib/booking";
 
 const GHL_BASE = "https://services.leadconnectorhq.com";
+const VALID_INTERESTS: Set<string> = new Set(Object.keys(INTEREST_SUBHEADINGS));
 
 interface GHLContact {
   id: string;
   email: string;
+  customFields?: { id: string; value: unknown }[];
 }
 
 interface GHLContactsResponse {
@@ -54,7 +57,7 @@ async function lookupContactWithRetry(
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, full_name, business_name, company_name, sms_consent, marketing_consent, contact_updates, audit_record, computed_email } = body as {
+    const { email, full_name, business_name, company_name, sms_consent, marketing_consent, source_industry, interest, contact_updates, audit_record, computed_email } = body as {
       email: string;
       full_name?: string;
       business_name?: string;
@@ -62,6 +65,7 @@ export async function POST(request: Request) {
       sms_consent?: boolean;
       marketing_consent?: boolean;
       source_industry?: string;
+      interest?: string;
       contact_updates?: {
         tags_add?: string[];
         customField?: Record<string, string>;
@@ -102,7 +106,30 @@ export async function POST(request: Request) {
       "Content-Type": "application/json",
     };
 
-    // 2. Update contact details (name, company) if provided
+    // 2. Append interest to GHL Interests field (read-then-write to avoid overwriting)
+    if (interest && VALID_INTERESTS.has(interest)) {
+      const contactRes = await fetch(`${GHL_BASE}/contacts/${contactId}`, {
+        headers: { Authorization: `Bearer ${apiKey}`, Version: "2021-07-28" },
+      });
+      if (contactRes.ok) {
+        const { contact } = (await contactRes.json()) as { contact: GHLContact };
+        const existingField = contact.customFields?.find((f) => f.id === GHL_FIELDS.INTERESTS);
+        const currentInterests: string[] = Array.isArray(existingField?.value)
+          ? (existingField.value as string[])
+          : [];
+        if (!currentInterests.includes(interest)) {
+          await fetch(`${GHL_BASE}/contacts/${contactId}`, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify({
+              customFields: [{ id: GHL_FIELDS.INTERESTS, value: [...currentInterests, interest] }],
+            }),
+          });
+        }
+      }
+    }
+
+    // 4. Update contact details (name, company) if provided
     const contactUpdatePayload: Partial<{
       firstName: string;
       lastName: string;
@@ -129,7 +156,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // 3. Update contact tags / custom fields
+    // 5. Update contact tags / custom fields
     {
       const tagsToAdd = contact_updates?.tags_add ?? [];
       if (tagsToAdd.length > 0) {
@@ -155,6 +182,10 @@ export async function POST(request: Request) {
           const id = customFieldIdMap[key];
           if (id) customFields.push({ id, value });
         }
+      }
+
+      if (source_industry && GHL_FIELDS.SOURCE_INDUSTRY) {
+        customFields.push({ id: GHL_FIELDS.SOURCE_INDUSTRY, value: normalizeIndustry(source_industry) });
       }
 
       if (sms_consent !== undefined) {
@@ -215,6 +246,8 @@ export async function POST(request: Request) {
       if (recordRes.ok) {
         const recordData = await recordRes.json();
         recordId = recordData.record?.id ?? null;
+      } else {
+        console.error("Failed to create audit record:", recordRes.status, await recordRes.text());
       }
 
       // 4. Associate record with contact

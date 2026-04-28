@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 import Navbar from "@/components/sections/navbar/default";
@@ -14,28 +14,39 @@ const DEFAULT_SUBHEADING =
 export default function BookingContent() {
   const searchParams = useSearchParams();
 
-  const stored = getBookingIntent();
-  const interest =
-    stored.interest ||
-    searchParams.get("interest") ||
-    searchParams.get("ref");
-  const source = stored.source || searchParams.get("source");
+  // Resolved once on mount from sessionStorage + searchParams.
+  // Stored in refs so the iframe URL never changes after first render.
+  const interestRef = useRef<string | null>(null);
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [subheading, setSubheading] = useState(DEFAULT_SUBHEADING);
 
-  const iframeUrl = new URL(
-    "https://link.marketstack.ai/widget/booking/3kaQEdii0FF1El7xKgWY"
-  );
-  iframeUrl.searchParams.set("utm_source", "marketstack.ai");
-  iframeUrl.searchParams.set("utm_medium", "website");
-  if (interest) {
-    iframeUrl.searchParams.set("utm_content", interest);
-    iframeUrl.searchParams.set("interest", interest);
-  }
-  if (source) iframeUrl.searchParams.set("utm_campaign", source);
+  useEffect(() => {
+    const intent = getBookingIntent();
+    const storedIndustry = (() => { try { return sessionStorage.getItem("ms_industry"); } catch { return null; } })();
 
-  const subheading =
-    (interest &&
-      INTEREST_SUBHEADINGS[interest as keyof typeof INTEREST_SUBHEADINGS]) ||
-    DEFAULT_SUBHEADING;
+    const resolvedInterest = intent.interest || searchParams.get("interest") || searchParams.get("ref");
+    const resolvedSource = intent.source || searchParams.get("source");
+    const resolvedIndustry = storedIndustry || searchParams.get("industry");
+
+    interestRef.current = resolvedInterest;
+
+    if (resolvedInterest && INTEREST_SUBHEADINGS[resolvedInterest as keyof typeof INTEREST_SUBHEADINGS]) {
+      setSubheading(INTEREST_SUBHEADINGS[resolvedInterest as keyof typeof INTEREST_SUBHEADINGS]);
+    }
+
+    const url = new URL("https://link.marketstack.ai/widget/booking/3kaQEdii0FF1El7xKgWY");
+    url.searchParams.set("utm_source", "marketstack.ai");
+    url.searchParams.set("utm_medium", "website");
+    if (resolvedInterest) {
+      url.searchParams.set("utm_content", resolvedInterest);
+      url.searchParams.set("interest", resolvedInterest);
+    }
+    if (resolvedSource) url.searchParams.set("utm_campaign", resolvedSource);
+    if (resolvedIndustry) url.searchParams.set("industry", resolvedIndustry);
+
+    setIframeUrl(url.toString());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const taggedRef = useRef(false);
   const contactIdRef = useRef<string | null>(null);
@@ -82,20 +93,21 @@ export default function BookingContent() {
       if (
         type === "msgsndr-booking-complete" &&
         !taggedRef.current &&
-        interest &&
+        interestRef.current &&
         contactIdRef.current
       ) {
         taggedRef.current = true;
+        const sourceIndustry = (() => { try { return sessionStorage.getItem("ms_industry") ?? undefined; } catch { return undefined; } })();
         fetch("/api/booking/interest", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contactId: contactIdRef.current, interest }),
+          body: JSON.stringify({ contactId: contactIdRef.current, interest: interestRef.current, source_industry: sourceIndustry }),
         }).catch(() => {});
       }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [interest]);
+  }, []);
 
   return (
     <main className="min-h-screen w-full bg-background text-foreground flex flex-col">
@@ -114,12 +126,14 @@ export default function BookingContent() {
           className="relative rounded-2xl animate-appear [animation-delay:100ms] max-w-[90%] mx-auto"
           style={{ height: "800px", overflow: "clip" }}
         >
-          <iframe
-            src={iframeUrl.toString()}
-            style={{ width: "100%", height: "100%", border: "none" }}
-            id="3kaQEdii0FF1El7xKgWY_1775158114885"
-            title="Book a call with Market Stack"
-          />
+          {iframeUrl && (
+            <iframe
+              src={iframeUrl}
+              style={{ width: "100%", height: "100%", border: "none" }}
+              id="3kaQEdii0FF1El7xKgWY_1775158114885"
+              title="Book a call with Market Stack"
+            />
+          )}
         </div>
 
         <Script

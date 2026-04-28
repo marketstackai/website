@@ -21,7 +21,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Soil scientists and geotechnical specialists operate at the intersection of technical precision and complex project coordination. We automate the intake, reporting, and follow-up layer so your expertise stays focused on the work that requires it.",
     ctaType: "audit",
-    industry: "soil-science",
+    industry: "soil_science",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

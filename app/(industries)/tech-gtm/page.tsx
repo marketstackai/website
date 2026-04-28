@@ -21,7 +21,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Your SDRs are spending 40% of their time on tasks that should be automated. We build the GTM infrastructure layer that handles research, sequences, CRM hygiene, and follow-up — so your team spends its time on conversations that close.",
     ctaType: "audit",
-    industry: "tech-gtm",
+    industry: "tech_gtm",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

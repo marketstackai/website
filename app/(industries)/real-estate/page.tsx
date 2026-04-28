@@ -21,7 +21,7 @@ const copy: LandingPageCopy = {
     subhead:
       "In real estate, the agent who responds first wins the client. We build AI-powered systems that make instant response automatic, keep every lead warm through a long sales cycle, and free your team for the work that actually closes deals.",
     ctaType: "audit",
-    industry: "real-estate",
+    industry: "real_estate",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

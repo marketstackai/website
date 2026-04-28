@@ -24,7 +24,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Clearing and grading operations are built around fieldwork — but the jobs are won in the office. We automate the lead response, bid follow-up, and project communication that keeps your pipeline full while your crews stay on site.",
     ctaType: "audit",
-    industry: "land-clearing",
+    industry: "land_clearing",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

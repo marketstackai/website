@@ -22,9 +22,7 @@ const copy: LandingPageCopy = {
       "Most small business websites exist — they don't perform. We build fast, conversion-focused sites designed from the ground up to rank in local search and turn visitors into booked calls.",
     ctaType: "demo",
     interest: "website",
-    primaryCtaLabel: "Book a Demo",
-    secondaryCtaLabel: "Start Your AI Audit",
-    secondaryCtaHref: "/audit/start",
+    secondaryCtaLabel: "Book a Demo",
   },
   problems: {
     sectionHeading: "Your current site is costing you leads you can't see.",
@@ -79,7 +77,7 @@ const copy: LandingPageCopy = {
     ],
   },
   crossLinks: [
-    { label: "Converational AI", href: "/services/ai-conversational", description: "Engage visitors the moment they land" },
+    { label: "Conversational AI", href: "/services/ai-conversational", description: "Engage visitors the moment they land" },
     { label: "Local SEO", href: "/services/seo", description: "Rank for searches that drive your business" },
     { label: "Home Services", href: "/home-services", description: "Full systems for trades businesses" },
   ],

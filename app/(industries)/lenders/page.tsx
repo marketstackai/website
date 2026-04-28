@@ -21,7 +21,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Lending operations run on documents, timelines, and follow-up — all of which can be automated. We build AI-powered systems that handle borrower intake, document collection, and pipeline management so your team focuses on deals, not administration.",
     ctaType: "audit",
-    industry: "lenders",
+    industry: "lender",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

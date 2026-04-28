@@ -2,11 +2,11 @@ import { LandingShell } from "@/components/landing/landing-shell";
 import type { LandingPageCopy } from "@/lib/landing/types";
 
 export const metadata = {
-  title: "Converational AI",
+  title: "Conversational AI",
   description:
     "Engage leads across every channel — web chat, SMS, email, and social media DMs — with AI that qualifies intent, answers questions, and books appointments around the clock.",
   keywords: [
-    "Converational AI",
+    "Conversational AI",
     "AI web chat",
     "AI SMS automation",
     "automated lead engagement",
@@ -18,15 +18,13 @@ export const metadata = {
 
 const copy: LandingPageCopy = {
   hero: {
-    eyebrow: "Converational AI",
+    eyebrow: "Conversational AI",
     headline: "Every Message Answered. Every Lead Captured.",
     subhead:
       "Leads reach out on your website, by text, via email, and through social media DMs — often at 10pm on a Tuesday. An AI that engages across every channel the moment contact happens turns those messages into booked jobs, with no human in the loop.",
     ctaType: "demo",
-    interest: "webchat",
-    primaryCtaLabel: "Book a Demo",
-    secondaryCtaLabel: "Start Your AI Audit",
-    secondaryCtaHref: "/audit/start",
+    interest: "aiconversational",
+    secondaryCtaLabel: "Book a Demo",
   },
   problems: {
     sectionHeading: "Leads are reaching out. You're not there.",

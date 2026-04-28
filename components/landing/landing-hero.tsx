@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
 import Glow from "@/components/ui/glow";
 import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
 import { BookingLink } from "@/components/ui/booking-link";
+import { AuditLink } from "@/components/ui/audit-link";
 import type { LandingPageCopy } from "@/lib/landing/types";
 
 interface LandingHeroProps {
@@ -15,22 +15,11 @@ export function LandingHero({ copy }: LandingHeroProps) {
   const {
     eyebrow,
     headline,
-    subhead,
     ctaType,
     industry,
     interest,
-    primaryCtaLabel,
     secondaryCtaLabel,
-    secondaryCtaHref,
-    secondaryCtaInterest,
   } = copy;
-
-  const auditHref = industry
-    ? `/audit/start?industry=${industry}`
-    : "/audit/start";
-
-  const primaryLabel =
-    primaryCtaLabel ?? (ctaType === "demo" ? "Book a Demo" : "Start Your AI Audit");
 
   return (
     <Section className="fade-bottom overflow-hidden pb-12 sm:pb-16 pt-52 sm:pt-64">
@@ -47,43 +36,34 @@ export function LandingHero({ copy }: LandingHeroProps) {
           </h1>
 
           <div className="animate-appear relative z-10 flex flex-col sm:flex-row items-center justify-center gap-3 opacity-0 delay-100">
+            {/* Audit is always the primary CTA */}
+            <Button size="lg" asChild>
+              <AuditLink industry={industry} interest={interest} className="flex items-center gap-1">
+                Start Your AI Audit
+                <ArrowUpRight className="ml-1 size-4" />
+              </AuditLink>
+            </Button>
+
+            {/* Secondary: booking link (demo pages) or custom secondary */}
             {ctaType === "demo" && interest ? (
-              <Button size="lg" asChild>
-                <BookingLink interest={interest} className="flex items-center gap-1">
-                  {primaryLabel}
-                  <ArrowUpRight className="ml-1 size-4" />
+              <Button variant="outline" size="lg" asChild>
+                <BookingLink interest={interest}>
+                  {secondaryCtaLabel ?? "Book a Demo"}
                 </BookingLink>
               </Button>
-            ) : (
-              <Button size="lg" asChild>
-                <Link href={auditHref} className="flex items-center gap-1">
-                  {primaryLabel}
-                  <ArrowUpRight className="ml-1 size-4" />
-                </Link>
-              </Button>
-            )}
-
-            {secondaryCtaLabel && (
-              ctaType === "demo" ? (
-                <Button variant="outline" size="lg" asChild>
-                  <Link href={secondaryCtaHref ?? auditHref}>
+            ) : secondaryCtaLabel ? (
+              <Button variant="outline" size="lg" asChild>
+                {interest ? (
+                  <BookingLink interest={interest}>
                     {secondaryCtaLabel}
-                  </Link>
-                </Button>
-              ) : (
-                <Button variant="outline" size="lg" asChild>
-                  {secondaryCtaInterest ? (
-                    <BookingLink interest={secondaryCtaInterest}>
-                      {secondaryCtaLabel}
-                    </BookingLink>
-                  ) : (
-                    <Link href={secondaryCtaHref ?? "/book"}>
-                      {secondaryCtaLabel}
-                    </Link>
-                  )}
-                </Button>
-              )
-            )}
+                  </BookingLink>
+                ) : (
+                  <AuditLink industry={industry} className="flex items-center gap-1">
+                    {secondaryCtaLabel}
+                  </AuditLink>
+                )}
+              </Button>
+            ) : null}
           </div>
         </div>
 

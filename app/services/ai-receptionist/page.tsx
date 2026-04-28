@@ -22,9 +22,7 @@ const copy: LandingPageCopy = {
       "Your AI Receptionist qualifies inbound calls, answers questions about your business, and books appointments around the clock — no voicemail, no missed opportunities.",
     ctaType: "demo",
     interest: "aireceptionist",
-    primaryCtaLabel: "Book a Demo",
-    secondaryCtaLabel: "Start Your AI Audit",
-    secondaryCtaHref: "/audit/start",
+    secondaryCtaLabel: "Book a Demo",
   },
   problems: {
     sectionHeading: "Leads don't wait. Most businesses make them.",
@@ -79,7 +77,7 @@ const copy: LandingPageCopy = {
     ],
   },
   crossLinks: [
-    { label: "Converational AI", href: "/services/ai-conversational", description: "Engage leads across every channel" },
+    { label: "Conversational AI", href: "/services/ai-conversational", description: "Engage leads across every channel" },
     { label: "Home Services", href: "/home-services", description: "Systems built for trades" },
     { label: "Professional Services", href: "/professional-services", description: "Intake automation for firms" },
   ],

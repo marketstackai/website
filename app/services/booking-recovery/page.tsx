@@ -22,9 +22,7 @@ const copy: LandingPageCopy = {
       "Every no-show is a time slot you can't get back and revenue you already counted. An automated confirmation, reminder, and recovery system slashes no-show rates and fills cancellations before they cost you.",
     ctaType: "demo",
     interest: "bookingrecovery",
-    primaryCtaLabel: "Book a Demo",
-    secondaryCtaLabel: "Start Your AI Audit",
-    secondaryCtaHref: "/audit/start",
+    secondaryCtaLabel: "Book a Demo",
   },
   problems: {
     sectionHeading: "Your calendar has leaks you can't see in real time.",

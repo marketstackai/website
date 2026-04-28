@@ -33,7 +33,6 @@ export interface LandingPageCopy {
     primaryCtaLabel?: string;
     secondaryCtaLabel?: string;
     secondaryCtaHref?: string;
-    secondaryCtaInterest?: string;
   };
   problems: {
     sectionHeading: string;

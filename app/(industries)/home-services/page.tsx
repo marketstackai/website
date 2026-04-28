@@ -21,7 +21,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Trades businesses win on speed and follow-through. We build AI-powered systems that answer every call, follow up on every quote, and keep your operation running while you're in the field.",
     ctaType: "audit",
-    industry: "home-services",
+    industry: "home_services",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",
