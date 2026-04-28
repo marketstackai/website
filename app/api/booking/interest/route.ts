@@ -1,24 +1,11 @@
 import { NextResponse } from "next/server";
-import type { BookingInterest } from "@/lib/booking";
+import { INTEREST_SUBHEADINGS } from "@/lib/booking";
+import { GHL_FIELDS, normalizeIndustry } from "@/lib/ghl";
 
 const GHL_BASE = "https://services.leadconnectorhq.com";
-const INTERESTS_FIELD_ID = "6OW3rNue3BDI1P0zB7qc";
 
-const VALID_INTERESTS: Set<string> = new Set<BookingInterest>([
-  "kit",
-  "os",
-  "studio",
-  "workshop",
-  "rolesprint",
-  "bootcamp",
-  "stackaudit",
-  "opsaudit",
-  "growthplan",
-  "aireceptionist",
-  "speedtolead",
-  "workflow",
-  "frontoffice",
-]);
+
+const VALID_INTERESTS: Set<string> = new Set(Object.keys(INTEREST_SUBHEADINGS));
 
 interface GHLContact {
   id: string;
@@ -35,9 +22,10 @@ function ghlHeaders(apiKey: string) {
 
 export async function POST(request: Request) {
   try {
-    const { contactId, interest } = (await request.json()) as {
+    const { contactId, interest, source_industry } = (await request.json()) as {
       contactId?: string;
       interest?: string;
+      source_industry?: string;
     };
 
     if (!contactId || !interest) {
@@ -80,7 +68,7 @@ export async function POST(request: Request) {
 
     // 2. Read current interests and append if not already present
     const existingField = contact.customFields?.find(
-      (f) => f.id === INTERESTS_FIELD_ID,
+      (f) => f.id === GHL_FIELDS.INTERESTS,
     );
     const currentInterests: string[] = Array.isArray(existingField?.value)
       ? (existingField.value as string[])
@@ -96,7 +84,10 @@ export async function POST(request: Request) {
       headers: ghlHeaders(apiKey),
       body: JSON.stringify({
         customFields: [
-          { id: INTERESTS_FIELD_ID, value: [...currentInterests, interest] },
+          { id: GHL_FIELDS.INTERESTS, value: [...currentInterests, interest] },
+          ...(source_industry && GHL_FIELDS.SOURCE_INDUSTRY
+            ? [{ id: GHL_FIELDS.SOURCE_INDUSTRY, value: normalizeIndustry(source_industry) }]
+            : []),
         ],
       }),
     });

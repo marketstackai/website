@@ -1,39 +1,20 @@
 import { Section } from "../../ui/section";
-import { Button, type ButtonProps } from "../../ui/button";
-import { siteConfig } from "@/config/site";
+import { Button } from "../../ui/button";
 import Glow from "../../ui/glow";
 import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
-import { ReactNode } from "react";
-
-interface CTAButtonProps {
-  href: string;
-  text: string;
-  variant?: ButtonProps["variant"];
-  icon?: ReactNode;
-  iconRight?: ReactNode;
-}
+import { AuditLink } from "../../ui/audit-link";
 
 interface CTAProps {
   title?: string;
-  buttons?: CTAButtonProps[] | false;
+  industry?: string;
+  interest?: string;
   subtext?: string | false;
-}
-
-function isInternalHref(href: string) {
-  return href.startsWith("/");
 }
 
 export default function CTA({
   title = "Ready to eliminate your bottlenecks?",
-  buttons = [
-    {
-      href: `${siteConfig.auditUrl}`,
-      text: "Start Your AI Audit",
-      variant: "default" as const,
-      iconRight: <ArrowUpRight className="ml-2 size-4" />,
-    },
-  ],
+  industry,
+  interest,
   subtext = "AI Readiness Report",
 }: CTAProps) {
   return (
@@ -42,43 +23,19 @@ export default function CTA({
         <h2 className="max-w-[640px] text-3xl leading-tight font-semibold sm:text-5xl sm:leading-tight">
           {title}
         </h2>
-        {buttons !== false && buttons.length > 0 && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex justify-center gap-4">
-              {buttons.map((button, index) => (
-                <Button
-                  key={index}
-                  variant={button.variant || "default"}
-                  size="lg"
-                  asChild
-                  className="group"
-                >
-                  {isInternalHref(button.href) ? (
-                    <Link
-                      href={button.href}
-                      className="flex items-center gap-1"
-                    >
-                      {button.icon}
-                      {button.text}
-                      {button.iconRight}
-                    </Link>
-                  ) : (
-                    <a href={button.href} className="flex items-center gap-1">
-                      {button.icon}
-                      {button.text}
-                      {button.iconRight}
-                    </a>
-                  )}
-                </Button>
-              ))}
-            </div>
-            {subtext && (
-              <p className="text-muted-foreground animate-appear text-sm delay-300">
-                {subtext}
-              </p>
-            )}
-          </div>
-        )}
+        <div className="flex flex-col items-center gap-4">
+          <Button size="lg" asChild className="group">
+            <AuditLink industry={industry} interest={interest} className="flex items-center gap-1">
+              Start Your AI Audit
+              <ArrowUpRight className="ml-2 size-4" />
+            </AuditLink>
+          </Button>
+          {subtext && (
+            <p className="text-muted-foreground animate-appear text-sm delay-300">
+              {subtext}
+            </p>
+          )}
+        </div>
       </div>
       <div className="absolute top-0 left-0 h-full w-full translate-y-[1rem] opacity-80 transition-all duration-500 ease-in-out group-hover:translate-y-[-2rem] group-hover:opacity-100">
         <Glow variant="bottom" />

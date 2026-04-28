@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import { inter } from "@/lib/fonts";
 import { ThemeProvider } from "@/components/contexts/theme-provider";
+import { GHLTracker } from "@/components/ghl-tracker";
 import { siteConfig } from "../config/site";
 
 export const metadata: Metadata = {
@@ -66,6 +67,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} bg-background antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
+        <GHLTracker />
       </body>
     </html>
   );

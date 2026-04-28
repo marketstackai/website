@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { ContactForm, ContactFormData } from "@/components/forms/contact-form";
 import { ArrowRightIcon, ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
-import { GHLTracker } from "@/components/ghl-tracker";
 
 import { cn } from "@/lib/utils";
 
@@ -27,6 +26,17 @@ export default function AuditStartPage() {
   const router = useRouter();
   const [view, setView] = useState<0 | 1>(0);
   const [savedContact, setSavedContact] = useState<ContactFormData | undefined>();
+
+  useEffect(() => {
+    // Silently capture industry attribution from landing page links
+    const params = new URLSearchParams(window.location.search);
+    const industry = params.get("industry");
+    if (industry) {
+      try {
+        sessionStorage.setItem("ms_industry", industry);
+      } catch { /* ignore */ }
+    }
+  }, []);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("ms_audit_contact");
@@ -75,6 +85,8 @@ export default function AuditStartPage() {
           company_name: data.company_name,
           sms_consent: data.sms_consent,
           marketing_consent: data.marketing_consent,
+          source_industry: sessionStorage.getItem("ms_industry") ?? undefined,
+          interest: sessionStorage.getItem("ms_interest") ?? undefined,
         }),
         keepalive: true,
       });
@@ -85,7 +97,6 @@ export default function AuditStartPage() {
 
   return (
     <>
-      <GHLTracker />
       <main className="min-h-screen w-full bg-background text-foreground flex flex-col relative overflow-hidden">
         <Section className={cn("flex-1 flex flex-col items-center sm:justify-center pt-16 sm:pt-0", view === 0 ? "justify-center" : "px-4")}>
           <div className="max-w-container mx-auto flex flex-col items-center gap-8 text-center px-4 relative z-10 w-full sm:pt-0">

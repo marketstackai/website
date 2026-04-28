@@ -102,9 +102,7 @@ export default function Navigation({
               <>
                 {item.href ? (
                   <Link href={item.href}>
-                    <NavigationMenuTrigger className="cursor-pointer">
-                      {item.title}
-                    </NavigationMenuTrigger>
+                    <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
                   </Link>
                 ) : (
                   <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>

@@ -8,6 +8,7 @@ import {
   makeTestEmail,
   pollAssociatedAuditRecord,
   pollContactCustomField,
+  waitForContactIndexed,
 } from "../support/ghl";
 
 const RUN = process.env.RUN_GHL_TESTS === "1" || process.env.RUN_GHL_TESTS === "true";
@@ -46,10 +47,11 @@ test.describe("audit funnel — end-to-end via GHL tracker", () => {
       await page.locator('input[name="email"]').fill(email);
       await page.locator('input[name="phone"]').fill("5551234567");
 
-      // Visible SMS/marketing checkboxes live inside a <form name="contact"> (tracker-observed).
-      // First checkbox = SMS, second = marketing. Only check SMS.
-      const visibleCheckboxes = page.locator('form[name="contact"] input[type=checkbox]');
-      await visibleCheckboxes.nth(0).check();
+      // Visible SMS/marketing toggles are <button role="checkbox"> (so GHL's heuristic
+      // doesn't try to capture them — captured value comes from the sr-only text inputs).
+      // First = SMS, second = marketing. Only toggle SMS on.
+      const consentToggles = page.locator('form[name="contact"] button[role="checkbox"]');
+      await consentToggles.nth(0).click();
 
       await page.getByRole("button", { name: /^next$/i }).click();
 
@@ -60,10 +62,12 @@ test.describe("audit funnel — end-to-end via GHL tracker", () => {
         timeout: 15_000,
       });
 
-      // Give the GHL tracker a moment to kick off contact creation before auto-submitting.
-      // Both /api/audit/contact and /api/audit/complete now retry for ~20s, so we don't need
-      // a long deterministic wait here.
-      await page.waitForTimeout(3_000);
+      // Wait for the GHL tracker + /api/audit/contact pipeline to make the contact
+      // *stably* discoverable in GHL's search index (waitForContactIndexed requires
+      // 2 consecutive hits — single-hit polling can flicker). Auto-submitting before
+      // this point means /api/audit/complete blows its lookup retry window before
+      // the contact appears, and the audit record never gets created.
+      await waitForContactIndexed(email, { timeoutMs: 60_000, intervalMs: 1_500 });
 
       await page.evaluate(() => {
         const autoSubmit = Array.from(document.querySelectorAll("button")).find(

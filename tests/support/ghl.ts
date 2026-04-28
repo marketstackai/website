@@ -314,4 +314,5 @@ export const FIELD_IDS = {
   marketingConsent: "JnitmKqDrHkP7JOCcY41",
   recommendation: "ukVdGi6W4efUGx3SIqHG",
   interests: "6OW3rNue3BDI1P0zB7qc",
+  sourceIndustry: "AR4nCG06ilvglIvl7XqM",
 } as const;

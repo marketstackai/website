@@ -45,7 +45,6 @@ export function RevenuLeakHero({
   maxImpactMonthly,
   maxImpactAnnual,
   realisticMonthly,
-  realisticAnnual,
   conservativeMonthly,
   optimisticMonthly,
   isRevenueUndisclosed,
