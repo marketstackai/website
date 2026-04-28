@@ -132,7 +132,11 @@ export async function POST(request: Request) {
       customFields.push({ id: GHL_FIELDS.MARKETING_CONSENT, value: parseConsent(body.marketing_consent) });
     }
     if (body.source_industry && GHL_FIELDS.SOURCE_INDUSTRY) {
-      customFields.push({ id: GHL_FIELDS.SOURCE_INDUSTRY, value: normalizeIndustry(body.source_industry) });
+      const normalized = normalizeIndustry(body.source_industry);
+      console.log("[GHL Contact Sync] source_industry:", { raw: body.source_industry, normalized });
+      customFields.push({ id: GHL_FIELDS.SOURCE_INDUSTRY, value: normalized });
+    } else {
+      console.log("[GHL Contact Sync] source_industry not sent:", { raw: body.source_industry, hasFieldId: Boolean(GHL_FIELDS.SOURCE_INDUSTRY) });
     }
 
     // Append the booking interest to the multi-select Interests field. Read the current

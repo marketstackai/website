@@ -21,7 +21,7 @@ const copy: LandingPageCopy = {
     subhead:
       "Every active build involves owners, subs, suppliers, inspectors, and lenders — all needing information at different times. We automate the communication and coordination layer so your project managers can manage more jobs without more chaos.",
     ctaType: "audit",
-    industry: "builders",
+    industry: "builder",
     primaryCtaLabel: "Start Your AI Audit",
     secondaryCtaLabel: "Book a Discovery Call",
     secondaryCtaHref: "/book",

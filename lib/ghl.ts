@@ -12,25 +12,23 @@ export const GHL_FIELDS = {
 type CanonicalIndustry =
   | "Home Services"
   | "Real Estate"
-  | "Professional Service"
+  | "Professional Services"
   | "E-Commerce"
-  | "Tech"
+  | "Tech GTM"
   | "Other";
 
 const INDUSTRY_MAP: Record<string, CanonicalIndustry> = {
-  // quiz values (underscore form)
   home_services: "Home Services",
   real_estate: "Real Estate",
-  professional_service: "Professional Service",
-  professional_services: "Professional Service",
-  tech: "Tech",
+  professional_service: "Professional Services",
+  professional_services: "Professional Services",
   ecom: "E-Commerce",
   ecommerce: "E-Commerce",
   e_commerce: "E-Commerce",
   manufactured_homes: "Real Estate",
-  // industry page slugs (hyphen form normalised to underscore before lookup)
-  tech_gtm: "Tech",
-  builders: "Home Services",
+  tech_gtm: "Tech GTM",
+  tech: "Tech GTM",
+  builder: "Home Services",
   lender: "Real Estate",
 };
 
