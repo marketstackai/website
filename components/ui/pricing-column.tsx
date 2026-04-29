@@ -9,7 +9,7 @@ import { ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const pricingColumnVariants = cva(
-  "max-w-container relative flex flex-col gap-6 overflow-hidden rounded-2xl p-8 shadow-xl",
+  "max-w-container relative flex flex-col gap-6 overflow-hidden rounded-2xl p-8 shadow-xl min-w-[280px]",
   {
     variants: {
       variant: {
@@ -85,7 +85,7 @@ export function PricingColumn({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3 lg:flex-col lg:items-start xl:flex-row xl:items-center">
+        <div className="flex flex-row items-center gap-3">
           <div className="flex items-start gap-1">
             {hasNumericPrice && (
               <span className="text-muted-foreground text-2xl font-bold mt-1">$</span>

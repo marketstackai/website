@@ -2,9 +2,9 @@ import { LandingShell } from "@/components/landing/landing-shell";
 import type { LandingPageCopy } from "@/lib/landing/types";
 
 export const metadata = {
-  title: "AI Automation for Construction & Land Lenders",
+  title: "AI Automation for Lenders",
   description:
-    "Construction lenders, hard-money lenders, and land lenders use Market Stack to automate borrower intake, document processing, and pipeline follow-up — closing more loans with less manual work.",
+    "Construction lenders, hard-money lenders, and DSCR lenders use Market Stack to automate borrower intake, document processing, and pipeline follow-up — closing more loans with less manual work.",
   keywords: [
     "AI for lenders",
     "construction lender automation",
@@ -16,7 +16,7 @@ export const metadata = {
 
 const copy: LandingPageCopy = {
   hero: {
-    eyebrow: "Construction & Land Lenders",
+    eyebrow: "Lenders",
     headline: "Process More Loans. Chase Less Paper.",
     subhead:
       "Lending operations run on documents, timelines, and follow-up — all of which can be automated. We build AI-powered systems that handle borrower intake, document collection, and pipeline management so your team focuses on deals, not administration.",

@@ -14,7 +14,7 @@ export function LandingCrossLinks({
 }: LandingCrossLinksProps) {
   return (
     <Section className="py-12 sm:py-16">
-      <div className="max-w-container mx-auto px-6">
+      <div className="max-w-container mx-auto px-0 sm:px-6">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6 text-center">
           {heading}
         </p>

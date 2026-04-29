@@ -28,18 +28,18 @@ interface FooterProps {
 export default function FooterSection({
   columns = [
     {
-      title: "Platform",
-      links: [
-        { text: "Services", href: "/services" },
-        { text: "AI Audit", href: "/audit" },
-      ],
-    },
-    {
       title: "Connect",
       links: [
         { text: "LinkedIn", href: siteConfig.links.linkedin },
         { text: "X / Twitter", href: siteConfig.links.twitter },
         { text: "GitHub", href: siteConfig.links.github },
+      ],
+    },
+    {
+      title: "Platform",
+      links: [
+        { text: "Services", href: "/services" },
+        { text: "AI Audit", href: "/audit" },
       ],
     },
   ],
@@ -63,7 +63,9 @@ export default function FooterSection({
                     key={linkIndex}
                     href={link.href}
                     className="text-muted-foreground text-sm"
-                    {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    {...(link.href.startsWith("http")
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
                   >
                     {link.text}
                   </a>
@@ -75,12 +77,16 @@ export default function FooterSection({
             <div>{copyright}</div>
             <div className="flex items-center gap-4">
               {policies.map((policy, index) => (
-                <a key={index} href={policy.href} className="text-muted-foreground transition-colors hover:text-foreground">
+                <a
+                  key={index}
+                  href={policy.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   {policy.text}
                 </a>
               ))}
               {showThemeToggle && <ThemeToggle type={"dropdown"} />}
-              <MarketStack className="size-6 text-primary ml-2" />
+              <MarketStack className="text-primary ml-2 size-6" />
             </div>
           </FooterBottom>
         </Footer>

@@ -46,7 +46,7 @@ export default function Hero({
   badge = (
     <Badge variant="outline" className="animate-appear">
       <span className="text-muted-foreground">
-        Now Offering Free Operations Audits
+        Now Offering Free AI Audits
       </span>
       {isInternalHref(siteConfig.auditUrl) ? (
         <Link

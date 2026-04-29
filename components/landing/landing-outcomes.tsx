@@ -9,7 +9,7 @@ interface LandingOutcomesProps {
 export function LandingOutcomes({ copy }: LandingOutcomesProps) {
   return (
     <Section className="py-16 sm:py-20">
-      <div className="max-w-container mx-auto px-6">
+      <div className="max-w-container mx-auto px-0 sm:px-6">
         <div className="text-center mb-12">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
             What You Get
