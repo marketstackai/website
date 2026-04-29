@@ -8,11 +8,12 @@ import { ThemeToggle } from "../../ui/theme-toggle";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTrigger,
   SheetHeader,
   SheetTitle,
 } from "../../ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { ReactNode } from "react";
@@ -50,6 +51,27 @@ function isInternalHref(href: string) {
   return href.startsWith("/");
 }
 
+const SERVICES_LINKS = [
+  { title: "The Stack", href: "/services#stack", description: "Automation for your specific needs." },
+  { title: "Train", href: "/services#train", description: "Fast-track your team with AI workshops." },
+  { title: "Strategize", href: "/services#strategize", description: "Map your bottlenecks and build strategy." },
+  { title: "Build", href: "/services#build", description: "Custom software and AI engineering." },
+];
+
+const INDUSTRIES_LINKS = [
+  { title: "Home Services", href: "/home-services", description: "HVAC, roofing, plumbing, trades" },
+  { title: "Real Estate", href: "/real-estate", description: "Brokerages, agents, investors" },
+  { title: "Lenders", href: "/lenders", description: "Construction and land lending" },
+  { title: "Professional Services", href: "/professional-services", description: "Law, accounting, consulting" },
+  { title: "E-Commerce", href: "/e-commerce", description: "DTC brands, Shopify operators" },
+  { title: "Tech & SaaS GTM", href: "/tech-gtm", description: "B2B SaaS and RevOps teams" },
+  { title: "Land Clearing & Grading", href: "/land-clearing", description: "Clearing and grading operators" },
+  { title: "Surveying", href: "/surveying", description: "Land surveyors" },
+  { title: "Soil Science", href: "/soil-science", description: "Geotechnical specialists" },
+  { title: "Builders", href: "/builders", description: "Custom and production builders" },
+  { title: "Manufactured Homes", href: "/manufactured-homes", description: "Dealers and installers" },
+];
+
 const servicesContent = (
   <div className="grid p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] gap-3">
     <div className="row-span-3">
@@ -64,11 +86,7 @@ const servicesContent = (
         </p>
       </Link>
     </div>
-    {[
-      { title: "Train", href: "/services#train", description: "Fast-track your team with highly actionable AI workshops." },
-      { title: "Strategize", href: "/services#strategize", description: "Map your bottlenecks and create custom strategy." },
-      { title: "Build", href: "/services#build", description: "Full-scale custom software development and AI engineering." },
-    ].map((item) => (
+    {SERVICES_LINKS.slice(1).map((item) => (
       <Link
         key={item.href}
         href={item.href}
@@ -84,14 +102,7 @@ const servicesContent = (
 const industriesContent = (
   <div className="grid gap-2 p-4 md:w-[500px] lg:w-[580px] lg:grid-cols-2">
     <div>
-      {[
-        { title: "Home Services", href: "/home-services", description: "HVAC, roofing, plumbing, trades" },
-        { title: "Real Estate", href: "/real-estate", description: "Brokerages, agents, investors" },
-        { title: "Lenders", href: "/lenders", description: "Construction and land lending" },
-        { title: "Professional Services", href: "/professional-services", description: "Law, accounting, consulting" },
-        { title: "E-Commerce", href: "/e-commerce", description: "DTC brands, Shopify operators" },
-        { title: "Tech & SaaS GTM", href: "/tech-gtm", description: "B2B SaaS and RevOps teams" },
-      ].map((item) => (
+      {INDUSTRIES_LINKS.slice(0, 6).map((item) => (
         <Link
           key={item.href}
           href={item.href}
@@ -103,13 +114,7 @@ const industriesContent = (
       ))}
     </div>
     <div>
-      {[
-        { title: "Land Clearing & Grading", href: "/land-clearing", description: "Clearing and grading operators" },
-        { title: "Surveying", href: "/surveying", description: "Land surveyors" },
-        { title: "Soil Science", href: "/soil-science", description: "Geotechnical specialists" },
-        { title: "Builders", href: "/builders", description: "Custom and production builders" },
-        { title: "Manufactured Homes", href: "/manufactured-homes", description: "Dealers and installers" },
-      ].map((item) => (
+      {INDUSTRIES_LINKS.slice(6).map((item) => (
         <Link
           key={item.href}
           href={item.href}
@@ -128,16 +133,6 @@ export default function Navbar({
   logo = <MarketStack />,
   name = "MARKET STACK",
   homeUrl = "/",
-  mobileLinks = [
-    { text: "Services", href: "/services" },
-    { text: "Home Services", href: "/home-services" },
-    { text: "Real Estate", href: "/real-estate" },
-    { text: "Lenders", href: "/lenders" },
-    { text: "Professional Services", href: "/professional-services" },
-    { text: "Land Clearing & Grading", href: "/land-clearing" },
-    { text: "Builders", href: "/builders" },
-    { text: "AI Audit", href: "/audit" },
-  ],
   actions = [
     {
       text: "AI Audit",
@@ -216,7 +211,7 @@ export default function Navbar({
                 <Link
                   key={index}
                   href={action.href}
-                  className="text-muted-foreground hover:text-foreground hidden cursor-pointer text-sm font-medium transition-colors md:flex"
+                  className="text-muted-foreground hover:text-foreground hidden  cursor-pointer text-sm font-medium transition-colors md:flex"
                 >
                   {action.text}
                 </Link>
@@ -230,57 +225,78 @@ export default function Navbar({
                 </a>
               ),
             )}
-            {mobileLinks.length > 0 && (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 md:hidden"
-                  >
-                    <Menu className="size-5" />
-                    <span className="sr-only">Toggle navigation menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                  <SheetHeader>
-                    <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                  </SheetHeader>
-                  <nav className="grid gap-4 text-lg font-medium mt-6">
-                    {isInternalHref(homeUrl) ? (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 md:hidden"
+                >
+                  <Menu className="size-5" />
+                  <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[85vw] sm:max-w-md overflow-y-auto" aria-describedby={undefined}>
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                  <SheetDescription className="sr-only">Site navigation links</SheetDescription>
+                </SheetHeader>
+                <nav className="flex flex-col gap-6 mt-6 pb-8">
+                  {/* Services group */}
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-2 mb-1">
+                      Services
+                    </p>
+                    {SERVICES_LINKS.map((link) => (
                       <Link
-                        href={homeUrl}
-                        className="flex items-center gap-2 text-xl font-bold"
-                      ></Link>
+                        key={link.href}
+                        href={link.href}
+                        className="flex flex-col rounded-lg px-3 py-3 hover:bg-accent transition-colors"
+                      >
+                        <span className="text-sm font-medium text-foreground">{link.title}</span>
+                        <span className="text-xs text-muted-foreground mt-0.5">{link.description}</span>
+                      </Link>
+                    ))}
+                  </div>
+
+                  <div className="h-px bg-border" />
+
+                  {/* Industries group */}
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground px-2 mb-1">
+                      Industries
+                    </p>
+                    {INDUSTRIES_LINKS.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="flex flex-col rounded-lg px-3 py-3 hover:bg-accent transition-colors"
+                      >
+                        <span className="text-sm font-medium text-foreground">{link.title}</span>
+                        <span className="text-xs text-muted-foreground mt-0.5">{link.description}</span>
+                      </Link>
+                    ))}
+                  </div>
+
+                  <div className="h-px bg-border" />
+
+                  {/* Primary CTA */}
+                  <Button size="lg" asChild className="w-full">
+                    {isInternalHref(siteConfig.auditUrl) ? (
+                      <Link href={siteConfig.auditUrl} className="flex items-center gap-1">
+                        Start Your AI Audit
+                        <ArrowUpRight className="size-4" />
+                      </Link>
                     ) : (
-                      <a
-                        href={homeUrl}
-                        className="flex items-center gap-2 text-xl font-bold"
-                      ></a>
+                      <a href={siteConfig.auditUrl} className="flex items-center gap-1">
+                        Start Your AI Audit
+                        <ArrowUpRight className="size-4" />
+                      </a>
                     )}
-                    {mobileLinks.map((link, index) =>
-                      isInternalHref(link.href) ? (
-                        <Link
-                          key={index}
-                          href={link.href}
-                          className="text-muted-foreground hover:text-foreground"
-                        >
-                          {link.text}
-                        </Link>
-                      ) : (
-                        <a
-                          key={index}
-                          href={link.href}
-                          className="text-muted-foreground hover:text-foreground"
-                        >
-                          {link.text}
-                        </a>
-                      ),
-                    )}
-                  </nav>
-                </SheetContent>
-              </Sheet>
-            )}
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
           </NavbarRight>
         </NavbarComponent>
       </div>

@@ -70,15 +70,15 @@ export default function ServicesPage() {
       <Navbar />
       
       {/* Packages Section */}
-      <Section id="stack" className="pt-24 pb-12 sm:pt-32 sm:pb-24">
-        <div className="max-w-container mx-auto px-6 relative">
+      <Section id="stack" className="pt-12 pb-12 sm:pt-32 sm:pb-24 overflow-hidden">
+        <div className="max-w-container mx-auto px-0 sm:px-6 relative">
           <div className="text-center mb-16">
             <Badge variant="outline" className="animate-appear mb-6">
               <span className="text-muted-foreground mr-2">
-                Now Offering Free Operations Audits
+                Now Offering Free AI Audits
               </span>
               <Link href={siteConfig.auditUrl} className="flex items-center gap-1 hover:text-brand transition-colors">
-                Learn more
+                Start
                 <ArrowUpRight className="size-3" />
               </Link>
             </Badge>
@@ -123,7 +123,7 @@ export default function ServicesPage() {
               priceSubtext={
                 <>
                   <span className="text-sm">/ month</span>
-                  <span className="text-muted-foreground text-sm">$4970 setup fee</span>
+                  <span className="text-muted-foreground text-sm">$4970 setup</span>
                 </>
               }
               priceNote="Done for you with ongoing support options."
@@ -162,8 +162,8 @@ export default function ServicesPage() {
       </Section>
 
       {/* Training & Enablement */}
-      <Section id="train" className="py-12">
-        <div className="max-w-[800px] mx-auto px-6 relative">
+      <Section id="train" className="py-12 overflow-hidden">
+        <div className="max-w-[800px] mx-auto px-0 sm:px-6 relative">
           <div className="relative z-10">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-semibold mb-4">Training & Enablement</h2>
@@ -269,8 +269,8 @@ export default function ServicesPage() {
       </Section>
 
       {/* Strategize Section */}
-      <Section id="strategize" className="py-12">
-        <div className="max-w-[800px] mx-auto px-6 relative">
+      <Section id="strategize" className="py-12 overflow-hidden">
+        <div className="max-w-[800px] mx-auto px-0 sm:px-6 relative">
           <div className="relative z-10">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-semibold mb-4">Strategy & Discovery</h2>
@@ -383,8 +383,8 @@ export default function ServicesPage() {
       </Section>
 
       {/* Build Section */}
-      <Section id="build" className="py-12">
-        <div className="max-w-[1000px] mx-auto px-6 relative">
+      <Section id="build" className="py-12 overflow-hidden">
+        <div className="max-w-[1000px] mx-auto px-0 sm:px-6 relative">
           <div className="relative z-10">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-semibold mb-4">Customized Builds</h2>
@@ -440,8 +440,8 @@ export default function ServicesPage() {
       </Section>
 
       {/* Support Section */}
-      <Section id="support" className="py-12">
-        <div className="max-w-[1000px] mx-auto px-6 relative">
+      <Section id="support" className="py-12 overflow-hidden">
+        <div className="max-w-[1000px] mx-auto px-0 sm:px-6 relative">
           <div className="relative z-10">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-semibold mb-4">Ongoing Support & Retainers</h2>
@@ -468,8 +468,8 @@ export default function ServicesPage() {
       </Section>
 
       {/* Spoke Cross-Links */}
-      <Section id="solutions" className="py-12">
-        <div className="max-w-[1000px] mx-auto px-6 relative">
+      <Section id="solutions" className="py-12 overflow-hidden">
+        <div className="max-w-[1000px] mx-auto px-0 sm:px-6 relative">
           <div className="relative z-10">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-semibold mb-4">Explore by Solution</h2>

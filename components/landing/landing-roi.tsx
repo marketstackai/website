@@ -8,9 +8,9 @@ interface LandingROIProps {
 export function LandingROI({ copy }: LandingROIProps) {
   return (
     <Section className="py-16 sm:py-20">
-      <div className="max-w-container mx-auto px-6">
+      <div className="max-w-container mx-auto px-0 sm:px-6">
         <div className="max-w-[880px] mx-auto rounded-2xl border border-border bg-card overflow-hidden">
-          <div className="px-8 py-10 sm:px-12 sm:py-12">
+          <div className="px-5 py-8 sm:px-12 sm:py-12">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
               The Math
             </p>

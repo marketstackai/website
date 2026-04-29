@@ -8,7 +8,7 @@ interface LandingProblemsProps {
 export function LandingProblems({ copy }: LandingProblemsProps) {
   return (
     <Section className="pt-10 pb-16 sm:pt-12 sm:pb-20">
-      <div className="max-w-container mx-auto px-6">
+      <div className="max-w-container mx-auto px-0 sm:px-6">
         <div className="text-center mb-12">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
             The Problem
