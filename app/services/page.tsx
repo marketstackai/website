@@ -186,8 +186,8 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm font-semibold">Hands-on session to build team buy-in before committing to a full system build.</p>
-                  <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
+                  <p className="text-muted-foreground text-base font-semibold">Hands-on session to build team buy-in before committing to a full system build.</p>
+                  <ul className="text-muted-foreground text-base mt-2 space-y-1 list-disc pl-4">
                     <li>Practical AI applications your team can use in daily roles immediately</li>
                     <li>No technical background required</li>
                     <li>90 minutes, in-person or virtual</li>
@@ -216,7 +216,7 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm font-semibold">Train specific roles on AI tools and workflows customized to their actual daily job.</p>
+                  <p className="text-muted-foreground text-base font-semibold">Train specific roles on AI tools and workflows customized to their actual daily job.</p>
                   <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
                     <li>Covers office managers, dispatchers, estimators, project managers</li>
                     <li>Each person walks away with workflows they built during training</li>
@@ -246,7 +246,7 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm font-semibold">Build internal AI capability — your ops lead becomes the in-house AI person.</p>
+                  <p className="text-muted-foreground text-base font-semibold">Build internal AI capability — your ops lead becomes the in-house AI person.</p>
                   <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
                     <li>Tool selection, prompt engineering, workflow design, and internal SOPs</li>
                     <li>6&#8211;8 week comprehensive program</li>
@@ -293,7 +293,7 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm font-semibold">Map your lead flow, tech stack, and bottlenecks in one session.</p>
+                  <p className="text-muted-foreground text-base font-semibold">Map your lead flow, tech stack, and bottlenecks in one session.</p>
                   <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
                     <li>Clear picture of where you&apos;re leaking revenue and what to fix first</li>
                     <li>$500 fee credits toward any package purchase</li>
@@ -330,7 +330,7 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm font-semibold">Full workflow mapping with a prioritized implementation roadmap and real ROI projections.</p>
+                  <p className="text-muted-foreground text-base font-semibold">Full workflow mapping with a prioritized implementation roadmap and real ROI projections.</p>
                   <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
                     <li>Covers your entire operation over a deep 2-week engagement</li>
                     <li>Includes one quick-win build so you see value immediately</li>
@@ -360,7 +360,7 @@ export default function ServicesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm font-semibold">Design your target operating model with a phased implementation plan.</p>
+                  <p className="text-muted-foreground text-base font-semibold">Design your target operating model with a phased implementation plan.</p>
                   <ul className="text-muted-foreground text-sm mt-2 space-y-1 list-disc pl-4">
                     <li>Map every revenue-touching workflow in your business</li>
                     <li>Architecture and tooling recommendations per phase</li>
@@ -401,18 +401,18 @@ export default function ServicesPage() {
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <p className="font-medium">{item.name}</p>
                           <div className="text-right shrink-0">
-                            <p className="font-semibold text-sm">{item.price}</p>
-                            <p className="text-xs text-muted-foreground">{item.timeline}</p>
+                            <p className="font-semibold text-base">{item.price}</p>
+                            <p className="text-sm text-muted-foreground">{item.timeline}</p>
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">{item.desc}</p>
+                        <p className="text-base text-muted-foreground">{item.desc}</p>
                       </div>
                     ))}
                   </div>
 
                   {/* Desktop: table */}
                   <div className="hidden md:block overflow-x-auto rounded-xl border bg-card text-card-foreground shadow-sm">
-                    <table className="w-full text-sm text-left">
+                    <table className="w-full text-base text-left">
                       <thead className="bg-muted text-muted-foreground uppercase border-b">
                         <tr>
                           <th className="px-6 py-4 font-medium">Service</th>
@@ -497,7 +497,7 @@ export default function ServicesPage() {
                   className="group flex flex-col gap-1 rounded-xl border bg-card p-5 hover:bg-accent transition-colors"
                 >
                   <p className="font-medium group-hover:text-foreground transition-colors">{item.label}</p>
-                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                  <p className="text-base text-muted-foreground">{item.description}</p>
                 </Link>
               ))}
               <BookingLink
@@ -507,7 +507,7 @@ export default function ServicesPage() {
                 <div className="pointer-events-none absolute -top-8 left-1/2 h-16 w-3/4 -translate-x-1/2 rounded-full bg-brand-foreground/60 blur-2xl" />
                 <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/[0.04] via-brand/10 to-transparent" />
                 <p className="relative font-medium group-hover:text-foreground transition-colors">Custom Build</p>
-                <p className="relative text-sm text-muted-foreground">Studio-tier engagements for unique infrastructure</p>
+                <p className="relative text-base text-muted-foreground">Studio-tier engagements for unique infrastructure</p>
               </BookingLink>
             </div>
           </div>

@@ -44,8 +44,8 @@ export interface AuditEmailData {
   firstName: string;
   tierLabel: string;
   totalScore: number;
-  realisticMonthly: number;
-  realisticAnnual: number;
+  maxImpactMonthly: number;
+  maxImpactAnnual: number;
   recommendedPackage: string;
   aiReadinessScore: string;
   aiReadinessDescription: string;
@@ -152,9 +152,9 @@ export function buildAuditEmail(data: AuditEmailData): string {
                 <!-- Revenue hero -->
                 <tr>
                   <td style="padding:36px 24px 32px;text-align:center;">
-                    <p style="margin:0 0 20px;font-size:11px;font-weight:700;color:${VERY_MUTED};text-transform:uppercase;letter-spacing:0.16em;">Estimated Revenue at Risk &mdash; Monthly</p>
-                    <p style="margin:0 0 10px;font-size:64px;font-weight:800;color:${BRAND};line-height:1;letter-spacing:-0.04em;text-shadow:0 0 60px ${BRAND_GLOW};">$${fmt(data.realisticMonthly)}</p>
-                    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};">That&#39;s $${fmt(data.realisticAnnual)} slipping away each year from leads you&#39;re already generating.</p>
+                    <p style="margin:0 0 20px;font-size:11px;font-weight:700;color:${VERY_MUTED};text-transform:uppercase;letter-spacing:0.16em;">Estimated Revenue Lost &mdash; Monthly</p>
+                    <p style="margin:0 0 10px;font-size:64px;font-weight:800;color:${BRAND};line-height:1;letter-spacing:-0.04em;text-shadow:0 0 60px ${BRAND_GLOW};">$${fmt(data.maxImpactMonthly)}</p>
+                    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};">That&#39;s $${fmt(data.maxImpactAnnual)} slipping away each year from leads you&#39;re already generating.</p>
                     <span style="display:inline-block;padding:5px 16px;border-radius:100px;font-size:12px;font-weight:700;color:${tier.color};background:${tier.bg};border:1px solid ${tier.border};">${data.tierLabel} Stage</span>
                   </td>
                 </tr>

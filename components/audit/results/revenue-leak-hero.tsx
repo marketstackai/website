@@ -3,15 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { ShieldAlert } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface RevenuLeakHeroProps {
   maxImpactMonthly: number;
   maxImpactAnnual: number;
-  realisticMonthly: number;
-  realisticAnnual: number;
-  conservativeMonthly: number;
-  optimisticMonthly: number;
   isAdjusted?: boolean;
   originalMaxImpact?: number;
   isRevenueUndisclosed: boolean;
@@ -44,9 +39,6 @@ function useCountUp(target: number, duration = 1500): number {
 export function RevenuLeakHero({
   maxImpactMonthly,
   maxImpactAnnual,
-  realisticMonthly,
-  conservativeMonthly,
-  optimisticMonthly,
   isRevenueUndisclosed,
   isJobValueUndisclosed,
 }: RevenuLeakHeroProps) {
@@ -70,7 +62,7 @@ export function RevenuLeakHero({
 
       <div className="space-y-4">
         <h1 className="text-lg sm:text-xl text-muted-foreground font-medium uppercase tracking-widest">
-          Estimated Monthly Revenue at Risk
+          Estimated Monthly Revenue Lost
         </h1>
 
         <div className="relative inline-block group">
@@ -85,21 +77,7 @@ export function RevenuLeakHero({
           That&apos;s up to <strong className="text-foreground">${Math.round(maxImpactAnnual).toLocaleString()}</strong> per year if every missed lead had converted.
         </p>
 
-        <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground/70 pt-1">
-          <span>Conservative: ${Math.round(conservativeMonthly).toLocaleString()}/mo</span>
-          <span className="text-muted-foreground/30">|</span>
-          <span>Optimistic: ${Math.round(optimisticMonthly).toLocaleString()}/mo</span>
-        </div>
 
-        <div className="pt-4 flex justify-center">
-          <div className="bg-card/50 border rounded-xl px-5 py-3 inline-flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">With Close Rate Factor:</span>
-            <span className="text-lg font-semibold text-foreground">
-              ${Math.round(realisticMonthly).toLocaleString()}/mo
-            </span>
-            <InfoTooltip content="The estimated revenue you'd actually recover after applying your close rate — a more realistic figure than max impact, which assumes every recovered lead converts." />
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -11,12 +11,12 @@ export function LandingROI({ copy }: LandingROIProps) {
       <div className="max-w-container mx-auto px-0 sm:px-6">
         <div className="max-w-[880px] mx-auto rounded-2xl border border-border bg-card overflow-hidden">
           <div className="px-5 py-8 sm:px-12 sm:py-12">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-4 text-balance">
               The Math
-            </p>
-            <h2 className="text-2xl sm:text-3xl font-semibold mb-6 text-balance">
-              {copy.sectionHeading}
             </h2>
+            <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-8">
+              {copy.sectionHeading}
+            </p>
             <p className="text-muted-foreground text-base sm:text-lg leading-relaxed text-balance">
               {copy.scenario}
             </p>
@@ -28,11 +28,11 @@ export function LandingROI({ copy }: LandingROIProps) {
                 <p className="text-3xl sm:text-4xl font-bold text-brand">
                   {metric.value}
                 </p>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-base font-medium text-foreground">
                   {metric.label}
                 </p>
                 {metric.sub && (
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-sm text-muted-foreground mt-0.5">
                     {metric.sub}
                   </p>
                 )}

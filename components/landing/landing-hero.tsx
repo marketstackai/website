@@ -22,7 +22,7 @@ export function LandingHero({ copy }: LandingHeroProps) {
   } = copy;
 
   return (
-    <Section className="fade-bottom overflow-hidden pb-12 sm:pb-16 pt-20 sm:pt-40 md:pt-64">
+    <Section className="fade-bottom overflow-hidden pb-12 sm:pb-16 pt-20">
       <div className="max-w-container mx-auto flex flex-col gap-8 sm:gap-12">
         <div className="flex flex-col items-center gap-5 text-center sm:gap-8">
           {eyebrow && (

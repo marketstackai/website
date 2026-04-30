@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Target, TrendingDown, BarChart3, Zap } from "lucide-react";
+import { Target, TrendingDown, Zap } from "lucide-react";
 import { MetricCard } from "./metric-card";
 import type { AdjustableParams } from "@/lib/audit/types";
 
@@ -15,7 +15,7 @@ export function MetricsGrid({
   onUpdateParam,
 }: MetricsGridProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto w-full">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-3xl mx-auto w-full">
       <MetricCard
         label="Leads/mo"
         value={`${params.leads}`}
@@ -35,16 +35,6 @@ export function MetricsGrid({
         type="percent"
         rawValue={params.leakRate}
         onValueChange={(val) => onUpdateParam("leakRate", Math.min(Math.max(val, 0.05), 0.85))}
-      />
-      <MetricCard
-        label="Close Rate"
-        value={`${Math.round(params.closeRate * 100)}%`}
-        icon={BarChart3}
-        tooltip={<p>The percentage of properly handled leads that successfully convert into paying customers.</p>}
-        isEditable
-        type="percent"
-        rawValue={params.closeRate}
-        onValueChange={(val) => onUpdateParam("closeRate", Math.min(Math.max(val, 0.05), 0.50))}
       />
       <MetricCard
         label="Avg Job Value"

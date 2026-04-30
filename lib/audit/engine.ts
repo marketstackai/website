@@ -138,19 +138,7 @@ export function computeResults(data: QuizData & { industry: string }): AuditResu
   const maxImpactMonthly = leads * leakRate * jobValue;
   const maxImpactAnnual = maxImpactMonthly * 12;
 
-  // Realistic (with close rate)
-  const realisticMonthly = leads * leakRate * closeRate * jobValue;
-  const realisticAnnual = realisticMonthly * 12;
 
-  // Conservative / Optimistic (Max Impact)
-  const conservativeLeads = Math.round(leads * 0.7);
-  const optimisticLeads = Math.round(leads * 1.3);
-  const conservativeMonthly = conservativeLeads * Math.max(leakRate - 0.05, 0.05) * jobValue;
-  const optimisticMonthly = optimisticLeads * Math.min(leakRate + 0.05, 0.85) * jobValue;
-
-  // Conservative / Optimistic (Realistic)
-  const conservativeRealistic = conservativeLeads * Math.max(leakRate - 0.05, 0.05) * Math.max(closeRate - 0.05, 0.05) * jobValue;
-  const optimisticRealistic = optimisticLeads * Math.min(leakRate + 0.05, 0.85) * Math.min(closeRate + 0.10, 0.50) * jobValue;
 
 
   // Flags (thresholds on the new 0–100 scale, refreshed to align with new
@@ -166,7 +154,7 @@ export function computeResults(data: QuizData & { industry: string }): AuditResu
   const needsReview = data.industry === "other" && !data.industry_other;
 
   // Quick wins
-  const quickWins = getQuickWins(data, { leads, leakRate, closeRate, jobValue }, recommendedPackage);
+  const quickWins = getQuickWins(data, { leads, leakRate, jobValue }, recommendedPackage);
 
   // AI Readiness matrix
   let aiScore: "Low" | "Moderate" | "High" = "Low";
@@ -194,12 +182,9 @@ export function computeResults(data: QuizData & { industry: string }): AuditResu
   }
 
   return {
-    leads, leakRate, closeRate, jobValue,
+    leads, leakRate, jobValue,
     industryMultiplier: industryMult, industry,
     maxImpactMonthly, maxImpactAnnual,
-    realisticMonthly, realisticAnnual,
-    conservativeMonthly, optimisticMonthly,
-    conservativeRealistic, optimisticRealistic,
     totalScore, tierLabel, tierText, recommendedPackage,
     hotLead, highTicket, quickWinOpp, enterpriseSignal, nurtureTrack, needsReview,
     isRevenueUndisclosed: data.monthly_revenue === "undisclosed",
@@ -216,12 +201,9 @@ export function computeResults(data: QuizData & { industry: string }): AuditResu
 // ─── Recalculate from adjusted parameters ───
 export function recalculate(params: AdjustableParams): RecalculatedValues {
   const maxImpactMonthly = params.leads * params.leakRate * params.jobValue;
-  const realisticMonthly = params.leads * params.leakRate * params.closeRate * params.jobValue;
 
   return {
     maxImpactMonthly,
     maxImpactAnnual: maxImpactMonthly * 12,
-    realisticMonthly,
-    realisticAnnual: realisticMonthly * 12,
   };
 }

@@ -57,13 +57,13 @@ const BULLETS: Record<"Low" | "Moderate" | "High", string[]> = {
     "Revisit AI deployment once core response gaps are closed.",
   ],
   Moderate: [
-    "Your infrastructure supports AI-assisted follow-up and intake workflows.",
-    "Start with conversational AI for intake — highest leverage, lowest risk.",
+    "Your infrastructure supports automated follow-up and intake workflows.",
+    "Layering in conversational AI to capture missed revenue at scale.",
     "Avoid over-engineering; targeted automation will outperform broad AI rollouts.",
   ],
   High: [
-    "You're primed for bespoke AI agents that operate with minimal supervision.",
-    "Custom workflows and AI-assisted decision-making are within reach now.",
+    "Agentic workflows and AI-assisted decision-making are within reach now.",
+    "You're primed for custom AI agents that operate with minimal supervision.",
     "Focus on compounding: AI that improves as it learns from your pipeline data.",
   ],
 };

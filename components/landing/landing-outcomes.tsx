@@ -11,12 +11,12 @@ export function LandingOutcomes({ copy }: LandingOutcomesProps) {
     <Section className="py-16 sm:py-20">
       <div className="max-w-container mx-auto px-0 sm:px-6">
         <div className="text-center mb-12">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          <h2 className="text-3xl sm:text-4xl font-semibold text-balance max-w-[600px] mx-auto mb-4">
             What You Get
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-semibold text-balance max-w-[600px] mx-auto">
-            {copy.sectionHeading}
           </h2>
+          <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+            {copy.sectionHeading}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-[880px] mx-auto">
@@ -34,7 +34,7 @@ export function LandingOutcomes({ copy }: LandingOutcomesProps) {
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="font-semibold text-foreground">{item.heading}</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-base text-muted-foreground leading-relaxed">
                     {item.body}
                   </p>
                 </div>

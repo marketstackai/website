@@ -73,7 +73,6 @@ export default function AuditDevPage() {
     () => getAllQuickWinsDebug(quizData, {
       leads: results.leads,
       leakRate: results.leakRate,
-      closeRate: results.closeRate,
       jobValue: results.jobValue,
     }, results.recommendedPackage),
     [quizData, results],
@@ -83,13 +82,12 @@ export default function AuditDevPage() {
   const defaults: AdjustableParams = {
     leads: results.leads,
     leakRate: results.leakRate,
-    closeRate: results.closeRate,
     jobValue: results.jobValue,
   };
   const [adjParams, setParams] = useState<AdjustableParams>(defaults);
 
   // Reset params when quiz data changes
-  const adjParamsKey = `${results.leads}-${results.leakRate}-${results.closeRate}-${results.jobValue}`;
+  const adjParamsKey = `${results.leads}-${results.leakRate}-${results.jobValue}`;
   const [lastKey, setLastKey] = useState(adjParamsKey);
   if (adjParamsKey !== lastKey) {
     setParams(defaults);
@@ -99,15 +97,12 @@ export default function AuditDevPage() {
   const isAdjusted =
     adjParams.leads !== defaults.leads ||
     adjParams.leakRate !== defaults.leakRate ||
-    adjParams.closeRate !== defaults.closeRate ||
     adjParams.jobValue !== defaults.jobValue;
 
   const adjusted = useMemo(() => recalculate(adjParams), [adjParams]);
 
   const displayMax = isAdjusted ? adjusted.maxImpactMonthly : results.maxImpactMonthly;
   const displayMaxAnnual = isAdjusted ? adjusted.maxImpactAnnual : results.maxImpactAnnual;
-  const displayRealistic = isAdjusted ? adjusted.realisticMonthly : results.realisticMonthly;
-  const displayRealisticAnnual = isAdjusted ? adjusted.realisticAnnual : results.realisticAnnual;
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -138,10 +133,6 @@ export default function AuditDevPage() {
               <RevenuLeakHero
                 maxImpactMonthly={displayMax}
                 maxImpactAnnual={displayMaxAnnual}
-                realisticMonthly={displayRealistic}
-                realisticAnnual={displayRealisticAnnual}
-                conservativeMonthly={results.conservativeMonthly}
-                optimisticMonthly={results.optimisticMonthly}
                 isAdjusted={isAdjusted}
                 originalMaxImpact={results.maxImpactMonthly}
                 isRevenueUndisclosed={results.isRevenueUndisclosed}
@@ -150,7 +141,6 @@ export default function AuditDevPage() {
 
               <AssumptionAdjuster
                 params={adjParams}
-                onChange={setParams}
                 onReset={() => setParams(defaults)}
                 onUpdateParam={(key, val) => setParams(prev => ({ ...prev, [key]: val }))}
                 isAdjusted={isAdjusted}
