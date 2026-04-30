@@ -14,7 +14,7 @@
     "test:ghl:sweep": "tsx tests/support/sweep.ts",
     "ai:sync": "lnai sync",
     "ai:skills": "node scripts/sync-skills.mjs",
-    "postinstall": "pnpm run ai:sync && pnpm run ai:skills",
+    "postinstall": "node -e \"if (process.env.VERCEL === '1') process.exit(0); process.exit(1);\" || (pnpm run ai:sync && pnpm run ai:skills)",
     "prepare": "husky"
   },
   "dependencies": {
@@ -61,5 +61,9 @@
   "overrides": {
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2"
+  },
+  "packageManager": "pnpm@9.15.1",
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RevenuLeakHero } from "./revenue-leak-hero";
 import { AssumptionAdjuster } from "./assumption-adjuster";
-import { TierAssessment } from "./tier-assessment";
+import { AIReadinessCard } from "./ai-readiness-card";
 import { QuickWinsSection } from "./quick-wins-section";
 import { CTAFooter } from "./cta-footer";
 import { recalculate } from "@/lib/audit/engine";
@@ -20,7 +20,6 @@ export function AuditResultsView({ results, email, onStartOver }: AuditResultsVi
   const defaults: AdjustableParams = {
     leads: results.leads ?? 0,
     leakRate: results.leakRate ?? 0,
-    closeRate: results.closeRate ?? 0,
     jobValue: results.jobValue ?? 0,
   };
 
@@ -29,7 +28,6 @@ export function AuditResultsView({ results, email, onStartOver }: AuditResultsVi
   const isAdjusted =
     params.leads !== defaults.leads ||
     params.leakRate !== defaults.leakRate ||
-    params.closeRate !== defaults.closeRate ||
     params.jobValue !== defaults.jobValue;
 
   const adjusted = useMemo(
@@ -39,8 +37,6 @@ export function AuditResultsView({ results, email, onStartOver }: AuditResultsVi
 
   const displayMax = isAdjusted ? adjusted.maxImpactMonthly : results.maxImpactMonthly;
   const displayMaxAnnual = isAdjusted ? adjusted.maxImpactAnnual : results.maxImpactAnnual;
-  const displayRealistic = isAdjusted ? adjusted.realisticMonthly : results.realisticMonthly;
-  const displayRealisticAnnual = isAdjusted ? adjusted.realisticAnnual : results.realisticAnnual;
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -50,10 +46,6 @@ export function AuditResultsView({ results, email, onStartOver }: AuditResultsVi
           <RevenuLeakHero
             maxImpactMonthly={displayMax}
             maxImpactAnnual={displayMaxAnnual}
-            realisticMonthly={displayRealistic}
-            realisticAnnual={displayRealisticAnnual}
-            conservativeMonthly={results.conservativeMonthly}
-            optimisticMonthly={results.optimisticMonthly}
             isAdjusted={isAdjusted}
             originalMaxImpact={results.maxImpactMonthly}
             isRevenueUndisclosed={results.isRevenueUndisclosed}
@@ -62,18 +54,17 @@ export function AuditResultsView({ results, email, onStartOver }: AuditResultsVi
 
           <AssumptionAdjuster
             params={params}
-            onChange={setParams}
             onReset={() => setParams(defaults)}
             onUpdateParam={(key, val) => setParams(prev => ({ ...prev, [key]: val }))}
             isAdjusted={isAdjusted}
           />
 
-          <TierAssessment
-            tierLabel={results.tierLabel}
-            tierText={results.tierText}
-            hotLead={results.hotLead}
-            aiReadiness={results.aiReadiness}
-          />
+          {results.aiReadiness?.score && (
+            <AIReadinessCard
+              score={results.aiReadiness.score}
+              tierLabel={results.tierLabel}
+            />
+          )}
 
           <QuickWinsSection quickWins={results.quickWins} />
 

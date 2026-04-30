@@ -30,26 +30,13 @@ export interface AuditResults {
   // Core metrics
   leads: number;
   leakRate: number;
-  closeRate: number;
   jobValue: number;
   industryMultiplier: number;
   industry: string;
 
-  // Max Impact (no close rate)
+  // Revenue Leak (Max Impact)
   maxImpactMonthly: number;
   maxImpactAnnual: number;
-
-  // Realistic (with close rate)
-  realisticMonthly: number;
-  realisticAnnual: number;
-
-  // Conservative / Optimistic ranges (Max Impact)
-  conservativeMonthly: number;
-  optimisticMonthly: number;
-
-  // Conservative / Optimistic ranges (Realistic)
-  conservativeRealistic: number;
-  optimisticRealistic: number;
 
   // Scoring
   totalScore: number;
@@ -117,13 +104,10 @@ export interface GHLAuditRecord {
 export interface AdjustableParams {
   leads: number;
   leakRate: number;
-  closeRate: number;
   jobValue: number;
 }
 
 export interface RecalculatedValues {
   maxImpactMonthly: number;
   maxImpactAnnual: number;
-  realisticMonthly: number;
-  realisticAnnual: number;
 }

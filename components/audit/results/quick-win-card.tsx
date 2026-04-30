@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowUpRight, Clock, DollarSign, Sparkles } from "lucide-react";
+import { ArrowUpRight, Clock, Sparkles, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BookingLink } from "@/components/ui/booking-link";
@@ -10,29 +10,39 @@ import type { QuickWin } from "@/lib/audit/types";
 function CardContent({ win }: { win: QuickWin }) {
   return (
     <>
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          {win.isPrimary && (
-            <Badge variant="brand" className="mb-2 text-[10px] font-bold tracking-widest uppercase px-3 py-1">
-              <Sparkles className="size-3 mr-1" />
-              Recommended Stack
-            </Badge>
-          )}
-          <h3 className="text-lg font-bold">
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-wrap items-center gap-3">
+          <h3
+            className={
+              win.isPrimary
+                ? "from-foreground to-foreground dark:to-muted-foreground inline-block bg-linear-to-r bg-clip-text text-lg leading-tight font-bold text-balance text-transparent drop-shadow-2xl sm:text-2xl"
+                : "text-lg font-bold"
+            }
+          >
             {win.title}
           </h3>
-          <p className="text-sm text-muted-foreground mt-1">{win.description}</p>
+          {win.isPrimary && (
+            <Badge variant="outline" className="border-brand/20 bg-brand/5 px-3 py-1">
+              <Sparkles className="size-3 mr-1 text-brand" />
+              <span className="text-foreground font-bold tracking-widest uppercase text-[10px]">
+                Recommended Stack
+              </span>
+            </Badge>
+          )}
         </div>
+        <p className={win.isPrimary ? "mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground" : "mt-1 text-sm text-muted-foreground"}>
+          {win.description}
+        </p>
       </div>
 
       <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
-          <DollarSign className="size-4 text-brand" />
-          <span className="font-medium">{win.priceRange}</span>
-        </div>
-        <div className="flex items-center gap-2">
           <Clock className="size-4 text-brand" />
           <span className="font-medium">{win.timeline}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Tag className="size-4 text-brand" />
+          <span className="font-medium">{win.priceRange}</span>
         </div>
       </div>
 
