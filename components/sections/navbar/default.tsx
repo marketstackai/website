@@ -73,8 +73,8 @@ const INDUSTRIES_LINKS = [
 ];
 
 const servicesContent = (
-  <div className="grid p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] gap-3">
-    <div className="row-span-3">
+  <div className="grid p-4 md:w-[450px] lg:w-[500px] md:grid-cols-[.75fr_1fr] gap-3">
+    <div className="md:row-span-3">
       <Link
         href="/services#stack"
         className="flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b from-muted/30 to-muted/10 p-6 no-underline outline-hidden select-none hover:bg-accent/50 transition-colors"
@@ -100,7 +100,7 @@ const servicesContent = (
 );
 
 const industriesContent = (
-  <div className="grid gap-2 p-4 md:w-[500px] lg:w-[580px] lg:grid-cols-2">
+  <div className="grid gap-2 p-4 md:w-[500px] lg:w-[580px] grid-cols-2">
     <div>
       {INDUSTRIES_LINKS.slice(0, 6).map((item) => (
         <Link

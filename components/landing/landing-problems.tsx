@@ -18,7 +18,7 @@ export function LandingProblems({ copy }: LandingProblemsProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-[880px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[840px] mx-auto">
           {copy.items.map((item, i) => (
             <div
               key={i}
