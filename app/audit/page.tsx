@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ const initialQuizData = {
 const QUIZ_START = 2;
 const TOTAL_STEPS = 11;
 
-export default function AuditPage() {
+function AuditPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState<number | null>(null);
@@ -1244,5 +1244,13 @@ export default function AuditPage() {
           document.body,
         )}
     </>
+  );
+}
+
+export default function AuditPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuditPageContent />
+    </Suspense>
   );
 }
