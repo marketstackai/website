@@ -94,7 +94,7 @@ export default function ServicesPage() {
               icon={<Blocks className="size-10" />}
               name="Foundation Kit"
               description="Building blocks."
-              price={"497"}
+              price={"997"}
               priceSubtext={
                 <>
                   <span className="text-sm">One-time payment</span>

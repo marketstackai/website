@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RevenuLeakHero } from "./revenue-leak-hero";
 import { AssumptionAdjuster } from "./assumption-adjuster";
-import { TierAssessment } from "./tier-assessment";
+import { AIReadinessCard } from "./ai-readiness-card";
 import { QuickWinsSection } from "./quick-wins-section";
 import { CTAFooter } from "./cta-footer";
 import { recalculate } from "@/lib/audit/engine";
@@ -59,12 +59,12 @@ export function AuditResultsView({ results, email, onStartOver }: AuditResultsVi
             isAdjusted={isAdjusted}
           />
 
-          <TierAssessment
-            tierLabel={results.tierLabel}
-            tierText={results.tierText}
-            hotLead={results.hotLead}
-            aiReadiness={results.aiReadiness}
-          />
+          {results.aiReadiness?.score && (
+            <AIReadinessCard
+              score={results.aiReadiness.score}
+              tierLabel={results.tierLabel}
+            />
+          )}
 
           <QuickWinsSection quickWins={results.quickWins} />
 

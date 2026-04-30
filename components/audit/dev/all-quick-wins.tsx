@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Check, X, DollarSign, Clock } from "lucide-react";
+import { Check, Clock, Tag, X } from "lucide-react";
 import type { DebugQuickWin } from "@/lib/audit/recommendations";
 
 interface AllQuickWinsProps {
@@ -65,7 +65,7 @@ export function AllQuickWins({ wins }: AllQuickWinsProps) {
             {win.triggerMet && (
               <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-1">
                 <span className="flex items-center gap-1">
-                  <DollarSign className="size-3 text-brand" />
+                  <Tag className="size-3 text-brand" />
                   {win.priceRange}
                 </span>
                 <span className="flex items-center gap-1">

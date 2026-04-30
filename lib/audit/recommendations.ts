@@ -1,3 +1,4 @@
+import { getRecommendedStack, RECOMMENDED_STACKS, type RecommendedStackDisplay, type RecommendedStackLabel } from "./display";
 import type { QuizData, QuickWin } from "./types";
 
 const RECOVERY_RATE = 0.50;
@@ -25,6 +26,33 @@ function buildRoiString(
 ): string {
   const leaked = Math.round(leads * leakRate);
   return `Based on your ~${leads} leads/mo and ${Math.round(leakRate * 100)}% leak rate, this could recover ~${recoveredLeads} of ${leaked} leaked leads/mo. At $${jobValue.toLocaleString()} avg job value, that's ~$${Math.round(recoveredMonthly).toLocaleString()}/mo in recovered revenue.`;
+}
+
+function buildPrimaryStackWin(
+  stack: RecommendedStackDisplay,
+  leakedLeads: number,
+  jobValue: number,
+): QuickWin {
+  const recoveredLeads = Math.round(leakedLeads * stack.recoveryRate);
+  const recoveredMonthly = recoveredLeads * jobValue;
+
+  return {
+    id: stack.id,
+    title: stack.title,
+    description: stack.description,
+    service: stack.service,
+    priceRange: stack.priceRange,
+    timeline: stack.timeline,
+    recoveredLeads,
+    recoveredMonthly,
+    recoveredAnnual: recoveredMonthly * 12,
+    roiProjection: stack.roiProjection,
+    ctaLabel: stack.ctaLabel,
+    ctaHref: stack.ctaHref,
+    interest: stack.interest,
+    priority: -1,
+    isPrimary: true,
+  };
 }
 
 export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPackage?: string): QuickWin[] {
@@ -125,61 +153,9 @@ export function getQuickWins(data: QuizData, ctx: MetricContext, recommendedPack
     });
   }
 
-  // Inject Primary Product Recommendation
-  if (recommendedPackage === "Foundation Kit") {
-    wins.push({
-      id: "foundation_kit_primary",
-      title: "Foundation Kit",
-      description: "Everything you need to capture missed leads and build a professional brand foundation. Website template, response blueprints, and review playbooks.",
-      service: "Foundation Product",
-      priceRange: "$497",
-      timeline: "Instant Access",
-      recoveredLeads: Math.round(leakedLeads * 0.20),
-      recoveredMonthly: Math.round(leakedLeads * 0.20) * jobValue,
-      recoveredAnnual: Math.round(leakedLeads * 0.20) * jobValue * 12,
-      roiProjection: "The foundational infrastructure required to stop the bleeding and start scaling.",
-      ctaLabel: "Get the Kit",
-      ctaHref: "/book",
-      interest: "kit",
-      priority: -1,
-      isPrimary: true,
-    });
-  } else if (recommendedPackage === "Operating System") {
-    wins.push({
-      id: "os_primary",
-      title: "Operating System",
-      description: "Our core revenue infrastructure. Fully automated lead response, custom CRM workflows, and professional website deployment.",
-      service: "Core Operating System",
-      priceRange: "$4,500",
-      timeline: "2 Weeks",
-      recoveredLeads: Math.round(leakedLeads * 0.50),
-      recoveredMonthly: Math.round(leakedLeads * 0.50) * jobValue,
-      recoveredAnnual: Math.round(leakedLeads * 0.50) * jobValue * 12,
-      roiProjection: "Professional scale. Every lead is captured, nurtured, and tracked automatically.",
-      ctaLabel: "Book Your OS Setup",
-      ctaHref: "/book",
-      interest: "os",
-      priority: -1,
-      isPrimary: true,
-    });
-  } else if (recommendedPackage === "Studio") {
-    wins.push({
-      id: "studio_primary",
-      title: "Studio",
-      description: "Bespoke automation and AI ops. We build custom agents and workflows that turn your business into a high-leverage revenue machine.",
-      service: "Custom AI & Ops",
-      priceRange: "Custom",
-      timeline: "4–8 Weeks",
-      recoveredLeads: Math.round(leakedLeads * 0.70),
-      recoveredMonthly: Math.round(leakedLeads * 0.70) * jobValue,
-      recoveredAnnual: Math.round(leakedLeads * 0.70) * jobValue * 12,
-      roiProjection: "Maximum leverage. Custom-tailored systems designed for your specific business bottlenecks.",
-      ctaLabel: "Book Studio Strategy Call",
-      ctaHref: "/book",
-      interest: "studio",
-      priority: -1,
-      isPrimary: true,
-    });
+  const recommendedStack = recommendedPackage ? getRecommendedStack(recommendedPackage) : null;
+  if (recommendedStack) {
+    wins.push(buildPrimaryStackWin(recommendedStack, leakedLeads, jobValue));
   }
 
   const sorted = wins
@@ -234,32 +210,11 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
   ];
 
   // Primary product recommendations
-  const primaryDefs: Record<string, { win: QuickWin; triggerDescription: string }> = {
-    "Foundation Kit": {
-      triggerDescription: 'recommendedPackage === "Foundation Kit"',
-      win: (() => {
-        const r = Math.round(leakedLeads * 0.20);
-        const m = r * jobValue;
-        return { id: "foundation_kit_primary", title: "Foundation Kit", description: "Capture missed leads and build a professional brand foundation.", service: "Foundation Product", priceRange: "$497", timeline: "Instant Access", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Foundational infrastructure to stop the bleeding and start scaling.", ctaLabel: "Get the Kit", ctaHref: "/book", interest: "kit", priority: -1, isPrimary: true };
-      })(),
-    },
-    "Operating System": {
-      triggerDescription: 'recommendedPackage === "Operating System"',
-      win: (() => {
-        const r = Math.round(leakedLeads * 0.50);
-        const m = r * jobValue;
-        return { id: "os_primary", title: "Operating System", description: "Fully automated lead response, CRM workflows, and website deployment.", service: "Core Operating System", priceRange: "$4,500", timeline: "2 Weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Every lead captured, nurtured, and tracked automatically.", ctaLabel: "Book Your OS Setup", ctaHref: "/book", interest: "os", priority: -1, isPrimary: true };
-      })(),
-    },
-    "Studio": {
-      triggerDescription: 'recommendedPackage === "Studio"',
-      win: (() => {
-        const r = Math.round(leakedLeads * 0.70);
-        const m = r * jobValue;
-        return { id: "studio_primary", title: "Studio", description: "Bespoke automation and AI ops for maximum leverage.", service: "Custom AI & Ops", priceRange: "Custom", timeline: "4–8 Weeks", recoveredLeads: r, recoveredMonthly: m, recoveredAnnual: m * 12, roiProjection: "Custom-tailored systems for your specific bottlenecks.", ctaLabel: "Book Studio Strategy Call", ctaHref: "/book", interest: "studio", priority: -1, isPrimary: true };
-      })(),
-    },
-  };
+  const primaryDefs = (Object.keys(RECOMMENDED_STACKS) as RecommendedStackLabel[]).map((label) => ({
+    label,
+    triggerDescription: `recommendedPackage === "${label}"`,
+    win: buildPrimaryStackWin(RECOMMENDED_STACKS[label], leakedLeads, jobValue),
+  }));
 
   // Build the filtered set to determine top 3
   const activeWins = getQuickWins(data, ctx, recommendedPackage);
@@ -275,10 +230,10 @@ export function getAllQuickWinsDebug(data: QuizData, ctx: MetricContext, recomme
   }));
 
   // Annotate primary products
-  for (const [pkg, def] of Object.entries(primaryDefs)) {
+  for (const def of primaryDefs) {
     result.push({
       ...def.win,
-      triggerMet: recommendedPackage === pkg,
+      triggerMet: recommendedPackage === def.label,
       meetsRoiThreshold: true,
       inTopThree: topThreeIds.has(def.win.id),
       triggerDescription: def.triggerDescription,
