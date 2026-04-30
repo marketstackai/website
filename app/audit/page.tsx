@@ -222,7 +222,7 @@ function AuditPageContent() {
             aiReadinessDescription: computed.aiReadiness.description,
             leads: computed.leads,
             leakRate: computed.leakRate,
-            quickWins: computed.quickWins.slice(0, 1).map((w) => ({
+            quickWins: computed.quickWins.map((w) => ({
               title: w.title,
               recoveredMonthly: w.recoveredMonthly,
             })),

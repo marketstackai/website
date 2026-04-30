@@ -93,7 +93,7 @@ export default function AuditDevPage() {
     aiReadinessDescription: results.aiReadiness.description,
     leads: results.leads,
     leakRate: results.leakRate,
-    quickWins: results.quickWins.slice(0, 1).map((win) => ({
+    quickWins: results.quickWins.map((win) => ({
       title: win.title,
       recoveredMonthly: win.recoveredMonthly,
     })),
