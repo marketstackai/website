@@ -41,6 +41,7 @@ export default function BookingCalendar() {
   const interestRef = useRef<string | null>(null);
   const sourceRef = useRef<string | null>(null);
   const industryRef = useRef<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [subheading, setSubheading] = useState(DEFAULT_SUBHEADING);
   const [timezone, setTimezone] = useState<string | null>(null);
 
@@ -185,11 +186,17 @@ export default function BookingCalendar() {
     });
   }, [selectedSlot]);
 
-  async function handleBookingSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!selectedSlot) return;
+  // Submits via a ref + reportValidity() rather than a native form submit,
+  // so no `submit` event is dispatched. The GHL external-tracking script hooks
+  // every form's submit event and would otherwise double-capture this booking
+  // through its generic field-mapping heuristic — the /api/booking/create call
+  // is the single source of truth for the contact record.
+  async function submitBooking() {
+    const form = formRef.current;
+    if (!form || !selectedSlot) return;
+    if (!form.reportValidity()) return;
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     setSubmitting(true);
     setSubmitError(null);
 
@@ -399,7 +406,22 @@ export default function BookingCalendar() {
             )}
 
             {view === "form" && selectedSlot && (
-              <form onSubmit={handleBookingSubmit} className="animate-appear">
+              <form
+                ref={formRef}
+                // Enter-to-submit without dispatching a native submit event
+                // (see submitBooking — keeps the GHL tracker from capturing this form).
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Enter" &&
+                    e.target instanceof HTMLElement &&
+                    e.target.tagName !== "TEXTAREA"
+                  ) {
+                    e.preventDefault();
+                    void submitBooking();
+                  }
+                }}
+                className="animate-appear"
+              >
                 <div className="mb-6 text-center">
                   <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">
                     {selectedDate ? format(selectedDate, "MMMM d") : ""} &middot;{" "}
@@ -449,7 +471,12 @@ export default function BookingCalendar() {
                   <p className="mt-4 text-sm text-destructive text-center">{submitError}</p>
                 )}
 
-                <Button type="submit" disabled={submitting} className="w-full mt-6">
+                <Button
+                  type="button"
+                  onClick={submitBooking}
+                  disabled={submitting}
+                  className="w-full mt-6"
+                >
                   {submitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (

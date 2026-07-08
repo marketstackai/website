@@ -84,6 +84,7 @@ export async function POST(request: Request) {
         email: body.email,
         phone: body.phone,
         timezone: body.timezone,
+        source: "calendar",
         customFields,
         attributionSource: {
           utmSource: body.utmSource || "marketstack.ai",
@@ -105,8 +106,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const { contact } = (await upsertRes.json()) as { contact: { id: string } };
-    const contactId = contact.id;
+    const upsertData = (await upsertRes.json()) as { contact?: { id: string } };
+    const contactId = upsertData.contact?.id;
+
+    if (!contactId) {
+      console.error("[Booking Create] Contact upsert succeeded but contact id is missing:", upsertData);
+      return NextResponse.json(
+        { success: false, error: "Failed to retrieve contact" },
+        { status: 502 },
+      );
+    }
 
     // 2. Append interest (multi-select, append-don't-clobber)
     if (body.interest) {
