@@ -9,6 +9,79 @@ export function getBrowserTimezone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
+export function getTimezoneLabel(timezone: string = getBrowserTimezone()): string {
+  const city = timezone.split("/").pop()?.replace(/_/g, " ") ?? timezone;
+  const abbreviation = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    timeZoneName: "short",
+  })
+    .formatToParts(new Date())
+    .find((part) => part.type === "timeZoneName")?.value;
+
+  return abbreviation ? `${city} (${abbreviation})` : city;
+}
+
+export interface TimezoneOption {
+  value: string;
+  label: string;
+}
+
+export const COMMON_TIMEZONES: TimezoneOption[] = [
+  { value: "Pacific/Honolulu", label: "Hawaii" },
+  { value: "America/Anchorage", label: "Alaska" },
+  { value: "America/Los_Angeles", label: "Pacific Time - US & Canada" },
+  { value: "America/Denver", label: "Mountain Time - US & Canada" },
+  { value: "America/Phoenix", label: "Arizona" },
+  { value: "America/Chicago", label: "Central Time - US & Canada" },
+  { value: "America/New_York", label: "Eastern Time - US & Canada" },
+];
+
+export function getTimezoneOptionLabel(timezone: string): string {
+  return COMMON_TIMEZONES.find((tz) => tz.value === timezone)?.label ?? getTimezoneLabel(timezone);
+}
+
+function getTimezoneOffsetMinutes(timezone: string): number {
+  const offset = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    timeZoneName: "longOffset",
+  })
+    .formatToParts(new Date())
+    .find((part) => part.type === "timeZoneName")?.value;
+
+  const match = offset?.match(/GMT([+-])(\d{2}):(\d{2})/);
+  if (!match) return 0;
+
+  const sign = match[1] === "-" ? -1 : 1;
+  return sign * (Number(match[2]) * 60 + Number(match[3]));
+}
+
+// All IANA zones, US & Canada pinned first, then everything else ordered
+// west-to-east by current UTC offset (mirrors how most timezone pickers group).
+export function getAllTimezoneOptions(): TimezoneOption[] {
+  const pinnedValues = new Set(COMMON_TIMEZONES.map((tz) => tz.value));
+
+  const others = Intl.supportedValuesOf("timeZone")
+    .filter((tz) => !pinnedValues.has(tz))
+    .map((tz) => ({
+      value: tz,
+      label: tz === "UTC" ? "UTC" : getTimezoneLabel(tz),
+      offset: getTimezoneOffsetMinutes(tz),
+    }))
+    .sort((a, b) => a.offset - b.offset || a.label.localeCompare(b.label))
+    .map(({ value, label }) => ({ value, label }));
+
+  return [...COMMON_TIMEZONES, ...others];
+}
+
+export function formatTimeInZone(iso: string, timezone: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(iso));
+}
+
 export function clampAvailabilityRange(startMs: number, endMs: number) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);

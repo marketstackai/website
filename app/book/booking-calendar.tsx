@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { endOfMonth, format, parseISO, startOfMonth } from "date-fns";
 import { getDefaultClassNames } from "react-day-picker";
-import { Loader2 } from "lucide-react";
+import * as Dialog from "@radix-ui/react-dialog";
+import { ChevronsUpDown, Globe, Loader2, Search } from "lucide-react";
 import Navbar from "@/components/sections/navbar/default";
 import Footer from "@/components/sections/footer/default";
 import Glow from "@/components/ui/glow";
@@ -16,7 +17,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { getBookingIntent, INTEREST_SUBHEADINGS } from "@/lib/booking";
-import { getBrowserTimezone, getFirstBookableDate, isBookableDay } from "@/lib/calendar";
+import {
+  formatTimeInZone,
+  getAllTimezoneOptions,
+  getBrowserTimezone,
+  getTimezoneOptionLabel,
+  getFirstBookableDate,
+  isBookableDay,
+} from "@/lib/calendar";
 
 const DEFAULT_SUBHEADING =
   "Pick a time that works for you. We’ll handle the rest.";
@@ -32,6 +40,25 @@ export default function BookingCalendar() {
   const sourceRef = useRef<string | null>(null);
   const industryRef = useRef<string | null>(null);
   const [subheading, setSubheading] = useState(DEFAULT_SUBHEADING);
+  const [timezone, setTimezone] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTimezone(getBrowserTimezone());
+  }, []);
+
+  const timezoneOptions = useMemo(() => getAllTimezoneOptions(), []);
+  const timezoneLabel = timezone ? getTimezoneOptionLabel(timezone) : null;
+
+  const [tzDialogOpen, setTzDialogOpen] = useState(false);
+  const [tzQuery, setTzQuery] = useState("");
+
+  const filteredTimezoneOptions = useMemo(() => {
+    const q = tzQuery.trim().toLowerCase();
+    if (!q) return timezoneOptions;
+    return timezoneOptions.filter(
+      (option) => option.label.toLowerCase().includes(q) || option.value.toLowerCase().includes(q),
+    );
+  }, [timezoneOptions, tzQuery]);
 
   useEffect(() => {
     const intent = getBookingIntent();
@@ -72,17 +99,17 @@ export default function BookingCalendar() {
   const [initialLoadDone, setInitialLoadDone] = useState(false);
 
   useEffect(() => {
+    if (!timezone) return;
     let cancelled = false;
 
     async function loadSlots() {
       setLoadingSlots(true);
       setSlotsError(null);
       try {
-        const timezone = getBrowserTimezone();
         const params = new URLSearchParams({
           startDate: String(startOfMonth(month).getTime()),
           endDate: String(endOfMonth(month).getTime()),
-          timezone,
+          timezone: timezone as string,
         });
         const res = await fetch(`/api/booking/slots?${params}`);
         const data = (await res.json()) as { success: boolean; slots?: Record<string, string[]>; error?: string };
@@ -107,7 +134,7 @@ export default function BookingCalendar() {
     return () => {
       cancelled = true;
     };
-  }, [month]);
+  }, [month, timezone]);
 
   const availableSlotsForDate = useMemo(() => {
     if (!selectedDate) return [];
@@ -167,7 +194,7 @@ export default function BookingCalendar() {
           notes: formData.get("notes"),
           consent: formData.get("consent") === "on",
           slot: selectedSlot,
-          timezone: getBrowserTimezone(),
+          timezone: timezone ?? getBrowserTimezone(),
           interest: interestRef.current ?? undefined,
           source: sourceRef.current ?? undefined,
           industry: industryRef.current ?? undefined,
@@ -191,7 +218,7 @@ export default function BookingCalendar() {
   return (
     <main className="min-h-screen w-full bg-background text-foreground flex flex-col">
       <Navbar />
-      <div className="flex-1 w-full max-w-container mx-auto px-4 pt-16 pb-24 sm:pt-32 relative overflow-hidden">
+      <div className="flex-1 w-full max-w-container mx-auto px-4 pt-6 pb-24 sm:pt-10 relative overflow-hidden">
         <div className="text-center mb-6 animate-appear">
           <h1 className="text-3xl sm:text-4xl font-semibold mb-4">Book a Call</h1>
           <p className="text-muted-foreground text-lg max-w-[540px] mx-auto text-balance">
@@ -213,7 +240,7 @@ export default function BookingCalendar() {
                 </div>
               ) : (
               <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
-                <div className="flex justify-center lg:justify-start lg:shrink-0">
+                <div className="flex flex-col items-center lg:items-start gap-4 lg:shrink-0">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -250,6 +277,78 @@ export default function BookingCalendar() {
                       ),
                     }}
                   />
+
+                  {timezone && (
+                    <div className="w-full px-1">
+                      <p className="mb-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Time zone
+                      </p>
+                      <Dialog.Root
+                        open={tzDialogOpen}
+                        onOpenChange={(open) => {
+                          setTzDialogOpen(open);
+                          if (!open) setTzQuery("");
+                        }}
+                      >
+                        <Dialog.Trigger asChild>
+                          <button
+                            type="button"
+                            className="flex w-full items-center gap-2 rounded-lg border border-border bg-background/50 px-3 py-2 text-left text-sm transition-colors hover:border-brand/50"
+                          >
+                            <Globe className="size-4 shrink-0 text-brand" />
+                            <span className="flex-1 truncate">{timezoneLabel}</span>
+                            <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
+                          </button>
+                        </Dialog.Trigger>
+                        <Dialog.Portal>
+                          <Dialog.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+                          <Dialog.Content className="fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-card p-4 shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                            <Dialog.Title className="mb-3 text-sm font-semibold">
+                              Select time zone
+                            </Dialog.Title>
+                            <Dialog.Description className="sr-only">
+                              Choose the time zone used to display available call times.
+                            </Dialog.Description>
+                            <div className="relative mb-3">
+                              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                              <input
+                                autoFocus
+                                value={tzQuery}
+                                onChange={(e) => setTzQuery(e.target.value)}
+                                placeholder="Search time zones..."
+                                className="w-full rounded-lg border border-border bg-background/50 py-2 pr-3 pl-9 text-sm outline-none focus:border-brand/50"
+                              />
+                            </div>
+                            <div className="-mx-1 max-h-[320px] overflow-y-auto px-1">
+                              {filteredTimezoneOptions.length === 0 ? (
+                                <p className="py-6 text-center text-sm text-muted-foreground">
+                                  No matching time zones.
+                                </p>
+                              ) : (
+                                filteredTimezoneOptions.map((option) => (
+                                  <button
+                                    key={option.value}
+                                    type="button"
+                                    onClick={() => {
+                                      setTimezone(option.value);
+                                      setTzDialogOpen(false);
+                                      setTzQuery("");
+                                    }}
+                                    className={cn(
+                                      "flex w-full items-center rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent",
+                                      option.value === timezone && "text-brand font-medium",
+                                    )}
+                                  >
+                                    {option.label}
+                                  </button>
+                                ))
+                              )}
+                            </div>
+                          </Dialog.Content>
+                        </Dialog.Portal>
+                      </Dialog.Root>
+                    </div>
+                  )}
                 </div>
 
                 <div className="lg:flex-1 lg:min-w-0 lg:border-l lg:border-border lg:pl-8 pt-6 lg:pt-0 border-t lg:border-t-0 border-border">
@@ -275,7 +374,7 @@ export default function BookingCalendar() {
                           }}
                           className="p-3 text-sm font-medium border border-border rounded-xl hover:border-brand hover:bg-brand/10 hover:text-brand transition-all focus:outline-none focus:ring-2 focus:ring-ring"
                         >
-                          {format(parseISO(slot), "h:mm a")}
+                          {formatTimeInZone(slot, timezone ?? getBrowserTimezone())}
                         </button>
                       ))}
                     </div>
@@ -294,7 +393,8 @@ export default function BookingCalendar() {
                 <div className="mb-6 text-center">
                   <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">
                     {selectedDate ? format(selectedDate, "MMMM d") : ""} &middot;{" "}
-                    {format(parseISO(selectedSlot), "h:mm a")}
+                    {formatTimeInZone(selectedSlot, timezone ?? getBrowserTimezone())}
+                    {timezoneLabel ? ` (${timezoneLabel})` : ""}
                   </p>
                   <button
                     type="button"
