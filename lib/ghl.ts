@@ -39,7 +39,10 @@ export async function tagContactInterest(
     return { ok: false, error: "Contact not found" };
   }
 
-  const { contact } = (await getRes.json()) as { contact: GHLContact };
+  const { contact } = (await getRes.json()) as { contact?: GHLContact };
+  if (!contact) {
+    return { ok: false, error: "Invalid contact data received" };
+  }
   const existingField = contact.customFields?.find((f) => f.id === GHL_FIELDS.INTERESTS);
   const currentInterests: string[] = Array.isArray(existingField?.value)
     ? (existingField.value as string[])
@@ -75,6 +78,7 @@ export async function tagContactInterest(
 type CanonicalIndustry =
   | "Home Services"
   | "Real Estate"
+  | "Land"
   | "Professional Services"
   | "E-Commerce"
   | "Tech GTM"
@@ -93,6 +97,9 @@ const INDUSTRY_MAP: Record<string, CanonicalIndustry> = {
   tech: "Tech GTM",
   builder: "Home Services",
   lender: "Real Estate",
+  land_clearing: "Land",
+  surveying: "Land",
+  soil_science: "Land",
 };
 
 export function normalizeIndustry(raw: string): CanonicalIndustry {

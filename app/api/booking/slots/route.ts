@@ -33,10 +33,17 @@ export async function GET(request: Request) {
       );
     }
 
-    const { startDate, endDate } = clampAvailabilityRange(
-      Number(startParam),
-      Number(endParam),
-    );
+    const startMs = Number(startParam);
+    const endMs = Number(endParam);
+
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) {
+      return NextResponse.json(
+        { success: false, error: "startDate and endDate must be numeric timestamps" },
+        { status: 400 },
+      );
+    }
+
+    const { startDate, endDate } = clampAvailabilityRange(startMs, endMs);
 
     const params = new URLSearchParams({
       startDate: String(startDate),
