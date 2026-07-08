@@ -394,7 +394,7 @@ export default function BookingCalendar() {
                   <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">
                     {selectedDate ? format(selectedDate, "MMMM d") : ""} &middot;{" "}
                     {formatTimeInZone(selectedSlot, timezone ?? getBrowserTimezone())}
-                    {timezoneLabel ? ` (${timezoneLabel})` : ""}
+                    {timezoneLabel ? <span className="normal-case"> ({timezoneLabel})</span> : ""}
                   </p>
                   <button
                     type="button"
@@ -408,15 +408,15 @@ export default function BookingCalendar() {
                 <div className="space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="fullName">Full Name</Label>
-                    <Input id="fullName" name="fullName" required />
+                    <Input id="fullName" name="fullName" placeholder="e.g. John Smith" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" name="phone" type="tel" required />
+                    <Input id="phone" name="phone" type="tel" placeholder="e.g. (555) 000-0000" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" type="email" required />
+                    <Input id="email" name="email" type="email" placeholder="e.g. john@example.com" required />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="notes">Notes</Label>
