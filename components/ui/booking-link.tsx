@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { setBookingIntent } from "@/lib/booking";
+import { setBookingIntent, setSourceIndustry } from "@/lib/booking";
 
 interface BookingLinkProps
   extends Omit<React.ComponentProps<typeof Link>, "href"> {
-  interest: string;
+  interest?: string;
   source?: string;
+  industry?: string;
 }
 
 export function BookingLink({
   interest,
   source,
+  industry,
   onClick,
   children,
   ...props
@@ -20,7 +22,8 @@ export function BookingLink({
     <Link
       href="/book"
       onClick={(e) => {
-        setBookingIntent(interest, source);
+        if (interest) setBookingIntent(interest, source);
+        if (industry) setSourceIndustry(industry);
         onClick?.(e);
       }}
       {...props}

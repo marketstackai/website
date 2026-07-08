@@ -19,6 +19,7 @@ export function LandingHero({ copy }: LandingHeroProps) {
     industry,
     interest,
     secondaryCtaLabel,
+    secondaryCtaHref,
   } = copy;
 
   return (
@@ -53,8 +54,8 @@ export function LandingHero({ copy }: LandingHeroProps) {
               </Button>
             ) : secondaryCtaLabel ? (
               <Button variant="outline" size="lg" asChild>
-                {interest ? (
-                  <BookingLink interest={interest}>
+                {secondaryCtaHref === "/book" ? (
+                  <BookingLink interest={interest} industry={industry} className="flex items-center gap-1">
                     {secondaryCtaLabel}
                   </BookingLink>
                 ) : (
