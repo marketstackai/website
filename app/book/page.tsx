@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Navbar from "@/components/sections/navbar/default";
 import Footer from "@/components/sections/footer/default";
-import BookingContent from "./booking-content";
+import BookingCalendar from "./booking-calendar";
 
 export const metadata = {
   title: "Book a Call",
@@ -15,7 +15,7 @@ export default function BookPage() {
       fallback={
         <main className="min-h-screen w-full bg-background text-foreground flex flex-col">
           <Navbar />
-          <div className="flex-1 w-full max-w-container mx-auto px-4 pt-32 pb-24">
+          <div className="flex-1 w-full max-w-container mx-auto px-4 pt-6 pb-24 sm:pt-10">
             <div className="text-center mb-6">
               <h1 className="text-3xl sm:text-4xl font-semibold mb-4">
                 Book a Call
@@ -42,7 +42,7 @@ export default function BookPage() {
         </main>
       }
     >
-      <BookingContent />
+      <BookingCalendar />
     </Suspense>
   );
 }

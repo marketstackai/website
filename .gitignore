@@ -64,9 +64,11 @@ skills-lock.json
 .ai/.lnai-manifest.json
 .claude/CLAUDE.md
 .claude/settings.json
+.codex/config.toml
 .cursor/cli.json
 .gemini/settings.json
 .gemini/workflows/sync.md
+.mcp.json
 .opencode/plugins/sync.js
 /AGENTS.md
 /opencode.json
