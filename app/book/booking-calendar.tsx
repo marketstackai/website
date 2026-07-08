@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { endOfMonth, format, parseISO, startOfMonth } from "date-fns";
 import { getDefaultClassNames } from "react-day-picker";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ChevronsUpDown, Globe, Loader2, Search } from "lucide-react";
+import { CalendarPlus, ChevronsUpDown, Globe, Loader2, Search } from "lucide-react";
 import Navbar from "@/components/sections/navbar/default";
 import Footer from "@/components/sections/footer/default";
 import Glow from "@/components/ui/glow";
@@ -18,12 +18,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { getBookingIntent, INTEREST_SUBHEADINGS } from "@/lib/booking";
 import {
+  buildCalendarLinks,
   formatTimeInZone,
   getAllTimezoneOptions,
   getBrowserTimezone,
   getTimezoneOptionLabel,
   getFirstBookableDate,
   isBookableDay,
+  MEETING_DURATION_MINUTES,
 } from "@/lib/calendar";
 
 const DEFAULT_SUBHEADING =
@@ -174,6 +176,14 @@ export default function BookingCalendar() {
     setSelectedSlot(null);
     setSubmitError(null);
   }
+
+  const calendarLinks = useMemo(() => {
+    if (!selectedSlot) return null;
+    return buildCalendarLinks(selectedSlot, MEETING_DURATION_MINUTES, {
+      title: "Call with Market Stack",
+      details: "Your call with Market Stack. We'll send the video call link in your confirmation email.",
+    });
+  }, [selectedSlot]);
 
   async function handleBookingSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -427,7 +437,7 @@ export default function BookingCalendar() {
                     />
                   </div>
                   <div className="flex items-start gap-2 pt-1">
-                    <Checkbox id="consent" name="consent" className="mt-0.5" />
+                    <Checkbox id="consent" name="consent" required className="mt-0.5" />
                     <Label htmlFor="consent" className="font-normal text-xs text-muted-foreground leading-snug">
                       I confirm that I want to receive content from Market Stack using any
                       contact information I provide.
@@ -455,6 +465,49 @@ export default function BookingCalendar() {
                 <p className="text-muted-foreground mb-6 text-balance">
                   We&apos;ve sent a confirmation with your meeting link. Talk soon!
                 </p>
+
+                {calendarLinks && (
+                  <div className="mb-6">
+                    <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Add to calendar
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <a
+                          href={calendarLinks.google}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5"
+                        >
+                          <CalendarPlus className="size-3.5" />
+                          Google
+                        </a>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <a
+                          href={calendarLinks.outlook}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5"
+                        >
+                          <CalendarPlus className="size-3.5" />
+                          Outlook
+                        </a>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <a
+                          href={calendarLinks.ics}
+                          download="market-stack-call.ics"
+                          className="flex items-center gap-1.5"
+                        >
+                          <CalendarPlus className="size-3.5" />
+                          Apple / iCal
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 <Button variant="outline" onClick={resetAll}>
                   Book Another
                 </Button>

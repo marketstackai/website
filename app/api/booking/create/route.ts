@@ -83,6 +83,7 @@ export async function POST(request: Request) {
         lastName,
         email: body.email,
         phone: body.phone,
+        timezone: body.timezone,
         customFields,
         attributionSource: {
           utmSource: body.utmSource || "marketstack.ai",

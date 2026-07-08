@@ -5,6 +5,9 @@ export const CALENDAR_ID = "3kaQEdii0FF1El7xKgWY";
 export const MIN_DAYS_OUT = 2;
 export const MAX_DAYS_OUT = 20;
 
+// Mirrors the calendar's configured slot length in GHL.
+export const MEETING_DURATION_MINUTES = 30;
+
 export function getBrowserTimezone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
@@ -112,4 +115,58 @@ export function getFirstBookableDate(): Date {
   date.setHours(0, 0, 0, 0);
   date.setDate(date.getDate() + MIN_DAYS_OUT);
   return date;
+}
+
+export interface CalendarLinks {
+  google: string;
+  outlook: string;
+  ics: string;
+}
+
+function toUtcStamp(date: Date): string {
+  return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+}
+
+export function buildCalendarLinks(
+  startIso: string,
+  durationMinutes: number,
+  event: { title: string; details: string },
+): CalendarLinks {
+  const start = new Date(startIso);
+  const end = new Date(start.getTime() + durationMinutes * 60_000);
+
+  const google = new URL("https://calendar.google.com/calendar/render");
+  google.searchParams.set("action", "TEMPLATE");
+  google.searchParams.set("text", event.title);
+  google.searchParams.set("dates", `${toUtcStamp(start)}/${toUtcStamp(end)}`);
+  google.searchParams.set("details", event.details);
+
+  const outlook = new URL("https://outlook.live.com/calendar/0/deeplink/compose");
+  outlook.searchParams.set("path", "/calendar/action/compose");
+  outlook.searchParams.set("rru", "addevent");
+  outlook.searchParams.set("startdt", start.toISOString());
+  outlook.searchParams.set("enddt", end.toISOString());
+  outlook.searchParams.set("subject", event.title);
+  outlook.searchParams.set("body", event.details);
+
+  const icsBody = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Market Stack//Booking//EN",
+    "BEGIN:VEVENT",
+    `UID:${start.getTime()}@marketstack.ai`,
+    `DTSTAMP:${toUtcStamp(new Date())}`,
+    `DTSTART:${toUtcStamp(start)}`,
+    `DTEND:${toUtcStamp(end)}`,
+    `SUMMARY:${event.title}`,
+    `DESCRIPTION:${event.details.replace(/\n/g, "\\n")}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  return {
+    google: google.toString(),
+    outlook: outlook.toString(),
+    ics: `data:text/calendar;charset=utf-8,${encodeURIComponent(icsBody)}`,
+  };
 }
