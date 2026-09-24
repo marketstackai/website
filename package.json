@@ -12,11 +12,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:ghl:sweep": "tsx tests/support/sweep.ts",
-    "ai:sync": "lnai sync",
-    "ai:skills": "pnpm dlx github:teddybenzdev/skills skills-sync",
-    "ai:skills:prune": "pnpm dlx github:teddybenzdev/skills skills-sync --prune",
-    "postinstall": "node scripts/postinstall.mjs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "ai:config:sync": "lnai sync",
+    "ai:skills:check": "pnpm dlx github:teddybenzdev/skills check",
+    "ai:skills:sync": "pnpm dlx github:teddybenzdev/skills sync"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
