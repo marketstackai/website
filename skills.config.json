@@ -1,7 +1,7 @@
 {
   "$schema": "https://skills.teddybenz.dev/schemas/skills-config.schema.json",
   "version": 1,
-  "catalogVersion": "2026.11.1",
+  "catalogVersion": "2026.11.2",
   "agents": [
     "claude-code",
     "codex",
