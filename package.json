@@ -13,9 +13,11 @@
     "test:e2e": "playwright test",
     "test:ghl:sweep": "tsx tests/support/sweep.ts",
     "prepare": "husky",
-    "ai:config:sync": "lnai sync",
     "ai:skills:check": "pnpm dlx github:teddybenzdev/skills check",
-    "ai:skills:sync": "pnpm dlx github:teddybenzdev/skills sync"
+    "ai:skills:sync": "pnpm dlx github:teddybenzdev/skills sync",
+    "ai:config:sync": "rulesync generate",
+    "ai:config:preview": "rulesync generate --dry-run",
+    "ai:config:check": "rulesync generate --check"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
@@ -51,7 +53,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.14",
     "husky": "^9.1.7",
-    "lnai": "^0.6.91",
     "playwright": "^1.59.1",
     "postcss": "^8",
     "prettier": "^3.3.3",
@@ -60,7 +61,8 @@
     "tsx": "^4.21.0",
     "typescript": "^5",
     "vite": "^6",
-    "vitest": "^3"
+    "vitest": "^3",
+    "rulesync": "43.6.0"
   },
   "overrides": {
     "@types/react": "19.0.2",

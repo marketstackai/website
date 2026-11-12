@@ -1,0 +1,24 @@
+{
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/download/v43.6.0/config-schema.json",
+  "targets": {
+    "claudecode": [
+      "rules",
+      "mcp"
+    ],
+    "opencode": [
+      "rules",
+      "mcp"
+    ],
+    "agentsmd": [
+      "rules"
+    ],
+    "codexcli": [
+      "rules",
+      "mcp"
+    ]
+  },
+  "delete": false,
+  "simulateCommands": false,
+  "simulateSubagents": false,
+  "simulateSkills": false
+}
