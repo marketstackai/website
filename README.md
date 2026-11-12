@@ -27,7 +27,7 @@ pnpm dev
 
 ## AI Configuration & Agents
 
-This project uses [LNAI](https://lnai.sh) to maintain a unified cross-platform rule-set and configuration for AI coding assistants (Claude Code, OpenCode, and Gemini/Antigravity). Centralized configuration lives within `.ai/` and get pushed to respecitve configuration directories post install, at start of a new session, or when `pnpm run ai:sync` is run.
+This project uses [Rulesync](https://rulesync.dyoshikawa.com/) with authored sources in `.rulesync/`. Preview with `pnpm run ai:config:preview`, apply explicitly with `pnpm run ai:config:sync`, and verify with `pnpm run ai:config:check`. See [agent configuration](docs/agent-configuration.md).
 
 ### Modular AI Skills (Vercel)
 We leverage Vercel's open [skills CLI](https://github.com/vercel-labs/skills) to extend agent capabilities dynamically across the stack without polluting version control. 

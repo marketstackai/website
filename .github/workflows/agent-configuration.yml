@@ -1,0 +1,27 @@
+name: Agent configuration
+on:
+  pull_request:
+    paths: ['.rulesync/**', 'rulesync.jsonc', 'package.json', 'pnpm-lock.yaml', 'skills.config.json', '.github/workflows/agent-configuration.yml']
+  push:
+    branches: [main]
+    paths: ['.rulesync/**', 'rulesync.jsonc', 'package.json', 'pnpm-lock.yaml', 'skills.config.json', '.github/workflows/agent-configuration.yml']
+jobs:
+  generate:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.1
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm run ai:config:preview
+      - run: pnpm run ai:config:sync
+      - run: pnpm run ai:config:check
